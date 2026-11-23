@@ -10,7 +10,7 @@ const HINT: Record<ExportFormat, string> = {
 };
 
 /** Download buttons for the whole report (every format holds all findings). */
-export function ExportButtons({ scanId, target }: { scanId: string; target: string }) {
+export function ExportButtons({ scanId, target, align = "end" }: { scanId: string; target: string; align?: "start" | "end" }) {
   const [busy, setBusy] = useState<ExportFormat | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +27,7 @@ export function ExportButtons({ scanId, target }: { scanId: string; target: stri
   };
 
   return (
-    <div className="flex flex-col items-start gap-1.5 sm:items-end">
+    <div className={`flex flex-col items-start gap-1.5 ${align === "end" ? "sm:items-end" : ""}`}>
       <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Export the report">
         <span className="mr-1 text-xs font-medium text-muted">Export</span>
         {EXPORT_FORMATS.map((format) => {
