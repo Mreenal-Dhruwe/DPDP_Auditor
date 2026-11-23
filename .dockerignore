@@ -1,0 +1,32 @@
+# Keep the build context small and free of secrets. The Dockerfile copies only what it needs.
+.git
+.gitignore
+.gitattributes
+.claude
+skills-lock.json
+.env
+.env.*
+!.env.example
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.venv
+venv
+
+# Local output and uploads
+tmp_uploads
+reports
+report
+*.pdf
+
+# Frontend: dependencies and build are recreated inside the image
+frontend/node_modules
+frontend/dist
+
+# Not needed at runtime
+tests
+samples
+demo
+scripts
+*.md
+!README.md

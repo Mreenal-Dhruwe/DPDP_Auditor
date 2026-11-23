@@ -196,7 +196,11 @@ frontend/           # React 19 + Vite 8 + TypeScript 7 + Tailwind 4 + react-rout
   vite.config.ts    # proxy /api -> http://localhost:8000 (API_URL overrides)
 requirements.txt
 .env.example
-Dockerfile          # added in Phase 2
+Dockerfile          # Phase 2: node:22-slim builds frontend/dist; python:3.13-slim runtime with
+                    # Pango + harfbuzz-subset + DejaVu fonts (PDF) and git (clones); non-root
+                    # user 10001; code read-only, writable /data (UPLOAD_DIR, REPORT_DIR); PORT
+                    # env (default 8000). Test: npm run e2e -- --pdf with BASE_URL on the container
+.dockerignore       # keeps .git, .env, node_modules, uploads and reports out of the build
 ```
 
 ## Build phases: local first, then online

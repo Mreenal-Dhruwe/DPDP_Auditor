@@ -4,6 +4,8 @@
 //   frontend: npm run dev                       (or test the production build on :8000)
 //   test:     npm run e2e                       zip upload of target_app
 //             npm run e2e -- --git              also scan OWASP Juice Shop from GitHub
+//             npm run e2e -- --pdf              PDF export must work (the Docker image); otherwise
+//                                               a 501 "no Pango" answer is accepted and its message checked
 //             BASE_URL=http://localhost:8000 npm run e2e   (production build served by FastAPI)
 //
 // Uses playwright-core with the Chrome or Edge already installed (CHROME_PATH overrides),
@@ -20,6 +22,7 @@ import { chromium } from "playwright-core";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const BASE = process.env.BASE_URL ?? "http://localhost:5173";
 const WITH_GIT = process.argv.includes("--git");
+const NEED_PDF = process.argv.includes("--pdf"); // the Docker image has Pango: PDF must work
 const GIT_URL = "https://github.com/juice-shop/juice-shop";
 
 function findBrowser() {
@@ -98,12 +101,22 @@ async function scanAndCheck(page, start, label, timeoutMs) {
       check(download.suggestedFilename().endsWith(`.${format}`), `export ${format} -> ${download.suggestedFilename()}`);
     }
     const pdf = await page.request.get(`${BASE}/api/scan/${scanId}/report.pdf`);
-    if (pdf.status() === 501) {
+    if (pdf.status() === 501 && !NEED_PDF) {
       await page.click("[aria-label='Export the report'] button:has-text('PDF')");
       const shown = await page.waitForSelector("[role=alert]:has-text('PDF')", { timeout: 10000 }).then(() => true, () => false);
       check(shown, "PDF unavailable (no Pango here): error shown in the UI");
     } else {
-      check(pdf.ok(), `PDF export (${pdf.status()})`);
+      check(pdf.ok(), `PDF from the API (${pdf.status()}${pdf.ok() ? "" : ": " + (await pdf.text()).slice(0, 120)})`);
+      if (!pdf.ok()) return { scanId, report };
+      const [download] = await Promise.all([
+        page.waitForEvent("download", { timeout: 60000 }),
+        page.click("[aria-label='Export the report'] button:has-text('PDF')"),
+      ]);
+      const file = path.join(work, download.suggestedFilename());
+      await download.saveAs(file);
+      const bytes = readFileSync(file);
+      check(bytes.subarray(0, 5).toString() === "%PDF-" && bytes.length > 5000,
+        `export pdf -> ${download.suggestedFilename()} (${Math.round(bytes.length / 1024)} KB, valid PDF header)`);
     }
     await page.click("text=all findings");
     await page.waitForURL(/\/scans\/[0-9a-f]{32}\?sev=/);
