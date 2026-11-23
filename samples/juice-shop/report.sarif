@@ -1,0 +1,3427 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "DPDP Compliance Auditor",
+          "version": "0.1.0",
+          "semanticVersion": "0.1.0",
+          "rules": [
+            {
+              "id": "DPDP-NOT-001",
+              "name": "PersonalDataCollectedWithoutANoticeOfDataAndPurpose",
+              "shortDescription": {
+                "text": "Personal data collected without a notice of data and purpose"
+              },
+              "fullDescription": {
+                "text": "Notice must give an itemised description of the personal data and the specified purpose."
+              },
+              "help": {
+                "text": "Show an itemised notice (data fields + purpose) before or with the consent request.\n\nLaw: DPDP Act s.5(1), DPDP Rules Rule 3(b). Notice must give an itemised description of the personal data and the specified purpose.",
+                "markdown": "**Fix:** Show an itemised notice (data fields + purpose) before or with the consent request.\n\n**Law:** DPDP Act s.5(1), DPDP Rules Rule 3(b). Notice must give an itemised description of the personal data and the specified purpose."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "notice",
+                  "s.5(1)",
+                  "Rule 3(b)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-CON-001",
+              "name": "ConsentCanBeGivenButNotWithdrawn",
+              "shortDescription": {
+                "text": "Consent can be given but not withdrawn"
+              },
+              "fullDescription": {
+                "text": "Withdrawal must be possible at any time, with ease comparable to giving consent; processing must then stop."
+              },
+              "help": {
+                "text": "Add DELETE /consent (or POST /consent/withdraw) that clears consent and stops downstream processing.\n\nLaw: DPDP Act s.6(4), DPDP Act s.6(6), DPDP Rules Rule 3(c)(i). Withdrawal must be possible at any time, with ease comparable to giving consent; processing must then stop.",
+                "markdown": "**Fix:** Add DELETE /consent (or POST /consent/withdraw) that clears consent and stops downstream processing.\n\n**Law:** DPDP Act s.6(4), DPDP Act s.6(6), DPDP Rules Rule 3(c)(i). Withdrawal must be possible at any time, with ease comparable to giving consent; processing must then stop."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "consent",
+                  "s.6(4)",
+                  "s.6(6)",
+                  "Rule 3(c)(i)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-CON-002",
+              "name": "PreTickedOrDefaultTrueConsent",
+              "shortDescription": {
+                "text": "Pre-ticked or default-true consent"
+              },
+              "fullDescription": {
+                "text": "Consent must be unambiguous with a clear affirmative action."
+              },
+              "help": {
+                "text": "Default consent to false and require an explicit user action.\n\nLaw: DPDP Act s.6(1). Consent must be unambiguous with a clear affirmative action.",
+                "markdown": "**Fix:** Default consent to false and require an explicit user action.\n\n**Law:** DPDP Act s.6(1). Consent must be unambiguous with a clear affirmative action."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "consent",
+                  "s.6(1)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-CON-003",
+              "name": "NoEvidenceOfConsentStored",
+              "shortDescription": {
+                "text": "No evidence of consent stored"
+              },
+              "fullDescription": {
+                "text": "The Data Fiduciary must be able to prove notice was given and consent obtained."
+              },
+              "help": {
+                "text": "Store consent records with user id, purpose, notice version, timestamp and channel.\n\nLaw: DPDP Act s.6(10). The Data Fiduciary must be able to prove notice was given and consent obtained.",
+                "markdown": "**Fix:** Store consent records with user id, purpose, notice version, timestamp and channel.\n\n**Law:** DPDP Act s.6(10). The Data Fiduciary must be able to prove notice was given and consent obtained."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "consent",
+                  "s.6(10)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-CON-004",
+              "name": "PersonalDataUsedWithoutCheckingConsent",
+              "shortDescription": {
+                "text": "Personal data used without checking consent"
+              },
+              "fullDescription": {
+                "text": "Process only on consent or a legitimate use, limited to the specified purpose."
+              },
+              "help": {
+                "text": "Add a consent guard (middleware or decorator) before purpose-specific processing.\n\nLaw: DPDP Act s.4(1), DPDP Act s.6(1). Process only on consent or a legitimate use, limited to the specified purpose.",
+                "markdown": "**Fix:** Add a consent guard (middleware or decorator) before purpose-specific processing.\n\n**Law:** DPDP Act s.4(1), DPDP Act s.6(1). Process only on consent or a legitimate use, limited to the specified purpose."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "consent",
+                  "s.4(1)",
+                  "s.6(1)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-CON-005",
+              "name": "OverCollectionBeyondTheStatedPurpose",
+              "shortDescription": {
+                "text": "Over-collection beyond the stated purpose"
+              },
+              "fullDescription": {
+                "text": "Consent is limited to personal data necessary for the specified purpose."
+              },
+              "help": {
+                "text": "Remove unused fields and permissions, or tie each one to a stated purpose.\n\nLaw: DPDP Act s.6(1). Consent is limited to personal data necessary for the specified purpose.",
+                "markdown": "**Fix:** Remove unused fields and permissions, or tie each one to a stated purpose.\n\n**Law:** DPDP Act s.6(1). Consent is limited to personal data necessary for the specified purpose."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "consent",
+                  "s.6(1)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-CON-006",
+              "name": "ConsentRequestOfferedInOneLanguageOnly",
+              "shortDescription": {
+                "text": "Consent request offered in one language only"
+              },
+              "fullDescription": {
+                "text": "Option to access the consent request in English or an Eighth Schedule language."
+              },
+              "help": {
+                "text": "Use i18n resources for notice and consent text with at least one Indian language.\n\nLaw: DPDP Act s.6(3). Option to access the consent request in English or an Eighth Schedule language.",
+                "markdown": "**Fix:** Use i18n resources for notice and consent text with at least one Indian language.\n\n**Law:** DPDP Act s.6(3). Option to access the consent request in English or an Eighth Schedule language."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "consent",
+                  "s.6(3)"
+                ],
+                "security-severity": "3.0",
+                "severity": "low"
+              }
+            },
+            {
+              "id": "DPDP-SEC-001",
+              "name": "PersonalDataWrittenToLogs",
+              "shortDescription": {
+                "text": "Personal data written to logs"
+              },
+              "fullDescription": {
+                "text": "Secure personal data through encryption, obfuscation, masking or virtual tokens."
+              },
+              "help": {
+                "text": "Mask or tokenise PII before logging (e.g. a***@x.com, ******1234).\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Secure personal data through encryption, obfuscation, masking or virtual tokens.",
+                "markdown": "**Fix:** Mask or tokenise PII before logging (e.g. a***@x.com, ******1234).\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Secure personal data through encryption, obfuscation, masking or virtual tokens."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(a)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-SEC-002",
+              "name": "PersonalDataStoredInPlaintext",
+              "shortDescription": {
+                "text": "Personal data stored in plaintext"
+              },
+              "fullDescription": {
+                "text": "Encryption, obfuscation, masking or virtual tokens."
+              },
+              "help": {
+                "text": "Encrypt sensitive columns at the field level, or store tokens instead of raw values.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Encryption, obfuscation, masking or virtual tokens.",
+                "markdown": "**Fix:** Encrypt sensitive columns at the field level, or store tokens instead of raw values.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Encryption, obfuscation, masking or virtual tokens."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(a)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-SEC-003",
+              "name": "WeakPasswordHashing",
+              "shortDescription": {
+                "text": "Weak password hashing"
+              },
+              "fullDescription": {
+                "text": "Reasonable security safeguards to prevent personal data breach."
+              },
+              "help": {
+                "text": "Use bcrypt, scrypt or argon2 with per-user salt.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Reasonable security safeguards to prevent personal data breach.",
+                "markdown": "**Fix:** Use bcrypt, scrypt or argon2 with per-user salt.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Reasonable security safeguards to prevent personal data breach."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(a)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-SEC-004",
+              "name": "HardcodedSecretsOrCredentials",
+              "shortDescription": {
+                "text": "Hardcoded secrets or credentials"
+              },
+              "fullDescription": {
+                "text": "Measures to control access to computer resources."
+              },
+              "help": {
+                "text": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(b). Measures to control access to computer resources.",
+                "markdown": "**Fix:** Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(b). Measures to control access to computer resources."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(b)"
+                ],
+                "security-severity": "9.5",
+                "severity": "critical"
+              }
+            },
+            {
+              "id": "DPDP-SEC-005",
+              "name": "PersonalDataExposedByAnUnauthenticatedRoute",
+              "shortDescription": {
+                "text": "Personal data exposed by an unauthenticated route"
+              },
+              "fullDescription": {
+                "text": "Appropriate measures to control access."
+              },
+              "help": {
+                "text": "Require authentication and check that the requester owns the record.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(b). Appropriate measures to control access.",
+                "markdown": "**Fix:** Require authentication and check that the requester owns the record.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(b). Appropriate measures to control access."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(b)"
+                ],
+                "security-severity": "9.5",
+                "severity": "critical"
+              }
+            },
+            {
+              "id": "DPDP-SEC-006",
+              "name": "ExcessiveDataInApiResponses",
+              "shortDescription": {
+                "text": "Excessive data in API responses"
+              },
+              "fullDescription": {
+                "text": "Masking and minimising exposed personal data."
+              },
+              "help": {
+                "text": "Return a response schema/serializer with only the needed fields; mask identifiers.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Masking and minimising exposed personal data.",
+                "markdown": "**Fix:** Return a response schema/serializer with only the needed fields; mask identifiers.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Masking and minimising exposed personal data."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(a)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-SEC-007",
+              "name": "NoAccessLoggingOnPersonalDataReads",
+              "shortDescription": {
+                "text": "No access logging on personal-data reads"
+              },
+              "fullDescription": {
+                "text": "Visibility on access to personal data through logs, monitoring and review."
+              },
+              "help": {
+                "text": "Write an audit event (who, what record, when) for every PII read and change.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(c). Visibility on access to personal data through logs, monitoring and review.",
+                "markdown": "**Fix:** Write an audit event (who, what record, when) for every PII read and change.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(c). Visibility on access to personal data through logs, monitoring and review."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(c)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-SEC-008",
+              "name": "InsecureInfrastructureConfiguration",
+              "shortDescription": {
+                "text": "Insecure infrastructure configuration"
+              },
+              "fullDescription": {
+                "text": "Access control and appropriate technical and organisational measures."
+              },
+              "help": {
+                "text": "Run as non-root, disable debug in production, restrict CORS, enforce TLS, block public buckets.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(b), DPDP Rules Rule 6(1)(g). Access control and appropriate technical and organisational measures.",
+                "markdown": "**Fix:** Run as non-root, disable debug in production, restrict CORS, enforce TLS, block public buckets.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(b), DPDP Rules Rule 6(1)(g). Access control and appropriate technical and organisational measures."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(b)",
+                  "Rule 6(1)(g)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-SEC-009",
+              "name": "NoBackupConfiguredForPersonalDataStores",
+              "shortDescription": {
+                "text": "No backup configured for personal-data stores"
+              },
+              "fullDescription": {
+                "text": "Reasonable measures for continued processing, such as data backups."
+              },
+              "help": {
+                "text": "Configure automated, encrypted backups with tested restore.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(d). Reasonable measures for continued processing, such as data backups.",
+                "markdown": "**Fix:** Configure automated, encrypted backups with tested restore.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(d). Reasonable measures for continued processing, such as data backups."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(d)"
+                ],
+                "security-severity": "3.0",
+                "severity": "low"
+              }
+            },
+            {
+              "id": "DPDP-SEC-010",
+              "name": "LogRetentionShorterThanOneYear",
+              "shortDescription": {
+                "text": "Log retention shorter than one year"
+              },
+              "fullDescription": {
+                "text": "Retain logs and personal data for one year for detecting and investigating unauthorised access."
+              },
+              "help": {
+                "text": "Retain access/processing logs for at least 365 days in protected storage.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(e), DPDP Rules Rule 8(3). Retain logs and personal data for one year for detecting and investigating unauthorised access.",
+                "markdown": "**Fix:** Retain access/processing logs for at least 365 days in protected storage.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(e), DPDP Rules Rule 8(3). Retain logs and personal data for one year for detecting and investigating unauthorised access."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(e)",
+                  "Rule 8(3)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-TP-001",
+              "name": "PersonalDataSentToAThirdPartySdk",
+              "shortDescription": {
+                "text": "Personal data sent to a third-party SDK"
+              },
+              "fullDescription": {
+                "text": "Fiduciary is responsible for processors, which must work under a valid contract with security terms."
+              },
+              "help": {
+                "text": "Send pseudonymous IDs instead of PII, scrub events, and confirm a DPA exists with the vendor.\n\nLaw: DPDP Act s.8(1), DPDP Act s.8(2), DPDP Rules Rule 6(1)(f). Fiduciary is responsible for processors, which must work under a valid contract with security terms.",
+                "markdown": "**Fix:** Send pseudonymous IDs instead of PII, scrub events, and confirm a DPA exists with the vendor.\n\n**Law:** DPDP Act s.8(1), DPDP Act s.8(2), DPDP Rules Rule 6(1)(f). Fiduciary is responsible for processors, which must work under a valid contract with security terms."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "third parties",
+                  "s.8(1)",
+                  "s.8(2)",
+                  "Rule 6(1)(f)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-TP-002",
+              "name": "PersonalDataStoredOrSentOutsideIndia",
+              "shortDescription": {
+                "text": "Personal data stored or sent outside India"
+              },
+              "fullDescription": {
+                "text": "Transfers allowed unless the Government restricts a country or sets requirements by order."
+              },
+              "help": {
+                "text": "Record transfer destinations and review them against current Government orders.\n\nLaw: DPDP Act s.16(1), DPDP Rules Rule 15. Transfers allowed unless the Government restricts a country or sets requirements by order.",
+                "markdown": "**Fix:** Record transfer destinations and review them against current Government orders.\n\n**Law:** DPDP Act s.16(1), DPDP Rules Rule 15. Transfers allowed unless the Government restricts a country or sets requirements by order."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "transfers",
+                  "s.16(1)",
+                  "Rule 15"
+                ],
+                "security-severity": "1.0",
+                "severity": "info"
+              }
+            },
+            {
+              "id": "DPDP-BR-001",
+              "name": "NoBreachNotificationMechanism",
+              "shortDescription": {
+                "text": "No breach notification mechanism"
+              },
+              "fullDescription": {
+                "text": "Inform affected users without delay; send the Board a detailed report within 72 hours."
+              },
+              "help": {
+                "text": "Add an incident module that can notify affected users and generate the Board report.\n\nLaw: DPDP Act s.8(6), DPDP Rules Rule 7(1), DPDP Rules Rule 7(2). Inform affected users without delay; send the Board a detailed report within 72 hours.",
+                "markdown": "**Fix:** Add an incident module that can notify affected users and generate the Board report.\n\n**Law:** DPDP Act s.8(6), DPDP Rules Rule 7(1), DPDP Rules Rule 7(2). Inform affected users without delay; send the Board a detailed report within 72 hours."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "breach",
+                  "s.8(6)",
+                  "Rule 7(1)",
+                  "Rule 7(2)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-RET-001",
+              "name": "PersonalDataWithNoEraseOrAnonymisePath",
+              "shortDescription": {
+                "text": "Personal data with no erase or anonymise path"
+              },
+              "fullDescription": {
+                "text": "Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+              },
+              "help": {
+                "text": "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds.\n\nLaw: DPDP Act s.8(7), DPDP Act s.12(3), DPDP Rules Rule 8. Erase personal data on withdrawal or once the purpose is served, unless law requires retention.",
+                "markdown": "**Fix:** Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds.\n\n**Law:** DPDP Act s.8(7), DPDP Act s.12(3), DPDP Rules Rule 8. Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "retention",
+                  "s.8(7)",
+                  "s.12(3)",
+                  "Rule 8"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-RET-002",
+              "name": "ImmediateHardDeleteWithNoMinimumRetention",
+              "shortDescription": {
+                "text": "Immediate hard delete with no minimum retention"
+              },
+              "fullDescription": {
+                "text": "Retain personal data, traffic data and processing logs for at least one year, then erase."
+              },
+              "help": {
+                "text": "Soft-delete and restrict access, keep processing logs for one year, then purge.\n\nLaw: DPDP Rules Rule 8(3). Retain personal data, traffic data and processing logs for at least one year, then erase.",
+                "markdown": "**Fix:** Soft-delete and restrict access, keep processing logs for one year, then purge.\n\n**Law:** DPDP Rules Rule 8(3). Retain personal data, traffic data and processing logs for at least one year, then erase."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "retention",
+                  "Rule 8(3)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-RET-003",
+              "name": "NoPreErasureNoticeToTheUser",
+              "shortDescription": {
+                "text": "No pre-erasure notice to the user"
+              },
+              "fullDescription": {
+                "text": "Inform the user at least 48 hours before erasure (applies to Third Schedule classes)."
+              },
+              "help": {
+                "text": "Send a notice 48 hours before scheduled erasure.\n\nLaw: DPDP Act s.8(8), DPDP Rules Rule 8(2). Inform the user at least 48 hours before erasure (applies to Third Schedule classes).",
+                "markdown": "**Fix:** Send a notice 48 hours before scheduled erasure.\n\n**Law:** DPDP Act s.8(8), DPDP Rules Rule 8(2). Inform the user at least 48 hours before erasure (applies to Third Schedule classes)."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "retention",
+                  "s.8(8)",
+                  "Rule 8(2)"
+                ],
+                "security-severity": "3.0",
+                "severity": "low"
+              }
+            },
+            {
+              "id": "DPDP-CH-001",
+              "name": "ChildDataCollectedWithoutParentalConsentFlow",
+              "shortDescription": {
+                "text": "Child data collected without parental consent flow"
+              },
+              "fullDescription": {
+                "text": "Verifiable consent of the parent before processing a child's personal data."
+              },
+              "help": {
+                "text": "Gate under-18 sign-ups behind verified parental consent (Rule 10 methods).\n\nLaw: DPDP Act s.9(1), DPDP Rules Rule 10. Verifiable consent of the parent before processing a child's personal data.",
+                "markdown": "**Fix:** Gate under-18 sign-ups behind verified parental consent (Rule 10 methods).\n\n**Law:** DPDP Act s.9(1), DPDP Rules Rule 10. Verifiable consent of the parent before processing a child's personal data."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "children",
+                  "s.9(1)",
+                  "Rule 10"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-CH-002",
+              "name": "TrackingOrTargetedAdsPossibleForChildren",
+              "shortDescription": {
+                "text": "Tracking or targeted ads possible for children"
+              },
+              "fullDescription": {
+                "text": "No tracking, behavioural monitoring or targeted advertising directed at children."
+              },
+              "help": {
+                "text": "Disable tracking and ad SDKs for users under 18.\n\nLaw: DPDP Act s.9(3). No tracking, behavioural monitoring or targeted advertising directed at children.",
+                "markdown": "**Fix:** Disable tracking and ad SDKs for users under 18.\n\n**Law:** DPDP Act s.9(3). No tracking, behavioural monitoring or targeted advertising directed at children."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "children",
+                  "s.9(3)"
+                ],
+                "security-severity": "9.5",
+                "severity": "critical"
+              }
+            },
+            {
+              "id": "DPDP-RT-001",
+              "name": "NoWayToAccessOrExportOneSData",
+              "shortDescription": {
+                "text": "No way to access or export one's data"
+              },
+              "fullDescription": {
+                "text": "Right to access information about personal data; publish how to make requests."
+              },
+              "help": {
+                "text": "Add GET /me/data returning stored data and processing summary.\n\nLaw: DPDP Act s.11, DPDP Rules Rule 14(1). Right to access information about personal data; publish how to make requests.",
+                "markdown": "**Fix:** Add GET /me/data returning stored data and processing summary.\n\n**Law:** DPDP Act s.11, DPDP Rules Rule 14(1). Right to access information about personal data; publish how to make requests."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "rights",
+                  "s.11",
+                  "Rule 14(1)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-RT-002",
+              "name": "NoCorrectionOrErasureEndpoint",
+              "shortDescription": {
+                "text": "No correction or erasure endpoint"
+              },
+              "fullDescription": {
+                "text": "Right to correction, completion, updating and erasure."
+              },
+              "help": {
+                "text": "Add PATCH /me and an erasure request endpoint.\n\nLaw: DPDP Act s.12, DPDP Rules Rule 14. Right to correction, completion, updating and erasure.",
+                "markdown": "**Fix:** Add PATCH /me and an erasure request endpoint.\n\n**Law:** DPDP Act s.12, DPDP Rules Rule 14. Right to correction, completion, updating and erasure."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "rights",
+                  "s.12",
+                  "Rule 14"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-RT-003",
+              "name": "NoGrievanceMechanismOrContactPublished",
+              "shortDescription": {
+                "text": "No grievance mechanism or contact published"
+              },
+              "fullDescription": {
+                "text": "Publish a contact for processing questions; respond to grievances within 90 days."
+              },
+              "help": {
+                "text": "Add a grievance form with tracking and a published DPO/contact page.\n\nLaw: DPDP Act s.8(9), DPDP Act s.8(10), DPDP Act s.13, DPDP Rules Rule 9, DPDP Rules Rule 14(3). Publish a contact for processing questions; respond to grievances within 90 days.",
+                "markdown": "**Fix:** Add a grievance form with tracking and a published DPO/contact page.\n\n**Law:** DPDP Act s.8(9), DPDP Act s.8(10), DPDP Act s.13, DPDP Rules Rule 9, DPDP Rules Rule 14(3). Publish a contact for processing questions; respond to grievances within 90 days."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "rights",
+                  "s.8(9)",
+                  "s.8(10)",
+                  "s.13",
+                  "Rule 9",
+                  "Rule 14(3)"
+                ],
+                "security-severity": "3.0",
+                "severity": "low"
+              }
+            }
+          ]
+        }
+      },
+      "automationDetails": {
+        "id": "dpdp-compliance/juice-shop/"
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "endTimeUtc": "2026-11-23T15:38:02.938055+00:00"
+        }
+      ],
+      "results": [
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (data/static/users.yml:3): password: '********' [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "86b7b9b9c9f6"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/users.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 3,
+                  "snippet": {
+                    "text": "password: '********' [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (data/static/users.yml:31): password: '********' [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "1399ed3c73ac"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/users.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 31,
+                  "snippet": {
+                    "text": "password: '********' [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (data/static/users.yml:63): password: 'OhG0********' [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "462987e96b96"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/users.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 63,
+                  "snippet": {
+                    "text": "password: 'OhG0********' [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (data/static/users.yml:88): password: 'bW9j********' [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "adddd1229502"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/users.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 88,
+                  "snippet": {
+                    "text": "password: 'bW9j********' [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (data/static/users.yml:107): password: 'mDLx********' [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "9e599e09ad2b"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/users.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 107,
+                  "snippet": {
+                    "text": "password: 'mDLx********' [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (data/static/users.yml:115): password: 'J6aV********' [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "fd3bf7a4df5b"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/users.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 115,
+                  "snippet": {
+                    "text": "password: 'J6aV********' [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (data/static/users.yml:123): password: 'focu********' [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "d91b9541f1ca"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/users.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 123,
+                  "snippet": {
+                    "text": "password: 'focu********' [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (data/static/users.yml:150): password: 'EinB********' [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "c0acc7fc45b5"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/users.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 150,
+                  "snippet": {
+                    "text": "password: 'EinB********' [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (data/static/users.yml:159): password: 'K1f.********' [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "c92427254df1"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/users.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 159,
+                  "snippet": {
+                    "text": "password: 'K1f.********' [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (data/static/users.yml:239): password: 'y&x5********' [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "991ea28f8e8f"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/users.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 239,
+                  "snippet": {
+                    "text": "password: 'y&x5********' [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (data/static/users.yml:245): password: 'y&x5********' [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "e545a06cdafc"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/users.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 245,
+                  "snippet": {
+                    "text": "password: 'y&x5********' [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (data/static/users.yml:272): password: 'IamU********' [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "e61cddd4305f"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/users.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 272,
+                  "snippet": {
+                    "text": "password: 'IamU********' [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (data/static/users.yml:277): password: 'DVKH********' [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "6327f3300991"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/users.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 277,
+                  "snippet": {
+                    "text": "password: 'DVKH********' [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (data/static/users.yml:296): password: 'FeuL********' [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "8cb062cf7153"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/users.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 296,
+                  "snippet": {
+                    "text": "password: 'FeuL********' [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (frontend/src/app/app.guard.spec.ts:46): localStorage.setItem('token', 'eyJh********') [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "fd549a39c7da"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend/src/app/app.guard.spec.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 46,
+                  "snippet": {
+                    "text": "localStorage.setItem('token', 'eyJh********') [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:72): localStorage.setItem('token', 'eyJh********') [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "40501873bc1b"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend/src/app/last-login-ip/last-login-ip.component.spec.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 72,
+                  "snippet": {
+                    "text": "localStorage.setItem('token', 'eyJh********') [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:78): localStorage.setItem('token', 'eyJh********') [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "4b23cab3a09c"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend/src/app/last-login-ip/last-login-ip.component.spec.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 78,
+                  "snippet": {
+                    "text": "localStorage.setItem('token', 'eyJh********') [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (frontend/src/app/login/login.component.ts:73): public testingPassword = 'IamU********' [literal value for testingPassword]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "344f27c0a6d8"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend/src/app/login/login.component.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 73,
+                  "snippet": {
+                    "text": "public testingPassword = 'IamU********' [literal value for testingPassword]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (infrastructure/terraform/networking.tf:171): private_key = \"----********\" # vuln-code-snippet vuln-line iacLeakedKeyChallenge [private key]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "58986a33d697"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "infrastructure/terraform/networking.tf",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 171,
+                  "snippet": {
+                    "text": "private_key = \"----********\" # vuln-code-snippet vuln-line iacLeakedKeyChallenge [private key]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (lib/insecurity.ts:21): const privateKey = '----********' [private key]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "2680b568fcc2"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/insecurity.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 21,
+                  "snippet": {
+                    "text": "const privateKey = '----********' [private key]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (terraform/networking.tf:171): private_key = \"----********\" # vuln-code-snippet vuln-line iacLeakedKeyChallenge [private key]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "0ad549e61817"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "terraform/networking.tf",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 171,
+                  "snippet": {
+                    "text": "private_key = \"----********\" # vuln-code-snippet vuln-line iacLeakedKeyChallenge [private key]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (test/api/user.test.ts:280): .set({ Authorization: 'eyJh********' }) [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "fb8ca4e46fbd"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/api/user.test.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 280,
+                  "snippet": {
+                    "text": ".set({ Authorization: 'eyJh********' }) [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (test/cypress/e2e/forgedJwt.spec.ts:22): 'eyJ0********' [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "6719703122c8"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/cypress/e2e/forgedJwt.spec.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 22,
+                  "snippet": {
+                    "text": "'eyJ0********' [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (test/cypress/e2e/forgedJwt.spec.ts:38): 'eyJ0********' [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "fb5ae7ce0839"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/cypress/e2e/forgedJwt.spec.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 38,
+                  "snippet": {
+                    "text": "'eyJ0********' [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (test/server/currentUser.unit.test.ts:40): req.cookies.token = 'eyJ0********' [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "9360e4fb6ef7"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/server/currentUser.unit.test.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 40,
+                  "snippet": {
+                    "text": "req.cookies.token = 'eyJ0********' [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (test/server/currentUser.unit.test.ts:43): 'eyJ0********', [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "ee8dcad34631"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/server/currentUser.unit.test.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 43,
+                  "snippet": {
+                    "text": "'eyJ0********', [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (test/server/verify.unit.test.ts:308): req.headers = { authorization: 'Bearer eyJ0********' } [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "b73546366e54"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/server/verify.unit.test.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 308,
+                  "snippet": {
+                    "text": "req.headers = { authorization: 'Bearer eyJ0********' } [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (test/server/verify.unit.test.ts:316): req.headers = { authorization: 'Bearer eyJ0********' } [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "110a14cdb39b"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/server/verify.unit.test.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 316,
+                  "snippet": {
+                    "text": "req.headers = { authorization: 'Bearer eyJ0********' } [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (data/static/codefixes/loginAdminChallenge_1.ts:18): models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "21ae5a2e2535"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/codefixes/loginAdminChallenge_1.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 18,
+                  "snippet": {
+                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (data/static/codefixes/loginAdminChallenge_2.ts:15): models.sequelize.query(`SELECT * FROM Users WHERE email = $1 AND password = '${se********'')}' AND deletedAt IS NULL`, [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "112f672fb60d"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/codefixes/loginAdminChallenge_2.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 15,
+                  "snippet": {
+                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = $1 AND password = '${se********'')}' AND deletedAt IS NULL`, [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (data/static/codefixes/loginAdminChallenge_4_correct.ts:16): { bind: [ req.body.email, security.hash(req.body.password) ], model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "d55d7832b1ea"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/codefixes/loginAdminChallenge_4_correct.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 16,
+                  "snippet": {
+                    "text": "{ bind: [ req.body.email, security.hash(req.body.password) ], model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (data/static/codefixes/loginBenderChallenge_1.ts:18): models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "c34fbafa945f"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/codefixes/loginBenderChallenge_1.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 18,
+                  "snippet": {
+                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (data/static/codefixes/loginBenderChallenge_2_correct.ts:16): { bind: { mail: req.body.email, pass: security.hash(req.body.password) }, model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "005bb50528f8"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/codefixes/loginBenderChallenge_2_correct.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 16,
+                  "snippet": {
+                    "text": "{ bind: { mail: req.body.email, pass: security.hash(req.body.password) }, model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (data/static/codefixes/loginBenderChallenge_3.ts:15): models.sequelize.query(`SELECT * FROM Users WHERE email = :mail AND password = '${se********'')}' AND deletedAt IS NULL`, [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "e7a5572e7688"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/codefixes/loginBenderChallenge_3.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 15,
+                  "snippet": {
+                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = :mail AND password = '${se********'')}' AND deletedAt IS NULL`, [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (data/static/codefixes/loginBenderChallenge_4.ts:15): models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "3333e4efa418"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/codefixes/loginBenderChallenge_4.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 15,
+                  "snippet": {
+                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (data/static/codefixes/loginJimChallenge_1_correct.ts:16): { bind: [ req.body.email, security.hash(req.body.password) ], model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "e4169cecf33d"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/codefixes/loginJimChallenge_1_correct.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 16,
+                  "snippet": {
+                    "text": "{ bind: [ req.body.email, security.hash(req.body.password) ], model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (data/static/codefixes/loginJimChallenge_2.ts:15): models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "d0bad33f4e2d"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/codefixes/loginJimChallenge_2.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 15,
+                  "snippet": {
+                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (data/static/codefixes/loginJimChallenge_4.ts:18): models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "75a005faa96b"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/codefixes/loginJimChallenge_4.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 18,
+                  "snippet": {
+                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (data/static/codefixes/weakPasswordChallenge_1_correct.ts:7): this.setDataValue('password', security.hash(clearTextPassword)) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "d995d4bbbd02"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/codefixes/weakPasswordChallenge_1_correct.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 7,
+                  "snippet": {
+                    "text": "this.setDataValue('password', security.hash(clearTextPassword)) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (data/static/codefixes/weakPasswordChallenge_2.ts:11): this.setDataValue('password', security.hash(clearTextPassword)) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "11f1b82994dc"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/codefixes/weakPasswordChallenge_2.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 11,
+                  "snippet": {
+                    "text": "this.setDataValue('password', security.hash(clearTextPassword)) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (data/static/codefixes/weakPasswordChallenge_3.ts:10): this.setDataValue('password', security.hash(clearTextPassword)) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "0020c4757ab1"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/codefixes/weakPasswordChallenge_3.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 10,
+                  "snippet": {
+                    "text": "this.setDataValue('password', security.hash(clearTextPassword)) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (data/static/codefixes/weakPasswordChallenge_4.ts:6): this.setDataValue('password', security.hash(clearTextPassword)) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "10f175f5abae"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "data/static/codefixes/weakPasswordChallenge_4.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 6,
+                  "snippet": {
+                    "text": "this.setDataValue('password', security.hash(clearTextPassword)) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-RET-001",
+          "ruleIndex": 20,
+          "level": "error",
+          "message": {
+            "text": "Personal data with no erase or anonymise path (models/address.ts:31): Address.init( [table Addresses holds address, full_name, mobile, pincode; no code deletes or anonymises it; finale-rest generates REST endpoints, so a delete path may exist outside the scanned code]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "e54174357963"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [
+              "address",
+              "full_name",
+              "mobile",
+              "pincode"
+            ],
+            "law": {
+              "act": [
+                "s.8(7)",
+                "s.12(3)"
+              ],
+              "rules": [
+                "Rule 8"
+              ],
+              "requirement": "Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Data is kept indefinitely and erasure requests cannot be honoured.",
+            "fix": "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "models/address.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 31,
+                  "snippet": {
+                    "text": "Address.init( [table Addresses holds address, full_name, mobile, pincode; no code deletes or anonymises it; finale-rest generates REST endpoints, so a delete path may exist outside the scanned code]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-RET-001",
+          "ruleIndex": 20,
+          "level": "error",
+          "message": {
+            "text": "Personal data with no erase or anonymise path (models/card.ts:27): Card.init( [table Cards holds card_number, full_name; no code deletes or anonymises it; finale-rest generates REST endpoints, so a delete path may exist outside the scanned code]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "0e7f0d506878"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [
+              "card_number",
+              "full_name"
+            ],
+            "law": {
+              "act": [
+                "s.8(7)",
+                "s.12(3)"
+              ],
+              "rules": [
+                "Rule 8"
+              ],
+              "requirement": "Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Data is kept indefinitely and erasure requests cannot be honoured.",
+            "fix": "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "models/card.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 27,
+                  "snippet": {
+                    "text": "Card.init( [table Cards holds card_number, full_name; no code deletes or anonymises it; finale-rest generates REST endpoints, so a delete path may exist outside the scanned code]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-002",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "Personal data stored in plaintext (models/card.ts:38): cardNum: { [Cards.cardNum stored as INTEGER]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "5836265a4118"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "card_number"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Encryption, obfuscation, masking or virtual tokens."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "A database leak exposes the data directly.",
+            "fix": "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "models/card.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 38,
+                  "snippet": {
+                    "text": "cardNum: { [Cards.cardNum stored as INTEGER]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-RET-001",
+          "ruleIndex": 20,
+          "level": "error",
+          "message": {
+            "text": "Personal data with no erase or anonymise path (models/recycle.ts:28): Recycle.init( [table Recycles holds address; no code deletes or anonymises it; finale-rest generates REST endpoints, so a delete path may exist outside the scanned code]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "454bde17b51a"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [
+              "address"
+            ],
+            "law": {
+              "act": [
+                "s.8(7)",
+                "s.12(3)"
+              ],
+              "rules": [
+                "Rule 8"
+              ],
+              "requirement": "Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Data is kept indefinitely and erasure requests cannot be honoured.",
+            "fix": "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "models/recycle.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 28,
+                  "snippet": {
+                    "text": "Recycle.init( [table Recycles holds address; no code deletes or anonymises it; finale-rest generates REST endpoints, so a delete path may exist outside the scanned code]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-RET-001",
+          "ruleIndex": 20,
+          "level": "error",
+          "message": {
+            "text": "Personal data with no erase or anonymise path (models/user.ts:37): User.init( [table Users holds email, ip_address, password; no code deletes or anonymises it; finale-rest generates REST endpoints, so a delete path may exist outside the scanned code]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "dcc6ebcb6176"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [
+              "email",
+              "ip_address",
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(7)",
+                "s.12(3)"
+              ],
+              "rules": [
+                "Rule 8"
+              ],
+              "requirement": "Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Data is kept indefinitely and erasure requests cannot be honoured.",
+            "fix": "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "models/user.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 37,
+                  "snippet": {
+                    "text": "User.init( [table Users holds email, ip_address, password; no code deletes or anonymises it; finale-rest generates REST endpoints, so a delete path may exist outside the scanned code]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (models/user.ts:73): this.setDataValue('password', security.hash(clearTextPassword)) // vuln-code-snippet vuln-line weakPasswordChallenge [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "7a631f6f2ea4"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "models/user.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 73,
+                  "snippet": {
+                    "text": "this.setDataValue('password', security.hash(clearTextPassword)) // vuln-code-snippet vuln-line weakPasswordChallenge [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (routes/2fa.ts:107): if (user.password !== security.hash(password)) { [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "f5b7586ea039"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "routes/2fa.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 107,
+                  "snippet": {
+                    "text": "if (user.password !== security.hash(password)) { [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (routes/2fa.ts:152): if (user.password !== security.hash(password)) { [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "b451527eeec6"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "routes/2fa.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 152,
+                  "snippet": {
+                    "text": "if (user.password !== security.hash(password)) { [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (routes/changePassword.ts:39): if (currentPassword && security.hash(currentPassword) !== loggedInUser.data.password) { [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "c6aae9067742"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "routes/changePassword.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 39,
+                  "snippet": {
+                    "text": "if (currentPassword && security.hash(currentPassword) !== loggedInUser.data.password) { [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (routes/login.ts:34): models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: UserModel, plain: true }) // vuln-code-snippet vuln-line loginAdminChallenge loginBenderChallenge loginJimChallenge [security.hash() hashes with m..."
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "f0d8179fc000"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "routes/login.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 34,
+                  "snippet": {
+                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: UserModel, plain: true }) // vuln-code-snippet vuln-line loginAdminChallenge loginBenderChallenge loginJimChallenge [security.hash() hashes with m..."
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (test/api/2fa.test.ts:323): password: security.hash(password), [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "5cd9480b5539"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/api/2fa.test.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 323,
+                  "snippet": {
+                    "text": "password: security.hash(password), [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-003",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Weak password hashing (test/api/2fa.test.ts:411): password: security.hash(password), [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "e1f5746600ae"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Reasonable security safeguards to prevent personal data breach."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Fast hashes are easily cracked after a leak.",
+            "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/api/2fa.test.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 411,
+                  "snippet": {
+                    "text": "password: security.hash(password), [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "target": "juice-shop",
+        "rulesVersion": "0.1.0",
+        "filesScanned": 1494,
+        "coverage": {
+          "files_by_kind": {
+            "typescript": 662,
+            "other": 503,
+            "config": 226,
+            "templates": 84,
+            "javascript": 16,
+            "python": 3
+          },
+          "rules_checked": [
+            "DPDP-CON-001",
+            "DPDP-CON-002",
+            "DPDP-SEC-001",
+            "DPDP-SEC-002",
+            "DPDP-SEC-003",
+            "DPDP-SEC-004",
+            "DPDP-SEC-005",
+            "DPDP-SEC-008",
+            "DPDP-TP-001",
+            "DPDP-RET-001",
+            "DPDP-RET-002",
+            "DPDP-CH-001"
+          ],
+          "rules_not_checked": [
+            "DPDP-NOT-001",
+            "DPDP-CON-003",
+            "DPDP-CON-004",
+            "DPDP-CON-005",
+            "DPDP-CON-006",
+            "DPDP-SEC-006",
+            "DPDP-SEC-007",
+            "DPDP-SEC-009",
+            "DPDP-SEC-010",
+            "DPDP-TP-002",
+            "DPDP-BR-001",
+            "DPDP-RET-003",
+            "DPDP-CH-002",
+            "DPDP-RT-001",
+            "DPDP-RT-002",
+            "DPDP-RT-003"
+          ]
+        },
+        "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes."
+      }
+    }
+  ]
+}

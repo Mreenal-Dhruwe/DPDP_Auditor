@@ -1,0 +1,2346 @@
+{
+  "tool": "DPDP Compliance Auditor",
+  "tool_version": "0.1.0",
+  "rules_version": "0.1.0",
+  "target": "juice-shop",
+  "generated_at": "2026-11-23T15:38:02.938055Z",
+  "files_scanned": 1494,
+  "coverage": {
+    "files_by_kind": {
+      "typescript": 662,
+      "other": 503,
+      "config": 226,
+      "templates": 84,
+      "javascript": 16,
+      "python": 3
+    },
+    "rules_checked": [
+      "DPDP-CON-001",
+      "DPDP-CON-002",
+      "DPDP-SEC-001",
+      "DPDP-SEC-002",
+      "DPDP-SEC-003",
+      "DPDP-SEC-004",
+      "DPDP-SEC-005",
+      "DPDP-SEC-008",
+      "DPDP-TP-001",
+      "DPDP-RET-001",
+      "DPDP-RET-002",
+      "DPDP-CH-001"
+    ],
+    "rules_not_checked": [
+      "DPDP-NOT-001",
+      "DPDP-CON-003",
+      "DPDP-CON-004",
+      "DPDP-CON-005",
+      "DPDP-CON-006",
+      "DPDP-SEC-006",
+      "DPDP-SEC-007",
+      "DPDP-SEC-009",
+      "DPDP-SEC-010",
+      "DPDP-TP-002",
+      "DPDP-BR-001",
+      "DPDP-RET-003",
+      "DPDP-CH-002",
+      "DPDP-RT-001",
+      "DPDP-RT-002",
+      "DPDP-RT-003"
+    ]
+  },
+  "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes.",
+  "summary": {
+    "total": 54,
+    "by_severity": {
+      "critical": 28,
+      "high": 26,
+      "medium": 0,
+      "low": 0,
+      "info": 0
+    },
+    "by_category": {
+      "Security": 50,
+      "Retention": 4
+    },
+    "by_provision": {
+      "s.8(5)": 50,
+      "Rule 6(1)(b)": 28,
+      "Rule 6(1)(a)": 22,
+      "s.8(7)": 4,
+      "s.12(3)": 4,
+      "Rule 8": 4
+    }
+  },
+  "findings": [
+    {
+      "id": "86b7b9b9c9f6",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/users.yml",
+      "line": 3,
+      "evidence": "password: '********' [literal value for password]",
+      "context": {
+        "start_line": 1,
+        "lines": [
+          "-",
+          "  email: admin",
+          "  password: '********'",
+          "  key: admin",
+          "  role: 'admin'",
+          "  securityQuestion:"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "1399ed3c73ac",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/users.yml",
+      "line": 31,
+      "evidence": "password: '********' [literal value for password]",
+      "context": {
+        "start_line": 28,
+        "lines": [
+          "      expYear: 2086",
+          "-",
+          "  email: jim",
+          "  password: '********'",
+          "  key: jim",
+          "  role: 'customer'",
+          "  walletBalance: 100"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "462987e96b96",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/users.yml",
+      "line": 63,
+      "evidence": "password: 'OhG0********' [literal value for password]",
+      "context": {
+        "start_line": 60,
+        "lines": [
+          "      expYear: 2099",
+          "-",
+          "  email: bender",
+          "  password: 'OhG0********'",
+          "  key: bender",
+          "  role: 'customer'",
+          "  securityQuestion:"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "adddd1229502",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/users.yml",
+      "line": 88,
+      "evidence": "password: 'bW9j********' [literal value for password]",
+      "context": {
+        "start_line": 85,
+        "lines": [
+          "-",
+          "  email: bj***@***",
+          "  username: bkimminich",
+          "  password: 'bW9j********'",
+          "  customDomain: true",
+          "  key: bjoernGoogle",
+          "  role: 'admin'"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "9e599e09ad2b",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/users.yml",
+      "line": 107,
+      "evidence": "password: 'mDLx********' [literal value for password]",
+      "context": {
+        "start_line": 104,
+        "lines": [
+          "      expYear: 2092",
+          "-",
+          "  email: ciso",
+          "  password: 'mDLx********'",
+          "  key: ciso",
+          "  role: 'deluxe'",
+          "  securityQuestion:"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "fd3bf7a4df5b",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/users.yml",
+      "line": 115,
+      "evidence": "password: 'J6aV********' [literal value for password]",
+      "context": {
+        "start_line": 112,
+        "lines": [
+          "    answer: 'Brd?j8sEMziOvvBf§Be?jFZ77H?hgm'",
+          "-",
+          "  email: support",
+          "  password: 'J6aV********'",
+          "  key: support",
+          "  role: 'admin'",
+          "  securityQuestion:"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "d91b9541f1ca",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/users.yml",
+      "line": 123,
+      "evidence": "password: 'focu********' [literal value for password]",
+      "context": {
+        "start_line": 120,
+        "lines": [
+          "    answer: 'SC OLEA SRL' # http://www.olea.com.ro/",
+          "-",
+          "  email: morty",
+          "  password: 'focu********'",
+          "  key: morty",
+          "  role: 'customer'",
+          "  walletBalance: 100"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "c0acc7fc45b5",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/users.yml",
+      "line": 150,
+      "evidence": "password: 'EinB********' [literal value for password]",
+      "context": {
+        "start_line": 147,
+        "lines": [
+          "-",
+          "  email: wurstbrot",
+          "  username: wurstbrot",
+          "  password: 'EinB********'",
+          "  totpSecret: IFTXE3SPOEYVURT2MRYGI52TKJ4HC3KH",
+          "  key: timo",
+          "  role: 'admin'"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "c92427254df1",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/users.yml",
+      "line": 159,
+      "evidence": "password: 'K1f.********' [literal value for password]",
+      "context": {
+        "start_line": 156,
+        "lines": [
+          "    answer: 'NZMJLjEinU7TFElDIYW8'",
+          "-",
+          "  email: amy",
+          "  password: 'K1f.********'",
+          "  key: amy",
+          "  role: 'customer'",
+          "  walletBalance: 48"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "991ea28f8e8f",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/users.yml",
+      "line": 239,
+      "evidence": "password: 'y&x5********' [literal value for password]",
+      "context": {
+        "start_line": 236,
+        "lines": [
+          "-",
+          "  email: john",
+          "  username: j0hNny",
+          "  password: 'y&x5********'",
+          "  key: john",
+          "  role: 'customer'",
+          "-"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "e545a06cdafc",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/users.yml",
+      "line": 245,
+      "evidence": "password: 'y&x5********' [literal value for password]",
+      "context": {
+        "start_line": 242,
+        "lines": [
+          "-",
+          "  email: emma",
+          "  username: E=ma²",
+          "  password: 'y&x5********'",
+          "  key: emma",
+          "  role: 'customer'",
+          "-"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "e61cddd4305f",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/users.yml",
+      "line": 272,
+      "evidence": "password: 'IamU********' [literal value for password]",
+      "context": {
+        "start_line": 269,
+        "lines": [
+          "    answer: \"Used Emporium\"",
+          "-",
+          "  email: testing",
+          "  password: 'IamU********'",
+          "  key: LetUsTest",
+          "  role: 'admin'",
+          "-"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "6327f3300991",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/users.yml",
+      "line": 277,
+      "evidence": "password: 'DVKH********' [literal value for password]",
+      "context": {
+        "start_line": 274,
+        "lines": [
+          "  role: 'admin'",
+          "-",
+          "  email: cloud-admin",
+          "  password: 'DVKH********'",
+          "  key: cloudAdmin",
+          "  role: 'admin'",
+          "  profileImage: 'default.svg'"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "8cb062cf7153",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/users.yml",
+      "line": 296,
+      "evidence": "password: 'FeuL********' [literal value for password]",
+      "context": {
+        "start_line": 293,
+        "lines": [
+          "-",
+          "  email: passkey-user",
+          "  username: passkey-user",
+          "  password: 'FeuL********'",
+          "  key: passkeyUser",
+          "  role: 'customer'",
+          "  passkeys:"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "fd549a39c7da",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "frontend/src/app/app.guard.spec.ts",
+      "line": 46,
+      "evidence": "localStorage.setItem('token', 'eyJh********') [known key format]",
+      "context": {
+        "start_line": 43,
+        "lines": [
+          "    it('returns payload from decoding a valid JWT', () => {",
+          "        const guard = TestBed.inject(LoginGuard)",
+          "",
+          "        localStorage.setItem('token', 'eyJh********')",
+          "        expect(guard.tokenDecode()).toEqual({",
+          "            sub: '1234567890',",
+          "            name: 'John Doe',"
+        ]
+      },
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "40501873bc1b",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "frontend/src/app/last-login-ip/last-login-ip.component.spec.ts",
+      "line": 72,
+      "evidence": "localStorage.setItem('token', 'eyJh********') [known key format]",
+      "context": {
+        "start_line": 69,
+        "lines": [
+          "    })",
+          "",
+          "    it('should set Last-Login IP from JWT as trusted HTML', () => {",
+          "        localStorage.setItem('token', 'eyJh********')",
+          "        component.ngOnInit()",
+          "        expect(sanitizer.bypassSecurityTrustHtml).toHaveBeenCalledWith('<small>1.2.3.4</small>')",
+          "    })"
+        ]
+      },
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "4b23cab3a09c",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "frontend/src/app/last-login-ip/last-login-ip.component.spec.ts",
+      "line": 78,
+      "evidence": "localStorage.setItem('token', 'eyJh********') [known key format]",
+      "context": {
+        "start_line": 75,
+        "lines": [
+          "    })",
+          "",
+          "    it('should not set Last-Login IP if none is present in JWT', () => {",
+          "        localStorage.setItem('token', 'eyJh********')",
+          "        component.ngOnInit()",
+          "        expect(sanitizer.bypassSecurityTrustHtml).not.toHaveBeenCalled()",
+          "    })"
+        ]
+      },
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "344f27c0a6d8",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "frontend/src/app/login/login.component.ts",
+      "line": 73,
+      "evidence": "public testingPassword = 'IamU********' [literal value for testingPassword]",
+      "context": {
+        "start_line": 70,
+        "lines": [
+          "  public oauthUnavailable = true",
+          "  public redirectUri = ''",
+          "  public testingUsername = 'te***@***'",
+          "  public testingPassword = 'IamU********'",
+          "",
+          "  ngOnInit (): void {",
+          "    const email = localStorage.getItem('email')"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "58986a33d697",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "infrastructure/terraform/networking.tf",
+      "line": 171,
+      "evidence": "private_key = \"----********\" # vuln-code-snippet vuln-line iacLeakedKeyChallenge [private key]",
+      "context": {
+        "start_line": 168,
+        "lines": [
+          "resource \"aws_iam_server_certificate\" \"juice_shop_tls\" {",
+          "  name             = \"${var.project_name}-tls-cert\"",
+          "  certificate_body = file(\"${path.module}/certs/server.crt\")",
+          "  private_key      = \"----********\" # vuln-code-snippet vuln-line iacLeakedKeyChallenge",
+          "",
+          "  lifecycle {",
+          "    create_before_destroy = true"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "2680b568fcc2",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "lib/insecurity.ts",
+      "line": 21,
+      "evidence": "const privateKey = '----********' [private key]",
+      "context": {
+        "start_line": 18,
+        "lines": [
+          "import * as z85 from 'z85'",
+          "",
+          "export const publicKey = fs ? fs.readFileSync('encryptionkeys/jwt.pub', 'utf8') : 'placeholder-public-key'",
+          "const privateKey = '----********'",
+          "",
+          "interface ResponseWithUser {",
+          "  status?: string"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "0ad549e61817",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "terraform/networking.tf",
+      "line": 171,
+      "evidence": "private_key = \"----********\" # vuln-code-snippet vuln-line iacLeakedKeyChallenge [private key]",
+      "context": {
+        "start_line": 168,
+        "lines": [
+          "resource \"aws_iam_server_certificate\" \"juice_shop_tls\" {",
+          "  name             = \"${var.project_name}-tls-cert\"",
+          "  certificate_body = file(\"${path.module}/certs/server.crt\")",
+          "  private_key      = \"----********\" # vuln-code-snippet vuln-line iacLeakedKeyChallenge",
+          "",
+          "  lifecycle {",
+          "    create_before_destroy = true"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "fb8ca4e46fbd",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "test/api/user.test.ts",
+      "line": 280,
+      "evidence": ".set({ Authorization: 'eyJh********' }) [known key format]",
+      "context": {
+        "start_line": 277,
+        "lines": [
+          "  void it('GET who-am-i request returns nothing on expired auth token', async () => {",
+          "    const res = await request(app)",
+          "      .get('/rest/user/whoami')",
+          "      .set({ Authorization: 'eyJh********' })",
+          "    assert.equal(res.status, 200)",
+          "    assert.ok(res.headers['content-type']?.includes('application/json'))",
+          "    assert.deepEqual(res.body.user, {})"
+        ]
+      },
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "6719703122c8",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "test/cypress/e2e/forgedJwt.spec.ts",
+      "line": 22,
+      "evidence": "'eyJ0********' [known key format]",
+      "context": {
+        "start_line": 19,
+        "lines": [
+          "          cy.window().then(() => {",
+          "            localStorage.setItem(",
+          "              'token',",
+          "              'eyJ0********'",
+          "            )",
+          "          })",
+          "          cy.visit('/#/')"
+        ]
+      },
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "fb5ae7ce0839",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "test/cypress/e2e/forgedJwt.spec.ts",
+      "line": 38,
+      "evidence": "'eyJ0********' [known key format]",
+      "context": {
+        "start_line": 35,
+        "lines": [
+          "      cy.window().then(() => {",
+          "        localStorage.setItem(",
+          "          'token',",
+          "          'eyJ0********'",
+          "        )",
+          "      })",
+          "      cy.visit('/#/')"
+        ]
+      },
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "9360e4fb6ef7",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "test/server/currentUser.unit.test.ts",
+      "line": 40,
+      "evidence": "req.cookies.token = 'eyJ0********' [known key format]",
+      "context": {
+        "start_line": 37,
+        "lines": [
+          "  })",
+          "",
+          "  void it('should return ID and email of user belonging to cookie from the request', () => {",
+          "    req.cookies.token = 'eyJ0********'",
+          "    req.query.callback = undefined",
+          "    authenticatedUsers.put(",
+          "      'eyJ0********',"
+        ]
+      },
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "ee8dcad34631",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "test/server/currentUser.unit.test.ts",
+      "line": 43,
+      "evidence": "'eyJ0********', [known key format]",
+      "context": {
+        "start_line": 40,
+        "lines": [
+          "    req.cookies.token = 'eyJ0********'",
+          "    req.query.callback = undefined",
+          "    authenticatedUsers.put(",
+          "      'eyJ0********',",
+          "      { data: { id: 1, email: 'ad***@***', lastLoginIp: '0.0.0.0', profileImage: '/assets/public/images/uploads/default.svg' } as unknown as UserModel }",
+          "    )",
+          "    retrieveLoggedInUser()(req, res)"
+        ]
+      },
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "b73546366e54",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "test/server/verify.unit.test.ts",
+      "line": 308,
+      "evidence": "req.headers = { authorization: 'Bearer eyJ0********' } [known key format]",
+      "context": {
+        "start_line": 305,
+        "lines": [
+          "    })",
+          "",
+          "    void it('\"jwtForgedChallenge\" is solved when forged token HMAC-signed with public RSA-key has email rs***@*** in the payload', { skip: isWindows() ? 'not supported on Windows' : false }, () => {",
+          "      req.headers = { authorization: 'Bearer eyJ0********' }",
+          "",
+          "      verify.jwtChallenges()(req, res, next)",
+          ""
+        ]
+      },
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "110a14cdb39b",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "test/server/verify.unit.test.ts",
+      "line": 316,
+      "evidence": "req.headers = { authorization: 'Bearer eyJ0********' } [known key format]",
+      "context": {
+        "start_line": 313,
+        "lines": [
+          "    })",
+          "",
+          "    void it('\"jwtForgedChallenge\" is solved when forged token HMAC-signed with public RSA-key has string \"rsa_lord@\" in the payload', { skip: isWindows() ? 'not supported on Windows' : false }, () ...",
+          "      req.headers = { authorization: 'Bearer eyJ0********' }",
+          "",
+          "      verify.jwtChallenges()(req, res, next)",
+          ""
+        ]
+      },
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "21ae5a2e2535",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/codefixes/loginAdminChallenge_1.ts",
+      "line": 18,
+      "evidence": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 15,
+        "lines": [
+          "    if (req.body.email.match(/.*['-;].*/) || req.body.password.match(/.*['-;].*/)) {",
+          "      res.status(451).send(res.__('SQL Injection detected.'))",
+          "    }",
+          "    models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true })",
+          "      .then((authenticatedUser) => {",
+          "        const user = utils.queryResultToJson(authenticatedUser)",
+          "        if (user.data?.id && user.data.totpSecret !== '') {"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "112f672fb60d",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/codefixes/loginAdminChallenge_2.ts",
+      "line": 15,
+      "evidence": "models.sequelize.query(`SELECT * FROM Users WHERE email = $1 AND password = '${se********'')}' AND deletedAt IS NULL`, [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 12,
+        "lines": [
+          "  }",
+          "",
+          "  return (req: Request, res: Response, next: NextFunction) => {",
+          "    models.sequelize.query(`SELECT * FROM Users WHERE email = $1 AND password = '${se********'')}' AND deletedAt IS NULL`,",
+          "      { bind: [ req.body.email ], model: models.User, plain: true })",
+          "      .then((authenticatedUser) => {",
+          "        const user = utils.queryResultToJson(authenticatedUser)"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "d55d7832b1ea",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/codefixes/loginAdminChallenge_4_correct.ts",
+      "line": 16,
+      "evidence": "{ bind: [ req.body.email, security.hash(req.body.password) ], model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 13,
+        "lines": [
+          "",
+          "  return (req: Request, res: Response, next: NextFunction) => {",
+          "    models.sequelize.query(`SELECT * FROM Users WHERE email = $1 AND password = $2 AND deletedAt IS NULL`,",
+          "      { bind: [ req.body.email, security.hash(req.body.password) ], model: models.User, plain: true })",
+          "      .then((authenticatedUser) => {",
+          "        const user = utils.queryResultToJson(authenticatedUser)",
+          "        if (user.data?.id && user.data.totpSecret !== '') {"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "c34fbafa945f",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/codefixes/loginBenderChallenge_1.ts",
+      "line": 18,
+      "evidence": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 15,
+        "lines": [
+          "    if (req.body.email.match(/.*['-;].*/) || req.body.password.match(/.*['-;].*/)) {",
+          "      res.status(451).send(res.__('SQL Injection detected.'))",
+          "    }",
+          "    models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true })",
+          "      .then((authenticatedUser) => {",
+          "        const user = utils.queryResultToJson(authenticatedUser)",
+          "        if (user.data?.id && user.data.totpSecret !== '') {"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "005bb50528f8",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/codefixes/loginBenderChallenge_2_correct.ts",
+      "line": 16,
+      "evidence": "{ bind: { mail: req.body.email, pass: security.hash(req.body.password) }, model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 13,
+        "lines": [
+          "",
+          "  return (req: Request, res: Response, next: NextFunction) => {",
+          "    models.sequelize.query(`SELECT * FROM Users WHERE email = $mail AND password = $pass AND deletedAt IS NULL`,",
+          "      { bind: { mail: req.body.email, pass: security.hash(req.body.password) }, model: models.User, plain: true })",
+          "      .then((authenticatedUser) => {",
+          "        const user = utils.queryResultToJson(authenticatedUser)",
+          "        if (user.data?.id && user.data.totpSecret !== '') {"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "e7a5572e7688",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/codefixes/loginBenderChallenge_3.ts",
+      "line": 15,
+      "evidence": "models.sequelize.query(`SELECT * FROM Users WHERE email = :mail AND password = '${se********'')}' AND deletedAt IS NULL`, [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 12,
+        "lines": [
+          "  }",
+          "",
+          "  return (req: Request, res: Response, next: NextFunction) => {",
+          "    models.sequelize.query(`SELECT * FROM Users WHERE email = :mail AND password = '${se********'')}' AND deletedAt IS NULL`,",
+          "      { replacements: { mail: req.body.email }, model: models.User, plain: true })",
+          "      .then((authenticatedUser) => {",
+          "        const user = utils.queryResultToJson(authenticatedUser)"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "3333e4efa418",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/codefixes/loginBenderChallenge_4.ts",
+      "line": 15,
+      "evidence": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 12,
+        "lines": [
+          "  }",
+          "",
+          "  return (req: Request, res: Response, next: NextFunction) => {",
+          "    models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false })",
+          "      .then((authenticatedUser) => {",
+          "        const user = utils.queryResultToJson(authenticatedUser)",
+          "        if (user.data?.id && user.data.totpSecret !== '') {"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "e4169cecf33d",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/codefixes/loginJimChallenge_1_correct.ts",
+      "line": 16,
+      "evidence": "{ bind: [ req.body.email, security.hash(req.body.password) ], model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 13,
+        "lines": [
+          "",
+          "  return (req: Request, res: Response, next: NextFunction) => {",
+          "    models.sequelize.query(`SELECT * FROM Users WHERE email = $1 AND password = $2 AND deletedAt IS NULL`,",
+          "      { bind: [ req.body.email, security.hash(req.body.password) ], model: models.User, plain: true })",
+          "      .then((authenticatedUser) => {",
+          "        const user = utils.queryResultToJson(authenticatedUser)",
+          "        if (user.data?.id && user.data.totpSecret !== '') {"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "d0bad33f4e2d",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/codefixes/loginJimChallenge_2.ts",
+      "line": 15,
+      "evidence": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 12,
+        "lines": [
+          "  }",
+          "",
+          "  return (req: Request, res: Response, next: NextFunction) => {",
+          "    models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false })",
+          "      .then((authenticatedUser) => {",
+          "        const user = utils.queryResultToJson(authenticatedUser)",
+          "        if (user.data?.id && user.data.totpSecret !== '') {"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "75a005faa96b",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/codefixes/loginJimChallenge_4.ts",
+      "line": 18,
+      "evidence": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 15,
+        "lines": [
+          "    if (req.body.email.match(/.*['-;].*/) || req.body.password.match(/.*['-;].*/)) {",
+          "      res.status(451).send(res.__('SQL Injection detected.'))",
+          "    }",
+          "    models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true })",
+          "      .then((authenticatedUser) => {",
+          "        const user = utils.queryResultToJson(authenticatedUser)",
+          "        if (user.data?.id && user.data.totpSecret !== '') {"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "d995d4bbbd02",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/codefixes/weakPasswordChallenge_1_correct.ts",
+      "line": 7,
+      "evidence": "this.setDataValue('password', security.hash(clearTextPassword)) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 4,
+        "lines": [
+          "        set (clearTextPassword: string) {",
+          "          validatePasswordHasAtLeastTenChar(clearTextPassword)",
+          "          validatePasswordIsNotInTopOneMillionCommonPasswordsList(clearTextPassword)",
+          "          this.setDataValue('password', security.hash(clearTextPassword))",
+          "        }",
+          "      },"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "11f1b82994dc",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/codefixes/weakPasswordChallenge_2.ts",
+      "line": 11,
+      "evidence": "this.setDataValue('password', security.hash(clearTextPassword)) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 8,
+        "lines": [
+          "          validatePasswordHasAtLeastOneLowerCaseChar(clearTextPassword)",
+          "          validatePasswordHasAtLeastTenChar(clearTextPassword)",
+          "          validatePasswordIsNotInTopOneMillionCommonPasswordsList(clearTextPassword)",
+          "          this.setDataValue('password', security.hash(clearTextPassword))",
+          "        }",
+          "      },"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "0020c4757ab1",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/codefixes/weakPasswordChallenge_3.ts",
+      "line": 10,
+      "evidence": "this.setDataValue('password', security.hash(clearTextPassword)) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 7,
+        "lines": [
+          "          validatePasswordHasAtLeastOneUpperCaseChar(clearTextPassword)",
+          "          validatePasswordHasAtLeastOneLowerCaseChar(clearTextPassword)",
+          "          validatePasswordHasAtLeastTenChar(clearTextPassword)",
+          "          this.setDataValue('password', security.hash(clearTextPassword))",
+          "        }",
+          "      },"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "10f175f5abae",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "data/static/codefixes/weakPasswordChallenge_4.ts",
+      "line": 6,
+      "evidence": "this.setDataValue('password', security.hash(clearTextPassword)) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 3,
+        "lines": [
+          "        type: DataTypes.STRING,",
+          "        set (clearTextPassword: string) {",
+          "          validatePasswordIsNotInTopOneMillionCommonPasswordsList(clearTextPassword)",
+          "          this.setDataValue('password', security.hash(clearTextPassword))",
+          "        }",
+          "      },"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "e54174357963",
+      "rule_id": "DPDP-RET-001",
+      "title": "Personal data with no erase or anonymise path",
+      "category": "Retention",
+      "scope": "line",
+      "file": "models/address.ts",
+      "line": 31,
+      "evidence": "Address.init( [table Addresses holds address, full_name, mobile, pincode; no code deletes or anonymises it; finale-rest generates REST endpoints, so a delete path may exist outside the scanned code]",
+      "context": {
+        "start_line": 28,
+        "lines": [
+          "}",
+          "",
+          "const AddressModelInit = (sequelize: Sequelize) => {",
+          "  Address.init(",
+          "    {",
+          "      UserId: {",
+          "        type: DataTypes.INTEGER"
+        ]
+      },
+      "pii": [
+        "address",
+        "full_name",
+        "mobile",
+        "pincode"
+      ],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(7)",
+          "s.12(3)"
+        ],
+        "rules": [
+          "Rule 8"
+        ],
+        "requirement": "Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Data is kept indefinitely and erasure requests cannot be honoured.",
+      "fix": "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds."
+    },
+    {
+      "id": "0e7f0d506878",
+      "rule_id": "DPDP-RET-001",
+      "title": "Personal data with no erase or anonymise path",
+      "category": "Retention",
+      "scope": "line",
+      "file": "models/card.ts",
+      "line": 27,
+      "evidence": "Card.init( [table Cards holds card_number, full_name; no code deletes or anonymises it; finale-rest generates REST endpoints, so a delete path may exist outside the scanned code]",
+      "context": {
+        "start_line": 24,
+        "lines": [
+          "}",
+          "",
+          "const CardModelInit = (sequelize: Sequelize) => {",
+          "  Card.init(",
+          "    {",
+          "      UserId: {",
+          "        type: DataTypes.INTEGER"
+        ]
+      },
+      "pii": [
+        "card_number",
+        "full_name"
+      ],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(7)",
+          "s.12(3)"
+        ],
+        "rules": [
+          "Rule 8"
+        ],
+        "requirement": "Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Data is kept indefinitely and erasure requests cannot be honoured.",
+      "fix": "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds."
+    },
+    {
+      "id": "5836265a4118",
+      "rule_id": "DPDP-SEC-002",
+      "title": "Personal data stored in plaintext",
+      "category": "Security",
+      "scope": "line",
+      "file": "models/card.ts",
+      "line": 38,
+      "evidence": "cardNum: { [Cards.cardNum stored as INTEGER]",
+      "context": {
+        "start_line": 35,
+        "lines": [
+          "        autoIncrement: true",
+          "      },",
+          "      fullName: DataTypes.STRING,",
+          "      cardNum: {",
+          "        type: DataTypes.INTEGER,",
+          "        validate: {",
+          "          isInt: true,"
+        ]
+      },
+      "pii": [
+        "card_number"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Encryption, obfuscation, masking or virtual tokens."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "A database leak exposes the data directly.",
+      "fix": "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+    },
+    {
+      "id": "454bde17b51a",
+      "rule_id": "DPDP-RET-001",
+      "title": "Personal data with no erase or anonymise path",
+      "category": "Retention",
+      "scope": "line",
+      "file": "models/recycle.ts",
+      "line": 28,
+      "evidence": "Recycle.init( [table Recycles holds address; no code deletes or anonymises it; finale-rest generates REST endpoints, so a delete path may exist outside the scanned code]",
+      "context": {
+        "start_line": 25,
+        "lines": [
+          "}",
+          "",
+          "const RecycleModelInit = (sequelize: Sequelize) => {",
+          "  Recycle.init(",
+          "    {",
+          "      UserId: {",
+          "        type: DataTypes.INTEGER"
+        ]
+      },
+      "pii": [
+        "address"
+      ],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(7)",
+          "s.12(3)"
+        ],
+        "rules": [
+          "Rule 8"
+        ],
+        "requirement": "Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Data is kept indefinitely and erasure requests cannot be honoured.",
+      "fix": "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds."
+    },
+    {
+      "id": "dcc6ebcb6176",
+      "rule_id": "DPDP-RET-001",
+      "title": "Personal data with no erase or anonymise path",
+      "category": "Retention",
+      "scope": "line",
+      "file": "models/user.ts",
+      "line": 37,
+      "evidence": "User.init( [table Users holds email, ip_address, password; no code deletes or anonymises it; finale-rest generates REST endpoints, so a delete path may exist outside the scanned code]",
+      "context": {
+        "start_line": 34,
+        "lines": [
+          "}",
+          "",
+          "const UserModelInit = (sequelize: Sequelize) => { // vuln-code-snippet start weakPasswordChallenge",
+          "  User.init(",
+          "    { // vuln-code-snippet hide-start",
+          "      id: {",
+          "        type: DataTypes.INTEGER,"
+        ]
+      },
+      "pii": [
+        "email",
+        "ip_address",
+        "password"
+      ],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(7)",
+          "s.12(3)"
+        ],
+        "rules": [
+          "Rule 8"
+        ],
+        "requirement": "Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Data is kept indefinitely and erasure requests cannot be honoured.",
+      "fix": "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds."
+    },
+    {
+      "id": "7a631f6f2ea4",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "models/user.ts",
+      "line": 73,
+      "evidence": "this.setDataValue('password', security.hash(clearTextPassword)) // vuln-code-snippet vuln-line weakPasswordChallenge [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 70,
+        "lines": [
+          "      password: {",
+          "        type: DataTypes.STRING,",
+          "        set (clearTextPassword: string) {",
+          "          this.setDataValue('password', security.hash(clearTextPassword)) // vuln-code-snippet vuln-line weakPasswordChallenge",
+          "        }",
+          "      }, // vuln-code-snippet end weakPasswordChallenge",
+          "      role: {"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "f5b7586ea039",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "routes/2fa.ts",
+      "line": 107,
+      "evidence": "if (user.password !== security.hash(password)) { [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 104,
+        "lines": [
+          "",
+          "    const { password, setupToken, initialToken } = req.body",
+          "",
+          "    if (user.password !== security.hash(password)) {",
+          "      throw new Error('Password doesnt match stored password')",
+          "    }",
+          ""
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "b451527eeec6",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "routes/2fa.ts",
+      "line": 152,
+      "evidence": "if (user.password !== security.hash(password)) { [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 149,
+        "lines": [
+          "",
+          "    const { password } = req.body",
+          "",
+          "    if (user.password !== security.hash(password)) {",
+          "      throw new Error('Password doesnt match stored password')",
+          "    }",
+          ""
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "c6aae9067742",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "routes/changePassword.ts",
+      "line": 39,
+      "evidence": "if (currentPassword && security.hash(currentPassword) !== loggedInUser.data.password) { [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 36,
+        "lines": [
+          "      return",
+          "    }",
+          "",
+          "    if (currentPassword && security.hash(currentPassword) !== loggedInUser.data.password) {",
+          "      res.status(401).send(res.__('Current password is not correct.'))",
+          "      return",
+          "    }"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "f0d8179fc000",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "routes/login.ts",
+      "line": 34,
+      "evidence": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: UserModel, plain: true }) // vuln-code-snippet vuln-line loginAdminChallenge loginBenderChallenge loginJimChallenge [security.hash() hashes with m...",
+      "context": {
+        "start_line": 31,
+        "lines": [
+          "",
+          "  return (req: Request, res: Response, next: NextFunction) => {",
+          "    verifyPreLoginChallenges(req) // vuln-code-snippet hide-line",
+          "    models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: UserModel, plain: true }) // vuln-code-sni...",
+          "      .then((authenticatedUser) => { // vuln-code-snippet neutral-line loginAdminChallenge loginBenderChallenge loginJimChallenge",
+          "        const user = utils.queryResultToJson(authenticatedUser)",
+          "        if (user.data?.id && user.data.totpSecret !== '') {"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "5cd9480b5539",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "test/api/2fa.test.ts",
+      "line": 323,
+      "evidence": "password: security.hash(password), [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 320,
+        "lines": [
+          "      data: {",
+          "        id: 999,",
+          "        email,",
+          "        password: security.hash(password),",
+          "        totpSecret: ''",
+          "      }",
+          "    })"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "e1f5746600ae",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "test/api/2fa.test.ts",
+      "line": 411,
+      "evidence": "password: security.hash(password), [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]",
+      "context": {
+        "start_line": 408,
+        "lines": [
+          "      data: {",
+          "        id: 998,",
+          "        email,",
+          "        password: security.hash(password),",
+          "        totpSecret: 'KDR5********'",
+          "      }",
+          "    })"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    }
+  ]
+}

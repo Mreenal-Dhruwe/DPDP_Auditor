@@ -1,0 +1,378 @@
+{
+  "tool": "DPDP Compliance Auditor",
+  "tool_version": "0.1.0",
+  "rules_version": "0.1.0",
+  "target": "target_app_js",
+  "generated_at": "2026-11-23T15:38:14.594222Z",
+  "files_scanned": 6,
+  "coverage": {
+    "files_by_kind": {
+      "typescript": 3,
+      "javascript": 2,
+      "config": 1
+    },
+    "rules_checked": [
+      "DPDP-CON-001",
+      "DPDP-CON-002",
+      "DPDP-SEC-001",
+      "DPDP-SEC-002",
+      "DPDP-SEC-003",
+      "DPDP-SEC-004",
+      "DPDP-SEC-005",
+      "DPDP-SEC-008",
+      "DPDP-TP-001",
+      "DPDP-RET-001",
+      "DPDP-RET-002",
+      "DPDP-CH-001"
+    ],
+    "rules_not_checked": [
+      "DPDP-NOT-001",
+      "DPDP-CON-003",
+      "DPDP-CON-004",
+      "DPDP-CON-005",
+      "DPDP-CON-006",
+      "DPDP-SEC-006",
+      "DPDP-SEC-007",
+      "DPDP-SEC-009",
+      "DPDP-SEC-010",
+      "DPDP-TP-002",
+      "DPDP-BR-001",
+      "DPDP-RET-003",
+      "DPDP-CH-002",
+      "DPDP-RT-001",
+      "DPDP-RT-002",
+      "DPDP-RT-003"
+    ]
+  },
+  "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes.",
+  "summary": {
+    "total": 7,
+    "by_severity": {
+      "critical": 3,
+      "high": 4,
+      "medium": 0,
+      "low": 0,
+      "info": 0
+    },
+    "by_category": {
+      "Security": 5,
+      "Retention": 1,
+      "Consent": 1
+    },
+    "by_provision": {
+      "s.8(5)": 5,
+      "Rule 6(1)(b)": 3,
+      "Rule 6(1)(a)": 2,
+      "s.8(7)": 1,
+      "s.12(3)": 1,
+      "Rule 8": 1,
+      "s.6(4)": 1,
+      "s.6(6)": 1,
+      "Rule 3(c)(i)": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "e3a9387e4454",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "config.js",
+      "line": 4,
+      "evidence": "jwtSecret: 'shop********', [literal value for jwtSecret]",
+      "context": {
+        "start_line": 1,
+        "lines": [
+          "// Demo target for the DPDP Compliance Auditor. Answer key: ../ground_truth_js.yml",
+          "module.exports = {",
+          "  port: 3000,",
+          "  jwtSecret: 'shop********',",
+          "  dbPassword: process.env.DB_PASSWORD,",
+          "  dbStorage: process.env.DB_STORAGE || 'shop.sqlite'",
+          "}"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "8873b8804ef1",
+      "rule_id": "DPDP-SEC-005",
+      "title": "Personal data exposed by an unauthenticated route",
+      "category": "Security",
+      "scope": "line",
+      "file": "server.ts",
+      "line": 31,
+      "evidence": "GET /api/users/:id (handler) returns user record with no authentication check; anyone can change :id to read other people's data (IDOR)",
+      "context": {
+        "start_line": 28,
+        "lines": [
+          "  res.status(201).end()",
+          "})",
+          "",
+          "app.get('/api/users/:id', async (req: Request, res: Response) => {",
+          "  const user = await User.findByPk(req.params.id)",
+          "  res.json(user)",
+          "})"
+        ]
+      },
+      "pii": [
+        "user record"
+      ],
+      "confidence": "medium",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Appropriate measures to control access."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Directly exploitable over the network by anyone.",
+      "fix": "Require authentication and check that the requester owns the record."
+    },
+    {
+      "id": "850a7ce62277",
+      "rule_id": "DPDP-SEC-005",
+      "title": "Personal data exposed by an unauthenticated route",
+      "category": "Security",
+      "scope": "line",
+      "file": "server.ts",
+      "line": 59,
+      "evidence": "GET /api/customers/:id (handler in routes/customers.ts) returns email, phone with no authentication check; anyone can change :id to read other people's data (IDOR)",
+      "context": {
+        "start_line": 56,
+        "lines": [
+          "const customers = require('./routes/customers')",
+          "const asyncHandler = (fn: any) => fn",
+          "",
+          "app.get('/api/customers/:id', asyncHandler(getCustomer()))",
+          "app.get('/admin/customers', customers.listCustomers())",
+          "",
+          "app.listen(3000, () => logger.info('listening on 3000'))"
+        ]
+      },
+      "pii": [
+        "email",
+        "phone"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Appropriate measures to control access."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Directly exploitable over the network by anyone.",
+      "fix": "Require authentication and check that the requester owns the record."
+    },
+    {
+      "id": "8199461f1965",
+      "rule_id": "DPDP-SEC-002",
+      "title": "Personal data stored in plaintext",
+      "category": "Security",
+      "scope": "line",
+      "file": "models.js",
+      "line": 10,
+      "evidence": "pan: DataTypes.STRING, [users.pan stored as STRING]",
+      "context": {
+        "start_line": 7,
+        "lines": [
+          "const User = sequelize.define('User', {",
+          "  email: { type: DataTypes.STRING, allowNull: false, unique: true },",
+          "  phone: DataTypes.STRING,",
+          "  pan: DataTypes.STRING,",
+          "  password: {",
+          "    type: DataTypes.STRING,",
+          "    set (value) {"
+        ]
+      },
+      "pii": [
+        "pan"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Encryption, obfuscation, masking or virtual tokens."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "A database leak exposes the data directly.",
+      "fix": "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+    },
+    {
+      "id": "bb40a43577ae",
+      "rule_id": "DPDP-RET-001",
+      "title": "Personal data with no erase or anonymise path",
+      "category": "Retention",
+      "scope": "line",
+      "file": "models.js",
+      "line": 20,
+      "evidence": "Lead.init({ [table leads holds email, mobile; no code deletes or anonymises it]",
+      "context": {
+        "start_line": 17,
+        "lines": [
+          "}, { tableName: 'users' })",
+          "",
+          "class Lead extends Model {}",
+          "Lead.init({",
+          "  name: DataTypes.STRING,",
+          "  email: DataTypes.STRING,",
+          "  mobile: DataTypes.STRING,"
+        ]
+      },
+      "pii": [
+        "email",
+        "mobile"
+      ],
+      "confidence": "medium",
+      "law": {
+        "act": [
+          "s.8(7)",
+          "s.12(3)"
+        ],
+        "rules": [
+          "Rule 8"
+        ],
+        "requirement": "Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Data is kept indefinitely and erasure requests cannot be honoured.",
+      "fix": "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds."
+    },
+    {
+      "id": "efdf12f3087f",
+      "rule_id": "DPDP-SEC-001",
+      "title": "Personal data written to logs",
+      "category": "Security",
+      "scope": "line",
+      "file": "server.ts",
+      "line": 21,
+      "evidence": "console.log('New signup', req.body.email, req.body.phone)",
+      "context": {
+        "start_line": 18,
+        "lines": [
+          "",
+          "app.post('/signup', async (req: Request, res: Response) => {",
+          "  const user = await User.create(req.body)",
+          "  console.log('New signup', req.body.email, req.body.phone)",
+          "  logger.info(`user ${user.id} created`)",
+          "  res.status(201).json({ id: user.id })",
+          "})"
+        ]
+      },
+      "pii": [
+        "email",
+        "phone"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Secure personal data through encryption, obfuscation, masking or virtual tokens."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Logs are widely accessible and long-lived; unmasked PII there is a common breach source.",
+      "fix": "Mask or tokenise PII before logging (e.g. a***@x.com, ******1234)."
+    },
+    {
+      "id": "4bc3944f1783",
+      "rule_id": "DPDP-CON-001",
+      "title": "Consent can be given but not withdrawn",
+      "category": "Consent",
+      "scope": "project",
+      "file": "server.ts",
+      "line": 45,
+      "evidence": "POST /consent grants consent; no route anywhere withdraws or revokes it",
+      "context": {
+        "start_line": 42,
+        "lines": [
+          "  res.json(await User.findAll())",
+          "})",
+          "",
+          "app.post('/consent', requireAuth, (req: Request, res: Response) => {",
+          "  res.json({ ok: true, purpose: req.body.purpose })",
+          "})",
+          ""
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.6(4)",
+          "s.6(6)"
+        ],
+        "rules": [
+          "Rule 3(c)(i)"
+        ],
+        "requirement": "Withdrawal must be possible at any time, with ease comparable to giving consent; processing must then stop."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Consent is the legal basis for processing; with no withdrawal path the user cannot stop it.",
+      "fix": "Add DELETE /consent (or POST /consent/withdraw) that clears consent and stops downstream processing."
+    }
+  ]
+}

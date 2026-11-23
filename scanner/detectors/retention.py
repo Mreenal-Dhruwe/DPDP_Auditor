@@ -49,25 +49,29 @@ REST_GENERATOR_CODE = re.compile(r"\b(finale|epilogue)\.resource\(|\bModelViewSe
 _ERASE_FUNCTION = re.compile(r"\b(?:def|function|const|let|var)\s+\w*(?:anonymi[sz]|purge|erase|forget)\w*", re.IGNORECASE)
 
 
-def _erase_patterns(table: Table) -> list[re.Pattern]:
+def _erase_patterns(table: Table) -> list[tuple[str, re.Pattern]]:
+    """(keyword, pattern) pairs. The keyword (lower case) must appear in a file before the
+    slower regex runs on it: most files contain no 'delete' / 'destroy' / 'truncate' at all."""
     name = re.escape(table.name)
     patterns = [
-        rf"\bdelete\s+from\s+[`\"\[]?(?:\w+\.)?{name}\b",
-        rf"\btruncate\s+(?:table\s+)?[`\"\[]?{name}\b",
-        rf"\bupdate\s+[`\"\[]?{name}[`\"\]]?\s+set\b[^;]{{0,300}}?\bnull\b",
+        ("delete", rf"\bdelete\s+from\s+[`\"\[]?(?:\w+\.)?{name}\b"),
+        ("truncate", rf"\btruncate\s+(?:table\s+)?[`\"\[]?{name}\b"),
+        ("null", rf"\bupdate\s+[`\"\[]?{name}[`\"\]]?\s+set\b[^;]{{0,300}}?\bnull\b"),
     ]
     if table.model:
         model = re.escape(table.model)
-        patterns += [
-            rf"\b{model}\.(?:query|objects)\b[^\n]*\.delete\(", rf"\bdelete\(\s*{model}\b",  # SQLAlchemy, Django
-            rf"\b{model}\.destroy\(", rf"\b{model}\.update\([^;]{{0,300}}?\bnull\b",  # Sequelize
+        patterns += [  # SQLAlchemy and Django, then Sequelize
+            ("delete(", rf"\b{model}\.(?:query|objects)\b[^\n]*\.delete\("),
+            ("delete(", rf"\bdelete\(\s*{model}\b"),
+            ("destroy(", rf"\b{model}\.destroy\("),
+            ("null", rf"\b{model}\.update\([^;]{{0,300}}?\bnull\b"),
         ]
-    return [re.compile(p, re.IGNORECASE | re.DOTALL) for p in patterns]
+    return [(keyword, re.compile(p, re.IGNORECASE | re.DOTALL)) for keyword, p in patterns]
 
 
 def _has_erase_path(table: Table, code: dict[str, tuple[str, str, bool]]) -> bool:
     """code: {file: (text, lower-cased text, has an anonymise/purge function)}. Only files that
-    mention the table or model at all are searched with the slower regexes."""
+    mention the table or model, and the pattern's keyword, are searched with the regexes."""
     patterns = _erase_patterns(table)
     names = {table.name.lower()} | ({table.model.lower()} if table.model else set())
     mentions = re.compile(rf"\b(?:{re.escape(table.name)}{'|' + re.escape(table.model) if table.model else ''})\b",
@@ -75,7 +79,7 @@ def _has_erase_path(table: Table, code: dict[str, tuple[str, str, bool]]) -> boo
     for text, lowered, erase_function in code.values():
         if not any(name in lowered for name in names):
             continue
-        if any(p.search(text) for p in patterns):
+        if any(keyword in lowered and p.search(text) for keyword, p in patterns):
             return True
         if mentions.search(text) and (erase_function or (table.model and "session.delete(" in text)):
             return True
