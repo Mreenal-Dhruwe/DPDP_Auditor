@@ -21,7 +21,7 @@ thirdparty.py     DPDP-TP-001, DPDP-TP-002
 children.py       DPDP-CH-001, DPDP-CH-002                     (both done)
 rights.py         DPDP-RT-001 to DPDP-RT-003, DPDP-BR-001        (RT-001 to RT-003 done)
 hardcoded_secrets.py  DPDP-SEC-004                         (done)
-config_files.py   DPDP-SEC-008 to DPDP-SEC-010
+config_files.py   DPDP-SEC-008 to DPDP-SEC-010                 (SEC-008, SEC-010 done)
 routes.py         shared helper: finds Flask / FastAPI routes with ast
 source.py         shared helper: which files to read, Python syntax trees
 schemas.py        shared helper: tables and columns from SQL and ORM models
@@ -68,6 +68,7 @@ DETECTORS: list[Detector] = [
     Detector("no correction or erasure", ("DPDP-RT-002",), rights.no_correction_or_erasure),
     Detector("no grievance channel", ("DPDP-RT-003",), rights.no_grievance_channel),
     Detector("personal-data reads with no audit log", ("DPDP-SEC-007",), logs.unaudited_reads),
+    Detector("log retention under a year", ("DPDP-SEC-010",), config_files.short_log_retention),
 ]
 
 

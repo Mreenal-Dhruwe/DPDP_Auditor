@@ -154,6 +154,8 @@ compliant:
     note: /api/me and /api/users/<id> select named columns without password_hash or aadhaar; login() reads password_hash but never returns it. The exception is GT-13.
   - rule_id: DPDP-SEC-007
     note: Every route that reads or changes personal data calls audit().
+  - rule_id: DPDP-SEC-010
+    note: logging_setup.py rotates daily and keeps 400 files (over a year).
   - rule_id: DPDP-CH-002
     note: Backend analytics runs only for adults (is_adult(dob) is checked before mp.track); the page tracker is GT-12.
   - rule_id: DPDP-BR-001
@@ -170,8 +172,6 @@ compliant:
 not_applicable:
   - rule_id: DPDP-SEC-009
     note: No database service in IaC (the app uses a SQLite file).
-  - rule_id: DPDP-SEC-010
-    note: No log rotation or retention settings anywhere.
   - rule_id: DPDP-TP-002
     note: No cloud region or foreign endpoint is configured.
   - rule_id: DPDP-RET-003

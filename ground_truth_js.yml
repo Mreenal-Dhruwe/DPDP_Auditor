@@ -163,6 +163,14 @@ planted:
     clue: absence
     note: The handler in routes/customers.ts lists users with no audit entry.
 
+  - id: JS-20
+    rule_id: DPDP-SEC-010
+    file: logger.ts
+    line: 9
+    anchor: "maxFiles: '14d'"
+    clue: config
+    note: Daily log files are deleted after 14 days; Rule 8(3) requires keeping logs for at least a year.
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -189,7 +197,6 @@ out_of_scope:
   - {rule_id: DPDP-SEC-003, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-008, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-009, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-SEC-010, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-TP-001, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-TP-002, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-BR-001, note: Not judged by the JS fixture app; see target_app.}
