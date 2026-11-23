@@ -59,4 +59,9 @@ const asyncHandler = (fn: any) => fn
 app.get('/api/customers/:id', asyncHandler(getCustomer()))
 app.get('/admin/customers', customers.listCustomers())
 
+// Marketing handlers in routes/marketing.ts
+const marketing = require('./routes/marketing')
+app.post('/admin/users/:id/offers', marketing.sendOffers())
+app.post('/admin/users/:id/newsletter', marketing.sendNewsletter())
+
 app.listen(3000, () => logger.info('listening on 3000'))

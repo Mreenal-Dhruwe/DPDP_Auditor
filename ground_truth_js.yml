@@ -91,6 +91,14 @@ planted:
     clue: structure
     note: Same in a handler defined in routes/customers.ts and wired in server.ts.
 
+  - id: JS-11
+    rule_id: DPDP-CON-004
+    file: routes/marketing.ts
+    line: 11
+    anchor: "mailer.sendPromo(user?.email"
+    clue: structure
+    note: sendOffers emails promotions to the user without checking the marketing consent the app records (Consent model).
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -102,6 +110,8 @@ compliant:
     note: logger.info logs only the internal user id.
   - rule_id: DPDP-SEC-005
     note: GET /api/me uses requireAuth; GET /admin/users and /admin/customers (handler in routes/customers.ts) are guarded by app.use('/admin', requireAuth).
+  - rule_id: DPDP-CON-004
+    note: "sendNewsletter (routes/marketing.ts) checks Consent.findOne(... marketing: true) before emailing."
   - rule_id: DPDP-SEC-006
     note: GET /api/me (server.ts:38) and getCustomer (routes/customers.ts:8) pick email and phone from the User record.
 
@@ -109,7 +119,6 @@ out_of_scope:
   - {rule_id: DPDP-NOT-001, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CON-002, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CON-003, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-CON-004, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CON-005, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CON-006, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-003, note: Not judged by the JS fixture app; see target_app.}

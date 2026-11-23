@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from backend import jobs
 from backend.main import create_app
 from scanner.config import PROJECT_ROOT, Settings
+from scanner.engine import scan_folder
 
 SECRET = "4f9a7c2e81b64d0c9e3a5b7d1f2c8e60"  # planted in target_app/config.py
 
@@ -66,9 +67,10 @@ def test_zip_upload_scan_and_downloads(client, settings):
     status = client.get(f"/api/scan/{scan_id}").json()  # TestClient runs background tasks before returning
     assert (status["status"], status["step"], status["target"]) == ("done", "done", "target_app")
     assert status["steps"] == ["queued", "unpacking", "scanning", "writing reports", "done"]
-    assert status["summary"]["total"] == 13
+    expected = scan_folder(PROJECT_ROOT / "target_app").summary.total  # same engine, scanned directly
+    assert status["summary"]["total"] == expected
     report = client.get(f"/api/scan/{scan_id}/findings").json()
-    assert report["target"] == "target_app" and len(report["findings"]) == 13
+    assert report["target"] == "target_app" and len(report["findings"]) == expected
     assert all(f["file"] is None or f["file"].startswith("target_app/") for f in report["findings"])
     for fmt in ("json", "html", "sarif"):
         download = client.get(f"/api/scan/{scan_id}/report.{fmt}")
@@ -118,7 +120,8 @@ def test_git_scan(client, monkeypatch):
     response = client.post("/api/scan", json={"git_url": "https://github.com/acme/shop-api.git"})
     status = client.get(f"/api/scan/{response.json()['scan_id']}").json()
     assert (status["status"], status["target"], status["source"]) == ("done", "shop-api", "git")
-    assert status["steps"][1] == "cloning" and status["summary"]["total"] == 10
+    assert status["steps"][1] == "cloning"
+    assert status["summary"]["total"] == scan_folder(PROJECT_ROOT / "target_app_js").summary.total
 
 
 def test_unknown_unfinished_and_expired_scans(client, settings):

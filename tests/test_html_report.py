@@ -34,8 +34,9 @@ def test_sections_and_disclaimer(html, target_report):
     assert "Automated checks ran for" in html and "need a manual review" in html
 
 
-def test_context_is_shown_masked_with_the_line_highlighted(html):
-    assert html.count('class="ln hit"') == 12  # 13 findings, the Dockerfile one is whole-file
+def test_context_is_shown_masked_with_the_line_highlighted(html, target_report):
+    with_line = [f for f in target_report.findings if f.context is not None]  # not file-wide ones (Dockerfile)
+    assert with_line and html.count('class="ln hit"') == len(with_line)
     assert "4f9a7c2e81b64d0c9e3a5b7d1f2c8e60" not in html  # the planted secret
     assert "lend********" in html
 

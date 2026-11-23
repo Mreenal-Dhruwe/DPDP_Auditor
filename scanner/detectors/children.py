@@ -29,7 +29,7 @@ from collections.abc import Iterator
 from scanner.detectors.consent import TEMPLATE_SUFFIXES, attribute, input_tags
 from scanner.detectors.schemas import find_tables
 from scanner.detectors.source import dotted_name, is_test_file, python_trees, string_key, suffix_of, text_files
-from scanner.detectors.thirdparty import SEND_METHODS, _clients, _sdk_names
+from scanner.detectors.thirdparty import SEND_METHODS, TRACKING_VENDORS, _clients, _sdk_names
 from scanner.ingest import Project
 from scanner.models import Hit
 from scanner.pii import split_words
@@ -122,9 +122,6 @@ TRACKERS = [
 ]
 _TRACKERS = [(re.compile(p), name, ads) for p, name, ads in TRACKERS]
 TRACKER_SUFFIXES = TEMPLATE_SUFFIXES | {".js", ".ts", ".mjs", ".cjs"}
-# Backend SDKs that track behaviour (error monitoring such as Sentry is not tracking).
-TRACKING_VENDORS = {"Mixpanel", "Segment", "PostHog", "Amplitude", "CleverTap", "MoEngage", "Intercom", "Braze",
-                    "RudderStack", "HubSpot", "Customer.io"}
 AGE_WORDS = {"adult", "adults", "minor", "minors", "child", "children", "kid", "kids", "age", "dob", "birth",
              "birthdate", "birthday", "18", "over18", "under18"}
 _CONDITION = re.compile(r"\bif\b|\{%-?\s*if\b|&&|\?|\bunless\b|v-if|\*ngIf", re.IGNORECASE)

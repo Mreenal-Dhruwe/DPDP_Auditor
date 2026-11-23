@@ -12,7 +12,7 @@ To add a detector:
      with no false positives
 
 Module            Rules it owns
-consent.py        DPDP-NOT-001, DPDP-CON-001 to DPDP-CON-006   (CON-001 done)
+consent.py        DPDP-NOT-001, DPDP-CON-001 to DPDP-CON-006   (CON-001, CON-002, CON-004 done)
 logs.py           DPDP-SEC-001, DPDP-SEC-007                   (SEC-001 done, Python)
 storage.py        DPDP-SEC-002, DPDP-SEC-003                   (SEC-002 done)
 access.py         DPDP-SEC-005, DPDP-SEC-006                   (both done; Python + Express)
@@ -62,6 +62,7 @@ DETECTORS: list[Detector] = [
     Detector("child data without parental consent", ("DPDP-CH-001",), children.no_parental_consent),
     Detector("tracking of children", ("DPDP-CH-002",), children.tracking_children),
     Detector("excessive data in API responses", ("DPDP-SEC-006",), access.excessive_response_data),
+    Detector("personal data used without consent", ("DPDP-CON-004",), consent.unconsented_use),
 ]
 
 

@@ -25,6 +25,9 @@ SDK_PACKAGES = {
     "moengage": "MoEngage", "intercom": "Intercom", "braze": "Braze", "rudderstack": "RudderStack",
     "newrelic": "New Relic", "datadog": "Datadog", "hubspot": "HubSpot", "customerio": "Customer.io",
 }
+# SDKs that track behaviour or market to people (error monitoring such as Sentry is neither).
+TRACKING_VENDORS = {"Mixpanel", "Segment", "PostHog", "Amplitude", "CleverTap", "MoEngage", "Intercom", "Braze",
+                    "RudderStack", "HubSpot", "Customer.io"}
 SEND_METHODS = {
     "track", "identify", "alias", "group", "page", "screen", "people_set", "people_set_once",
     "people_append", "set_user", "set_context", "set_tag", "set_extra", "capture", "capture_message",

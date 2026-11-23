@@ -24,4 +24,10 @@ Lead.init({
   source: DataTypes.STRING
 }, { sequelize, tableName: 'leads' })
 
-module.exports = { sequelize, User, Lead }
+// Marketing consent as a bare yes/no flag: no time, notice version or purpose is kept
+const Consent = sequelize.define('Consent', {
+  userId: DataTypes.INTEGER,
+  marketing: DataTypes.BOOLEAN
+}, { tableName: 'consents', timestamps: false })
+
+module.exports = { sequelize, User, Lead, Consent }

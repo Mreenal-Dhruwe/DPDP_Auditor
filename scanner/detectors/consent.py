@@ -1,17 +1,22 @@
 """Notice and consent detectors: DPDP-NOT-001, DPDP-CON-001 to DPDP-CON-006.
 
-Implemented: DPDP-CON-001 (consent can be given but not withdrawn) and DPDP-CON-002
-(pre-ticked or default-true consent).
+Implemented: DPDP-CON-001 (consent can be given but not withdrawn), DPDP-CON-002
+(pre-ticked or default-true consent) and DPDP-CON-004 (personal data used without a consent
+check; see its section).
 """
 
 import ast
 import re
 
+from scanner.detectors.javascript import FUNCTION_TYPES, JsPiiRefs, arguments, callee, js_files, line_of, text, walk
+from scanner.detectors.pii_refs import PiiRefs
 from scanner.detectors.routes import Route, find_routes
-from scanner.detectors.source import dotted_name, is_test_file, python_trees, suffix_of
+from scanner.detectors.schemas import find_tables
+from scanner.detectors.source import dotted_name, is_test_file, python_trees, suffix_of, text_files
+from scanner.detectors.thirdparty import SEND_METHODS, TRACKING_VENDORS, _clients, _sdk_names
 from scanner.ingest import Project
 from scanner.models import Hit
-from scanner.pii import split_words
+from scanner.pii import default_matcher, split_words
 
 CON_001 = "DPDP-CON-001"
 CON_002 = "DPDP-CON-002"
@@ -175,3 +180,164 @@ def pre_ticked_consent(project: Project) -> list[Hit]:
     """DPDP-CON-002: a consent checkbox ticked by default, or a consent field that defaults
     to True. Consent must be a clear affirmative action by the user (s.6(1))."""
     return sorted(_pre_ticked_checkboxes(project) + _default_true_fields(project), key=lambda h: (h.file, h.line))
+
+
+# --- DPDP-CON-004: personal data used without checking consent ------------------------------
+#
+# Only when the app records consent somewhere (a consent table or column, a consent form
+# field, a consent key in code). Then a call that sends personal data to
+#   - a marketing function (sendPromo, add_to_campaign, newsletter ...),
+#   - an analytics SDK (mp.track, analytics.identify, posthog.capture ...), or
+#   - an email send inside a marketing-named function
+# must sit behind a consent check on the same path: an enclosing if / && / ?: whose
+# condition mentions consent, opt-in or subscription, or an earlier `if not consent: return`
+# in the same function. A check in a caller (another function) is not seen: medium confidence
+# for analytics and email, high for functions that say they are marketing.
+
+CON_004 = "DPDP-CON-004"
+MARKETING_WORDS = {"marketing", "promo", "promos", "promotion", "promotions", "promotional", "newsletter",
+                   "newsletters", "campaign", "campaigns", "offer", "offers", "advert", "adverts", "advertising",
+                   "remarketing", "retarget", "retargeting", "drip"}
+EMAIL_SENDS = {"send_mail", "sendmail", "send_email", "sendemail", "send_message", "send", "deliver"}
+JS_TRACKERS = {"mixpanel", "analytics", "posthog", "amplitude", "segment", "gtag", "fbq", "clevertap", "moengage",
+               "braze", "intercom", "hubspot", "rudderanalytics", "customerio"}
+CONSENT_GUARD = re.compile(r"consent|opt[_-]?in|opted|subscri|permission", re.IGNORECASE)
+_CONSENT_MARK = re.compile(r"\w*(?:consent|opt_?in|optIn|subscribed)\w*", re.IGNORECASE)
+CODE_SUFFIXES = {".py", ".js", ".ts", ".jsx", ".tsx", ".mjs", ".cjs", ".sql"} | TEMPLATE_SUFFIXES
+
+
+def _consent_recorded(project: Project) -> str | None:
+    """Where the app records consent ("models.js:30"), or None if it never does."""
+    for table in find_tables(project):
+        if "consent" in table.name.lower() or any(_CONSENT_MARK.fullmatch(c.name) for c in table.columns):
+            return f"{table.file}:{table.line}"
+    for rel in text_files(project):
+        if suffix_of(rel) in CODE_SUFFIXES and not is_test_file(rel):
+            text = project.read_text(rel)
+            if m := _CONSENT_MARK.search(text):
+                return f"{rel}:{text.count(chr(10), 0, m.start()) + 1}"
+    return None
+
+
+def _py_guarded(call: ast.Call, parents: dict[ast.AST, ast.AST]) -> bool:
+    node = call
+    while node in parents:
+        parent = parents[node]
+        if isinstance(parent, (ast.If, ast.IfExp, ast.While)) and CONSENT_GUARD.search(ast.unparse(parent.test)):
+            return True
+        if isinstance(parent, ast.BoolOp) and CONSENT_GUARD.search(ast.unparse(parent)):
+            return True  # consent_given and send_offer(...)
+        if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            return any(isinstance(stmt, ast.If) and stmt.lineno < call.lineno and CONSENT_GUARD.search(ast.unparse(stmt.test))
+                       and any(isinstance(s, (ast.Return, ast.Raise)) for s in stmt.body) for stmt in ast.walk(parent))
+        node = parent
+    return False
+
+
+def _py_unconsented(project: Project, matcher) -> list[tuple[str, int, str, dict, str]]:
+    found = []
+    for rel, tree in python_trees(project):
+        if is_test_file(rel):
+            continue
+        sdk = {name: vendor for name, vendor in _sdk_names(tree).items() if vendor in TRACKING_VENDORS}
+        clients = _clients(tree, sdk) if sdk else {}
+        parents = {child: parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)}
+        for func in (n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))):
+            in_marketing = bool(set(split_words(func.name)) & MARKETING_WORDS)
+            for call in (n for n in ast.walk(func) if isinstance(n, ast.Call)):
+                name = dotted_name(call.func)
+                last = name.rsplit(".", 1)[-1]
+                receiver = dotted_name(call.func.value) if isinstance(call.func, ast.Attribute) else ""
+                vendor = clients.get(receiver) or clients.get(receiver.split(".")[0])
+                if vendor and last in SEND_METHODS:
+                    what, strong = f"{vendor} ({name})", False
+                elif set(split_words(last)) & MARKETING_WORDS:
+                    what, strong = f"marketing call {name}()", True
+                elif last.lower() in EMAIL_SENDS and in_marketing:
+                    what, strong = f"email from {func.name}()", False
+                else:
+                    continue
+                refs = PiiRefs(matcher)
+                for arg in call.args + [kw.value for kw in call.keywords]:
+                    refs.visit(arg)
+                if refs.found and not _py_guarded(call, parents):
+                    found.append((rel, call.lineno, what, refs.found, "high" if strong else "medium"))
+    return found
+
+
+def _js_function_names(node) -> list[str]:
+    """Names of the functions around a node: `export const sendOffers = () => async (req, res) => ...`."""
+    names = []
+    current = node.parent
+    while current is not None:
+        if current.type in FUNCTION_TYPES:
+            name = text(current.child_by_field_name("name"))
+            if not name and current.parent is not None and current.parent.type == "variable_declarator":
+                name = text(current.parent.child_by_field_name("name"))
+            names.append(name)
+        current = current.parent
+    return [n for n in names if n]
+
+
+def _js_guarded(call) -> bool:
+    current, child = call.parent, call
+    while current is not None:
+        if current.type in {"if_statement", "ternary_expression"}:
+            condition = current.child_by_field_name("condition")
+            if condition is not None and condition != child and CONSENT_GUARD.search(text(condition)):
+                return True
+        if current.type == "binary_expression" and "&&" in text(current) and CONSENT_GUARD.search(
+                text(current.child_by_field_name("left"))):
+            return True
+        if current.type in FUNCTION_TYPES:
+            body = current.child_by_field_name("body")
+            for stmt in walk(body) if body is not None else []:
+                if stmt.type == "if_statement" and stmt.start_byte < call.start_byte \
+                        and CONSENT_GUARD.search(text(stmt.child_by_field_name("condition"))) \
+                        and any(n.type in {"return_statement", "throw_statement"}
+                                for n in walk(stmt.child_by_field_name("consequence"))):
+                    return True
+            return False
+        child, current = current, current.parent
+    return False
+
+
+def _js_unconsented(project: Project, matcher) -> list[tuple[str, int, str, dict, str]]:
+    found = []
+    for f in js_files(project):
+        if is_test_file(f.rel):
+            continue
+        for call in walk(f.root):
+            if call.type != "call_expression":
+                continue
+            called = callee(call)
+            parts = called.split(".")
+            last = parts[-1]
+            if parts[0].lower() in JS_TRACKERS and last in SEND_METHODS and len(parts) > 1:
+                what, strong = f"analytics ({called})", False
+            elif set(split_words(last)) & MARKETING_WORDS:
+                what, strong = f"marketing call {called}()", True
+            elif last.lower() in EMAIL_SENDS and any(set(split_words(n)) & MARKETING_WORDS for n in _js_function_names(call)):
+                what, strong = f"email ({called})", False
+            else:
+                continue
+            refs = JsPiiRefs(matcher)
+            for arg in arguments(call):
+                refs.visit(arg)
+            if refs.found and not _js_guarded(call):
+                found.append((f.rel, line_of(call), what, refs.found, "high" if strong else "medium"))
+    return found
+
+
+def unconsented_use(project: Project) -> list[Hit]:
+    where = _consent_recorded(project)
+    if where is None:
+        return []  # the app never records consent: nothing to check against
+    matcher = default_matcher()
+    hits = []
+    for rel, line, what, found, confidence in _py_unconsented(project, matcher) + _js_unconsented(project, matcher):
+        source = project.read_text(rel).splitlines()[line - 1].strip()
+        hits.append(Hit(rule_id=CON_004, file=rel, line=line, pii=sorted(found), confidence=confidence,
+                        evidence=f"{source}  [{what} receives {', '.join(sorted(found))} with no consent check on "
+                                 f"this path; the app records consent ({where})]"))
+    return sorted({(h.file, h.line): h for h in hits}.values(), key=lambda h: (h.file, h.line))
