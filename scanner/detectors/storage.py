@@ -9,12 +9,17 @@ the YAML) and nothing shows it is protected:
   and encrypted ORM types (EncryptedType, EncryptedCharField)
 Medium-sensitivity data (email, phone) is not reported here: the rule targets the fields
 whose leak causes the most harm.
+
+Also implemented: DPDP-SEC-003 (weak password hashing), for Python and JavaScript / TypeScript.
 """
 
 import ast
 
+from scanner.detectors.javascript import (
+    FUNCTION_TYPES, arguments, callee, js_files, line_of, string_value, text, walk,
+)
 from scanner.detectors.schemas import find_tables
-from scanner.detectors.source import dotted_name, python_trees, string_key
+from scanner.detectors.source import dotted_name, is_test_file, python_trees, string_key
 from scanner.ingest import Project
 from scanner.models import Hit
 from scanner.pii import default_matcher, split_words
@@ -84,7 +89,8 @@ def weak_password_hashing(project: Project) -> list[Hit]:
                     evidence=f"{lines[node.lineno - 1].strip()}  [{algo}: {why} with a fast, unsalted hash]",
                     confidence="high" if direct else "medium",
                 )
-    return sorted(hits.values(), key=lambda h: (h.file, h.line))
+    js_hits = _js_weak_password_hashing(project)
+    return sorted(list(hits.values()) + js_hits, key=lambda h: (h.file, h.line))
 
 
 def plaintext_sensitive_columns(project: Project) -> list[Hit]:
@@ -106,3 +112,91 @@ def plaintext_sensitive_columns(project: Project) -> list[Hit]:
                 confidence=match.confidence,
             ))
     return sorted(hits, key=lambda h: (h.file, h.line))
+
+
+# --- DPDP-SEC-003 for JavaScript / TypeScript ---------------------------------------------
+
+SLOW_HASH_LIBRARIES = {"bcrypt", "bcryptjs", "argon2", "scrypt", "pbkdf2"}  # bcrypt.hash(...) is fine
+
+
+def _js_fast_hash(call) -> tuple[str, list] | None:
+    """(algorithm, hashed values) for crypto.createHash('md5').update(x), md5(x),
+    sha1(x), CryptoJS.SHA256(x) ...; else None."""
+    called = callee(call)
+    last = called.rsplit(".", 1)[-1]
+    if last == "update":  # crypto.createHash('md5').update(x): the object is the createHash call
+        inner = call.child_by_field_name("function").child_by_field_name("object")
+        if inner is not None and inner.type == "call_expression" and callee(inner).endswith("createHash"):
+            algo = (string_value((arguments(inner) or [None])[0]) or "").lower().replace("-", "")
+            return (algo, arguments(call)) if algo in FAST_HASHES else None
+        return None
+    algo = last.lower().replace("-", "")
+    if algo in FAST_HASHES and called.split(".")[0].lower() not in SLOW_HASH_LIBRARIES:
+        return algo, arguments(call)  # md5(x), sha1(x), CryptoJS.MD5(x)
+    return None
+
+
+def _js_password_value(node) -> bool:
+    for sub in walk(node):
+        if sub.type in {"identifier", "property_identifier", "shorthand_property_identifier"}:
+            words = set(split_words(text(sub)))
+            if words & PASSWORD_WORDS and "hash" not in words:
+                return True
+    return False
+
+
+def _js_enclosing_function(node):
+    """(name, parameter names) of the function around a node, or ("", [])."""
+    current = node.parent
+    while current is not None and current.type not in FUNCTION_TYPES:
+        current = current.parent
+    if current is None:
+        return "", []
+    name = text(current.child_by_field_name("name"))
+    if not name and current.parent is not None and current.parent.type == "variable_declarator":
+        name = text(current.parent.child_by_field_name("name"))  # const hash = (data) => ...
+    params = current.child_by_field_name("parameters") or current.child_by_field_name("parameter")
+    names = [text(n) for n in walk(params) if n.type == "identifier"] if params is not None else []
+    return name, names
+
+
+def _js_weak_password_hashing(project: Project) -> list[Hit]:
+    """Direct: a fast hash of a password-like value, or inside a password-named function.
+    Via a helper: `const hash = (data) => crypto.createHash('md5').update(data)...` hashes
+    its own parameter; every call that passes it a password (security.hash(clearTextPassword))
+    is reported at the call site."""
+    hits: dict[tuple[str, int], Hit] = {}
+    helpers: dict[str, tuple[str, str, int]] = {}  # helper name -> (algorithm, file, line)
+    files = js_files(project)
+    for f in files:
+        for node in walk(f.root):
+            if node.type != "call_expression" or (found := _js_fast_hash(node)) is None:
+                continue
+            algo, values = found
+            function, params = _js_enclosing_function(node)
+            line = line_of(node)
+            direct = any(_js_password_value(v) for v in values)
+            if direct or set(split_words(function)) & PASSWORD_WORDS:
+                hits[(f.rel, line)] = Hit(
+                    rule_id=SEC_003, file=f.rel, line=line, pii=["password"],
+                    confidence="low" if is_test_file(f.rel) else "high" if direct else "medium",
+                    evidence=f"{f.lines[line - 1].strip()}  [{algo}: password hashed with a fast, unsalted hash]")
+            elif function and any(text(v) in params for v in values):
+                helpers[function] = (algo, f.rel, line)
+    for f in files:
+        for node in walk(f.root):
+            if node.type != "call_expression":
+                continue
+            called = callee(node)
+            name = called.rsplit(".", 1)[-1]
+            if name not in helpers or called.split(".")[0].lower() in SLOW_HASH_LIBRARIES:
+                continue
+            if any(_js_password_value(a) for a in arguments(node)):
+                algo, helper_file, helper_line = helpers[name]
+                line = line_of(node)
+                hits.setdefault((f.rel, line), Hit(
+                    rule_id=SEC_003, file=f.rel, line=line, pii=["password"],
+                    confidence="low" if is_test_file(f.rel) else "high",
+                    evidence=f"{f.lines[line - 1].strip()}  [{called}() hashes with {algo} "
+                             f"({helper_file}:{helper_line}): a fast, unsalted hash]"))
+    return list(hits.values())

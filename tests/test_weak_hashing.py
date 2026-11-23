@@ -14,8 +14,28 @@ def scan(folder):
 
 
 def test_vulnerable_fixture():
-    found = [(h.line, h.confidence) for h in scan(FIXTURES / "vulnerable")]
-    assert found == [(5, "medium"), (9, "high"), (14, "high")]  # by function name; direct; via h.update
+    found = [(h.file, h.line, h.confidence) for h in scan(FIXTURES / "vulnerable")]
+    assert found == [
+        ("auth.js", 7, "high"),   # hash(password): helper that md5-hashes its parameter
+        ("auth.js", 8, "high"),   # crypto.createHash('sha1').update(password)
+        ("auth.js", 9, "high"),   # md5(user.password)
+        ("auth.py", 5, "medium"),  # inside hash_password(): by function name
+        ("auth.py", 9, "high"),   # direct
+        ("auth.py", 14, "high"),  # via h.update
+    ]
+    assert "hash() hashes with md5 (auth.js:4)" in scan(FIXTURES / "vulnerable")[0].evidence
+
+
+def test_juice_shop_style_helper_across_files(tmp_path):
+    (tmp_path / "lib").mkdir()
+    (tmp_path / "models").mkdir()
+    (tmp_path / "lib" / "insecurity.ts").write_text(
+        "export const hash = (data: string) => crypto.createHash('md5').update(data).digest('hex')\n", encoding="utf-8")
+    (tmp_path / "models" / "user.ts").write_text(
+        "set (clearTextPassword: string) {\n  this.setDataValue('password', security.hash(clearTextPassword))\n}\n",
+        encoding="utf-8")
+    [hit] = scan(tmp_path)
+    assert (hit.file, hit.line) == ("models/user.ts", 2)
 
 
 def test_fixed_fixture_is_clean():

@@ -1,0 +1,6 @@
+# Normalise line endings in the repository (LF), whatever the OS of the teammate.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
+*.pdf binary
