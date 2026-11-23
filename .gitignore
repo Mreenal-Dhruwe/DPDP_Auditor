@@ -12,3 +12,6 @@ reports/
 .DS_Store
 node_modules/
 frontend/dist/
+# Local agent tooling (skills, settings): never committed
+.claude/
+skills-lock.json

@@ -47,7 +47,8 @@ patches (unified diffs), live testing of running API endpoints.
      provision (Recharts), filterable findings table (severity, rule, file:line,
      provision, confidence).
   3. Finding detail: code viewer with the flagged line highlighted, law card (Act
-     section + Rule + requirement), severity + reason, fix as a diff, export buttons
+     section + Rule + requirement), severity + reason, the fix as a text card (decided:
+     rules hold prose fixes; diffs would come with the auto-patch bonus), export buttons
      (HTML, PDF, SARIF, JSON).
   Routing with react-router; plain fetch or a tiny api.ts wrapper; no heavy state library.
 - Backend: FastAPI in `backend/`. Endpoints:
