@@ -26,6 +26,17 @@ def test_fixed_fixture_is_clean():
     assert scan(FIXTURES / "fixed") == []
 
 
+def test_terraform_variable_default(tmp_path):
+    """Juice Shop: provider "aws" { region = var.aws_region }, the value is the variable's default."""
+    (tmp_path / "schema.sql").write_text("CREATE TABLE users (id INT, email TEXT);\n", encoding="utf-8")
+    (tmp_path / "main.tf").write_text('provider "aws" {\n  region = var.aws_region\n}\n', encoding="utf-8")
+    (tmp_path / "variables.tf").write_text(
+        'variable "aws_region" {\n  type    = string\n  default = "eu-west-1"\n}\n\n'
+        'variable "location_label" {\n  default = "checkout"\n}\n', encoding="utf-8")
+    [hit] = scan(tmp_path)
+    assert (hit.file, hit.line) == ("variables.tf", 3) and "eu-west-1" in hit.evidence
+
+
 def test_no_personal_data_means_nothing_to_report(tmp_path):
     (tmp_path / "main.tf").write_text('provider "aws" {\n  region = "us-east-1"\n}\n', encoding="utf-8")
     assert scan(tmp_path) == []

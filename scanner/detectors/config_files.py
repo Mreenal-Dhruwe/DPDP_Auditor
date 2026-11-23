@@ -325,6 +325,31 @@ _REGION_VALUE = re.compile(
     rf"|[a-z]+\d?)\b")
 
 
+_TF_REGION_VARIABLE = re.compile(r'^[ \t]*variable\s+"[\w-]*(?:region|location)[\w-]*"\s*\{([^}]*)\}',
+                                 re.MULTILINE | re.IGNORECASE)
+_TF_DEFAULT = re.compile(r'default\s*=\s*"([\w-]+)"')
+
+
+def _foreign_region(value: str) -> bool:
+    """A cloud region name outside India ("location = request.path" is not a region)."""
+    region = value.lower()
+    plain = re.fullmatch(r"[a-z]+\d?", region) is not None
+    return region not in INDIA_REGIONS and not (plain and region not in AZURE_REGIONS)
+
+
+def _region_settings(rel: str, text: str) -> list[tuple[int, str]]:
+    """(line, region) for region = "...", AWS_REGION=..., and Terraform variables named like
+    a region whose default is one (provider "aws" { region = var.aws_region } -> its default)."""
+    found = [(_line_of(text, m.start()), m.group(1).lower()) for m in _REGION_VALUE.finditer(text)
+             if _foreign_region(m.group(1))]
+    if rel.endswith(".tf"):
+        for block in _TF_REGION_VARIABLE.finditer(text):
+            if (default := _TF_DEFAULT.search(block.group(1))) and re.fullmatch(r"[a-z]+(-[a-z]+)*-?\d", default.group(1)):
+                if _foreign_region(default.group(1)):
+                    found.append((_line_of(text, block.start(1) + default.start()), default.group(1).lower()))
+    return found
+
+
 def regions_outside_india(project: Project) -> list[Hit]:
     table = personal_data_table(project)
     if table is None:
@@ -335,12 +360,7 @@ def regions_outside_india(project: Project) -> list[Hit]:
             continue
         text = project.read_text(rel)
         lines = text.splitlines()
-        for m in _REGION_VALUE.finditer(text):
-            region = m.group(1).lower()
-            plain = re.fullmatch(r"[a-z]+\d?", region) is not None
-            if region in INDIA_REGIONS or (plain and region not in AZURE_REGIONS):
-                continue  # India, or not a cloud region name ("location = request.path")
-            line = _line_of(text, m.start())
+        for line, region in _region_settings(rel, text):
             hits.append(Hit(rule_id=TP_002, file=rel, line=line, confidence="low",
                             evidence=f"{lines[line - 1].strip()}  [cloud region {region} is outside India; transfer is "
                                      f"allowed unless the Government restricts that country (s.16); verify manually "
