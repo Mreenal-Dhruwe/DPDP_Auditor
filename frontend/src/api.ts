@@ -5,7 +5,7 @@
 //   report is src/mock/report.json.
 // - the scan id "sample" always shows that mock report, in any mode: an offline demo.
 
-import type { Report, ScanStarted, ScanStatus } from "./types/contract";
+import type { Report, ScanStarted, ScanStatus, Severity } from "./types/contract";
 
 export const MOCK_MODE = import.meta.env.VITE_API_MODE === "mock";
 export const SAMPLE_ID = "sample";
@@ -148,19 +148,54 @@ function mockStatus(scanId: string, sample: Report): ScanStatus {
   };
 }
 
-// --- rule catalogue (titles for rule ids; optional) --------------------------------------
+// --- rule catalogue and service health -----------------------------------------------------
 
-let ruleTitles: Promise<Record<string, string>> | null = null;
+/** One rule as GET /api/rules returns it (rules/dpdp_rules.yml, the source of legal meaning). */
+export interface RuleInfo {
+  id: string;
+  category: string;
+  title: string;
+  detects: string[];
+  targets: string[];
+  law: { act: string[]; rules: string[]; requirement: string };
+  penalty: string; // a key of `penalty_caps`
+  severity: Severity;
+  severity_reason: string;
+  fix: string;
+}
+export interface Catalogue {
+  rules: RuleInfo[];
+  checked: string[]; // rule ids with an automated detector
+  penalty_caps: Record<string, { schedule_item: number; provision: string; cap: string }>;
+}
 
-/** {rule id: title} from GET /api/rules, or {} when there is no backend (mock mode). */
+let catalogue: Promise<Catalogue> | null = null;
+
+/** The live rule catalogue. Mock mode has no backend, so it fails with a clear message. */
+export function getCatalogue(): Promise<Catalogue> {
+  if (MOCK_MODE) return Promise.reject(new ApiError(0, "The rule catalogue comes from the API; mock mode has none."));
+  catalogue ??= request<Catalogue>("/api/rules");
+  catalogue.catch(() => (catalogue = null)); // retry on the next call
+  return catalogue;
+}
+
+/** {rule id: title}, or {} when the catalogue is unavailable. */
 export function getRuleTitles(): Promise<Record<string, string>> {
-  if (MOCK_MODE) return Promise.resolve({});
-  ruleTitles ??= request<{ rules: { id: string; title: string }[] }>("/api/rules").then(
-    (body) => Object.fromEntries(body.rules.map((r) => [r.id, r.title])),
-    () => {
-      ruleTitles = null;
-      return {};
-    },
+  return getCatalogue().then(
+    (c) => Object.fromEntries(c.rules.map((r) => [r.id, r.title])),
+    () => ({}),
   );
-  return ruleTitles;
+}
+
+export interface Health {
+  status: string;
+  version: string;
+  rules: number;
+  detectors: number;
+  rules_checked: number;
+}
+
+export function getHealth(): Promise<Health> {
+  if (MOCK_MODE) return Promise.reject(new ApiError(0, "mock mode"));
+  return request<Health>("/api/health");
 }

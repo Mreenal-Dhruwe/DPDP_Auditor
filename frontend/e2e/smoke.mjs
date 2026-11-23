@@ -60,7 +60,7 @@ function check(ok, message) {
 
 async function scanAndCheck(page, start, label, timeoutMs) {
   console.log(`\n${label}`);
-  await page.goto(BASE + "/");
+  await page.goto(BASE + "/scan");
   await start(page);
   await page.waitForURL(/\/scans\/[^/]+\/progress$/, { timeout: 15000 });
   check(true, "progress view opened");

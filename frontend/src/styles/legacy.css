@@ -1,0 +1,49 @@
+/* TEMPORARY: Tailwind tokens for screens not yet ported to the DPDP Auditor design
+   (removed once every screen uses base.css / shell.css / screens.css). Dark values. */
+:root {
+  --page: var(--bg);
+  --surface: var(--panel);
+  --surface-2: #1d1e23;
+  --ink: var(--text);
+  --ink-2: #c9cbd3;
+  --line: #2d2e35;
+  --line-strong: var(--edge);
+  --brand: var(--rail-bg);
+  --brand-ink: var(--text);
+  --accent: var(--violet);
+  --accent-hover: #d6c8ff;
+  --accent-soft: #241f33;
+  --on-accent: #120d1f;
+  --series-1: #b8a0ec;
+  --danger-ink: var(--danger);
+  --danger-soft: #24181a;
+  --ok-ink: var(--mint);
+  --code-bg: #0d0e11;
+  --code-hit: #b9f5d015;
+}
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-danger-ink: var(--danger-ink);
+  --color-danger-soft: var(--danger-soft);
+  --color-ok-ink: var(--ok-ink);
+  --color-code-bg: var(--code-bg);
+  --color-code-hit: var(--code-hit);
+  --color-sev-critical: var(--sev-critical);
+  --color-sev-high: var(--sev-high);
+  --color-sev-medium: var(--sev-medium);
+  --color-sev-low: var(--sev-low);
+  --color-sev-info: var(--sev-info);
+}
