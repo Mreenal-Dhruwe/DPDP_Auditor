@@ -35,7 +35,7 @@ def test_sections_and_disclaimer(html, target_report):
 
 
 def test_context_is_shown_masked_with_the_line_highlighted(html):
-    assert html.count('class="ln hit"') == 11  # 12 findings, the Dockerfile one is whole-file
+    assert html.count('class="ln hit"') == 12  # 13 findings, the Dockerfile one is whole-file
     assert "4f9a7c2e81b64d0c9e3a5b7d1f2c8e60" not in html  # the planted secret
     assert "lend********" in html
 

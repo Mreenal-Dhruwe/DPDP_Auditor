@@ -3,7 +3,7 @@
   "tool_version": "0.1.0",
   "rules_version": "0.1.0",
   "target": "juice-shop",
-  "generated_at": "2026-11-23T15:38:02.938055Z",
+  "generated_at": "2026-11-23T19:41:19.115946Z",
   "files_scanned": 1494,
   "coverage": {
     "files_by_kind": {
@@ -22,11 +22,13 @@
       "DPDP-SEC-003",
       "DPDP-SEC-004",
       "DPDP-SEC-005",
+      "DPDP-SEC-006",
       "DPDP-SEC-008",
       "DPDP-TP-001",
       "DPDP-RET-001",
       "DPDP-RET-002",
-      "DPDP-CH-001"
+      "DPDP-CH-001",
+      "DPDP-CH-002"
     ],
     "rules_not_checked": [
       "DPDP-NOT-001",
@@ -34,14 +36,12 @@
       "DPDP-CON-004",
       "DPDP-CON-005",
       "DPDP-CON-006",
-      "DPDP-SEC-006",
       "DPDP-SEC-007",
       "DPDP-SEC-009",
       "DPDP-SEC-010",
       "DPDP-TP-002",
       "DPDP-BR-001",
       "DPDP-RET-003",
-      "DPDP-CH-002",
       "DPDP-RT-001",
       "DPDP-RT-002",
       "DPDP-RT-003"
@@ -49,22 +49,22 @@
   },
   "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes.",
   "summary": {
-    "total": 54,
+    "total": 55,
     "by_severity": {
       "critical": 28,
-      "high": 26,
+      "high": 27,
       "medium": 0,
       "low": 0,
       "info": 0
     },
     "by_category": {
-      "Security": 50,
+      "Security": 51,
       "Retention": 4
     },
     "by_provision": {
-      "s.8(5)": 50,
+      "s.8(5)": 51,
       "Rule 6(1)(b)": 28,
-      "Rule 6(1)(a)": 22,
+      "Rule 6(1)(a)": 23,
       "s.8(7)": 4,
       "s.12(3)": 4,
       "Rule 8": 4
@@ -2212,6 +2212,49 @@
       "severity": "high",
       "severity_reason": "Fast hashes are easily cracked after a leak.",
       "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "58e00318212b",
+      "rule_id": "DPDP-SEC-006",
+      "title": "Excessive data in API responses",
+      "category": "Security",
+      "scope": "line",
+      "file": "routes/changePassword.ts",
+      "line": 56,
+      "evidence": "res.json({ user }) [GET /rest/user/change-password (asyncHandler) sends UserModel.findByPk() with password; pass `attributes` or pick the fields]",
+      "context": {
+        "start_line": 53,
+        "lines": [
+          "        challenges.changePasswordBenderChallenge,",
+          "        () => user.id === 3 && !currentPassword && user.password === security.hash('slurmCl4ssic')",
+          "      )",
+          "      res.json({ user })",
+          "    } catch (error) {",
+          "      next(error)",
+          "    }"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Masking and minimising exposed personal data."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Sensitive fields leak to every client, including logs and caches.",
+      "fix": "Return a response schema/serializer with only the needed fields; mask identifiers."
     },
     {
       "id": "f0d8179fc000",

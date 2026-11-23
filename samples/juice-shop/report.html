@@ -78,20 +78,20 @@
 <header>
   <h1>DPDP compliance report</h1>
   <p class="sub">juice-shop · Digital Personal Data Protection Act, 2023 and DPDP Rules, 2025</p>
-  <p class="meta">Generated 23 Nov 2026, 15:38 UTC · DPDP Compliance Auditor 0.1.0 · rules v0.1.0</p>
+  <p class="meta">Generated 23 Nov 2026, 19:41 UTC · DPDP Compliance Auditor 0.1.0 · rules v0.1.0</p>
   <nav aria-label="Sections">
     <a href="#summary">Summary</a>
     <a href="#coverage">Scan coverage</a>
-<a href="#sev-critical">Critical (28)</a><a href="#sev-high">High (26)</a>    <a href="#disclaimer">Disclaimer</a>
+<a href="#sev-critical">Critical (28)</a><a href="#sev-high">High (27)</a>    <a href="#disclaimer">Disclaimer</a>
   </nav>
 </header>
 
 <section id="summary">
   <h2>Summary</h2>
   <div class="tiles">
-    <div class="tile"><span class="n">54</span><span class="k">findings</span></div>
+    <div class="tile"><span class="n">55</span><span class="k">findings</span></div>
     <div class="tile critical"><span class="n">28</span><span class="k">critical</span></div>
-    <div class="tile high"><span class="n">26</span><span class="k">high</span></div>
+    <div class="tile high"><span class="n">27</span><span class="k">high</span></div>
     <div class="tile medium"><span class="n">0</span><span class="k">medium</span></div>
     <div class="tile low"><span class="n">0</span><span class="k">low</span></div>
     <div class="tile info"><span class="n">0</span><span class="k">info</span></div>
@@ -101,14 +101,14 @@
       <table>
         <thead><tr><th>DPDP provision</th><th class="num">Findings</th></tr></thead>
         <tbody>
-<tr><td>s.8(5)</td><td class="num">50</td></tr><tr><td>Rule 6(1)(b)</td><td class="num">28</td></tr><tr><td>Rule 6(1)(a)</td><td class="num">22</td></tr><tr><td>s.8(7)</td><td class="num">4</td></tr><tr><td>s.12(3)</td><td class="num">4</td></tr><tr><td>Rule 8</td><td class="num">4</td></tr>        </tbody>
+<tr><td>s.8(5)</td><td class="num">51</td></tr><tr><td>Rule 6(1)(b)</td><td class="num">28</td></tr><tr><td>Rule 6(1)(a)</td><td class="num">23</td></tr><tr><td>s.8(7)</td><td class="num">4</td></tr><tr><td>s.12(3)</td><td class="num">4</td></tr><tr><td>Rule 8</td><td class="num">4</td></tr>        </tbody>
       </table>
     </div>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Category</th><th class="num">Findings</th></tr></thead>
         <tbody>
-<tr><td>Security</td><td class="num">50</td></tr><tr><td>Retention</td><td class="num">4</td></tr>        </tbody>
+<tr><td>Security</td><td class="num">51</td></tr><tr><td>Retention</td><td class="num">4</td></tr>        </tbody>
       </table>
     </div>
   </div>
@@ -118,7 +118,7 @@
   <h2>Scan coverage</h2>
   <p>1494 files read (never executed):
 662 typescript, 503 other, 226 config, 84 templates, 16 javascript, 3 python.</p>
-  <p>Automated checks ran for <strong>12 of 28</strong> rules.
+  <p>Automated checks ran for <strong>14 of 28</strong> rules.
      No finding for a checked rule means the scanner saw no sign of the problem, not that the code is compliant.</p>
   <div class="table-wrap">
     <table>
@@ -131,16 +131,18 @@
         <tr><td><code>DPDP-SEC-003</code></td><td>Weak password hashing</td><td class="num">21</td></tr>
         <tr><td><code>DPDP-SEC-004</code></td><td>Hardcoded secrets or credentials</td><td class="num">28</td></tr>
         <tr><td><code>DPDP-SEC-005</code></td><td>Personal data exposed by an unauthenticated route</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-SEC-006</code></td><td>Excessive data in API responses</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-SEC-008</code></td><td>Insecure infrastructure configuration</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-TP-001</code></td><td>Personal data sent to a third-party SDK</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-RET-001</code></td><td>Personal data with no erase or anonymise path</td><td class="num">4</td></tr>
         <tr><td><code>DPDP-RET-002</code></td><td>Immediate hard delete with no minimum retention</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-CH-001</code></td><td>Child data collected without parental consent flow</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-CH-002</code></td><td>Tracking or targeted ads possible for children</td><td class="num">0</td></tr>
       </tbody>
     </table>
   </div>
   <details>
-    <summary>16 rules need a manual review (no automated check yet)</summary>
+    <summary>14 rules need a manual review (no automated check yet)</summary>
     <div class="table-wrap">
       <table>
         <tbody>
@@ -149,14 +151,12 @@
           <tr><td><code>DPDP-CON-004</code></td><td>Personal data used without checking consent</td></tr>
           <tr><td><code>DPDP-CON-005</code></td><td>Over-collection beyond the stated purpose</td></tr>
           <tr><td><code>DPDP-CON-006</code></td><td>Consent request offered in one language only</td></tr>
-          <tr><td><code>DPDP-SEC-006</code></td><td>Excessive data in API responses</td></tr>
           <tr><td><code>DPDP-SEC-007</code></td><td>No access logging on personal-data reads</td></tr>
           <tr><td><code>DPDP-SEC-009</code></td><td>No backup configured for personal-data stores</td></tr>
           <tr><td><code>DPDP-SEC-010</code></td><td>Log retention shorter than one year</td></tr>
           <tr><td><code>DPDP-TP-002</code></td><td>Personal data stored or sent outside India</td></tr>
           <tr><td><code>DPDP-BR-001</code></td><td>No breach notification mechanism</td></tr>
           <tr><td><code>DPDP-RET-003</code></td><td>No pre-erasure notice to the user</td></tr>
-          <tr><td><code>DPDP-CH-002</code></td><td>Tracking or targeted ads possible for children</td></tr>
           <tr><td><code>DPDP-RT-001</code></td><td>No way to access or export one&#39;s data</td></tr>
           <tr><td><code>DPDP-RT-002</code></td><td>No correction or erasure endpoint</td></tr>
           <tr><td><code>DPDP-RT-003</code></td><td>No grievance mechanism or contact published</td></tr>
@@ -728,7 +728,7 @@
       <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
     </dl>
   </article>
-  <h2 id="sev-high">High <span class="count high">· 26</span></h2>
+  <h2 id="sev-high">High <span class="count high">· 27</span></h2>
   <article class="finding high" id="f-21ae5a2e2535">
     <header>
       <span class="badge high">high</span>
@@ -1187,6 +1187,26 @@
       <dd>Fast hashes are easily cracked after a leak.</dd>
       <dt>Recommended fix</dt>
       <dd>Use bcrypt, scrypt or argon2 with per-user salt.</dd>
+    </dl>
+  </article>
+  <article class="finding high" id="f-58e00318212b">
+    <header>
+      <span class="badge high">high</span>
+      <h3>Excessive data in API responses</h3>
+      <code class="rule">DPDP-SEC-006</code>
+    </header>
+    <p class="where"><code>routes/changePassword.ts:56</code> · confidence high · personal data: password</p>
+    <div class="evidence"><code>res.json({ user }) [GET /rest/user/change-password (asyncHandler) sends UserModel.findByPk() with password; pass `attributes` or pick the fields]</code></div>
+    <pre class="code" aria-label="Source around routes/changePassword.ts:56 (masked)"><span class="ln"><span class="no">53</span>        challenges.changePasswordBenderChallenge,</span><span class="ln"><span class="no">54</span>        () =&gt; user.id === 3 &amp;&amp; !currentPassword &amp;&amp; user.password === security.hash(&#39;slurmCl4ssic&#39;)</span><span class="ln"><span class="no">55</span>      )</span><span class="ln hit"><span class="no">56</span>      res.json({ user })</span><span class="ln"><span class="no">57</span>    } catch (error) {</span><span class="ln"><span class="no">58</span>      next(error)</span><span class="ln"><span class="no">59</span>    }</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(a) DPDP Rules</span><br>Masking and minimising exposed personal data.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why high</dt>
+      <dd>Sensitive fields leak to every client, including logs and caches.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Return a response schema/serializer with only the needed fields; mask identifiers.</dd>
     </dl>
   </article>
   <article class="finding high" id="f-f0d8179fc000">

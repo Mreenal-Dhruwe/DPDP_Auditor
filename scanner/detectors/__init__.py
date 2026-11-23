@@ -15,7 +15,7 @@ Module            Rules it owns
 consent.py        DPDP-NOT-001, DPDP-CON-001 to DPDP-CON-006   (CON-001 done)
 logs.py           DPDP-SEC-001, DPDP-SEC-007                   (SEC-001 done, Python)
 storage.py        DPDP-SEC-002, DPDP-SEC-003                   (SEC-002 done)
-access.py         DPDP-SEC-005, DPDP-SEC-006                   (SEC-005 done, Flask/FastAPI)
+access.py         DPDP-SEC-005, DPDP-SEC-006                   (both done; Python + Express)
 retention.py      DPDP-RET-001 to DPDP-RET-003                 (RET-001 done)
 thirdparty.py     DPDP-TP-001, DPDP-TP-002
 children.py       DPDP-CH-001, DPDP-CH-002                     (both done)
@@ -61,6 +61,7 @@ DETECTORS: list[Detector] = [
     Detector("immediate hard delete", ("DPDP-RET-002",), retention.immediate_hard_delete),
     Detector("child data without parental consent", ("DPDP-CH-001",), children.no_parental_consent),
     Detector("tracking of children", ("DPDP-CH-002",), children.tracking_children),
+    Detector("excessive data in API responses", ("DPDP-SEC-006",), access.excessive_response_data),
 ]
 
 

@@ -191,5 +191,13 @@ def raise_grievance():
     return jsonify(ok=True, ticket=cur.lastrowid, reply_within_days=90)
 
 
+@app.route("/api/kyc/<int:user_id>")
+@login_required
+def kyc_record(user_id):
+    audit(session["user_id"], "read", "users", user_id)
+    row = db().execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+    return jsonify(dict(row))
+
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000)

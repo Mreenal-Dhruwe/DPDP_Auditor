@@ -77,11 +77,17 @@ HANDLERS = {
         export default () => listUsers
     """,
     "routes/legacy.js": "module.exports = function profile (req, res) { res.json({ email: req.user.email }) }\n",
+    "lib/utils.ts": "export const asyncHandler = (fn) => (req, res, next) => {\n"
+                    "  void Promise.resolve(fn(req, res, next)).catch(next)\n}\n",
 }
 
 
 @pytest.mark.parametrize(("wiring", "expected"), [
     ("import { getUser } from './routes/users'\napp.get('/u/:id', utils.asyncHandler(getUser()))", "routes/users.ts"),
+    # Juice Shop: the wrapper is a real imported function; its handler only calls `fn`, so the
+    # argument is the real handler (not lib/utils.ts)
+    ("import * as utils from './lib/utils'\nimport { getUser } from './routes/users'\n"
+     "app.get('/u/:id', utils.asyncHandler(getUser()))", "routes/users.ts"),
     ("import * as users from './routes/users'\napp.get('/u/:id', users.getUser())", "routes/users.ts"),
     ("import listUsers from './routes/users'\napp.get('/u', listUsers())", "routes/users.ts"),   # default factory
     ("const profile = require('./routes/legacy')\napp.get('/p', profile)", "routes/legacy.js"),

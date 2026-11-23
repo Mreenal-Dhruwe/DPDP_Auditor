@@ -21,6 +21,7 @@
       "DPDP-SEC-003",
       "DPDP-SEC-004",
       "DPDP-SEC-005",
+      "DPDP-SEC-006",
       "DPDP-SEC-008",
       "DPDP-TP-001",
       "DPDP-RET-001",
@@ -34,7 +35,6 @@
       "DPDP-CON-004",
       "DPDP-CON-005",
       "DPDP-CON-006",
-      "DPDP-SEC-006",
       "DPDP-SEC-007",
       "DPDP-SEC-009",
       "DPDP-SEC-010",
@@ -48,16 +48,16 @@
   },
   "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes.",
   "summary": {
-    "total": 15,
+    "total": 16,
     "by_severity": {
       "critical": 3,
-      "high": 7,
+      "high": 8,
       "medium": 3,
       "low": 1,
       "info": 1
     },
     "by_category": {
-      "Security": 7,
+      "Security": 8,
       "Children": 2,
       "Consent": 2,
       "Breach": 1,
@@ -66,9 +66,9 @@
       "Transfers": 1
     },
     "by_provision": {
-      "s.8(5)": 7,
+      "s.8(5)": 8,
+      "Rule 6(1)(a)": 4,
       "Rule 6(1)(b)": 3,
-      "Rule 6(1)(a)": 3,
       "s.9(3)": 1,
       "Rule 6(1)(g)": 1,
       "s.9(1)": 1,
@@ -416,6 +416,47 @@
       "severity": "high",
       "severity_reason": "Consent is the legal basis for processing; with no withdrawal path the user cannot stop it.",
       "fix": "Add DELETE /consent (or POST /consent/withdraw) that clears consent and stops downstream processing."
+    },
+    {
+      "id": "1c652da24dbf",
+      "rule_id": "DPDP-SEC-006",
+      "title": "Excessive data in API responses",
+      "category": "Security",
+      "scope": "line",
+      "file": "app.py",
+      "line": 199,
+      "evidence": "return jsonify(dict(row))",
+      "context": {
+        "start_line": 196,
+        "lines": [
+          "def kyc_record(user_id):",
+          "    audit(session[\"user_id\"], \"read\", \"users\", user_id)",
+          "    row = db().execute(\"SELECT * FROM users WHERE id = ?\", (user_id,)).fetchone()",
+          "    return jsonify(dict(row))",
+          "",
+          "",
+          "if __name__ == \"__main__\":"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Masking and minimising exposed personal data."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Sensitive fields leak to every client, including logs and caches.",
+      "fix": "Return a response schema/serializer with only the needed fields; mask identifiers."
     },
     {
       "id": "b4ab0a7f3ef2",

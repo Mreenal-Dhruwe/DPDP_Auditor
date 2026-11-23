@@ -823,7 +823,7 @@
       "invocations": [
         {
           "executionSuccessful": true,
-          "endTimeUtc": "2026-11-23T15:38:13.973373+00:00"
+          "endTimeUtc": "2026-11-23T19:41:07.052769+00:00"
         }
       ],
       "results": [
@@ -917,6 +917,52 @@
                   "startLine": 3,
                   "snippet": {
                     "text": "SECRET_KEY = \"lend********\" [literal value for SECRET_KEY]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-CH-002",
+          "ruleIndex": 24,
+          "level": "error",
+          "message": {
+            "text": "Tracking or targeted ads possible for children (templates/signup.html:43): <script async src=\"https://www.googletagmanager.com/gtag/js?id=G-LENDDEMO01\"></script> [Google Analytics (gtag.js) runs for every user, children included: the app collects date of birth / age (the backend reads 'dob', app.py:90) but no age check stops the tracking]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "bcd7b9fa103e"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "dob"
+            ],
+            "law": {
+              "act": [
+                "s.9(3)"
+              ],
+              "rules": [],
+              "requirement": "No tracking, behavioural monitoring or targeted advertising directed at children."
+            },
+            "penaltyCap": "Rs 200 crore",
+            "severityReason": "Rs 200 crore cap and an outright prohibition.",
+            "fix": "Disable tracking and ad SDKs for users under 18."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "templates/signup.html",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 43,
+                  "snippet": {
+                    "text": "<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-LENDDEMO01\"></script> [Google Analytics (gtag.js) runs for every user, children included: the app collects date of birth / age (the backend reads 'dob', app.py:90) but no age check stops the tracking]"
                   }
                 }
               }
@@ -1158,6 +1204,55 @@
           ]
         },
         {
+          "ruleId": "DPDP-SEC-006",
+          "ruleIndex": 12,
+          "level": "error",
+          "message": {
+            "text": "Excessive data in API responses (app.py:199): return jsonify(dict(row)) [GET /api/kyc/<int:user_id> (kyc_record) sends SELECT * FROM users with aadhaar, password; return only the fields the client needs]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "1c652da24dbf"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "aadhaar",
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Masking and minimising exposed personal data."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Sensitive fields leak to every client, including logs and caches.",
+            "fix": "Return a response schema/serializer with only the needed fields; mask identifiers."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 199,
+                  "snippet": {
+                    "text": "return jsonify(dict(row)) [GET /api/kyc/<int:user_id> (kyc_record) sends SELECT * FROM users with aadhaar, password; return only the fields the client needs]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
           "ruleId": "DPDP-SEC-002",
           "ruleIndex": 8,
           "level": "error",
@@ -1364,11 +1459,13 @@
             "DPDP-SEC-003",
             "DPDP-SEC-004",
             "DPDP-SEC-005",
+            "DPDP-SEC-006",
             "DPDP-SEC-008",
             "DPDP-TP-001",
             "DPDP-RET-001",
             "DPDP-RET-002",
-            "DPDP-CH-001"
+            "DPDP-CH-001",
+            "DPDP-CH-002"
           ],
           "rules_not_checked": [
             "DPDP-NOT-001",
@@ -1376,14 +1473,12 @@
             "DPDP-CON-004",
             "DPDP-CON-005",
             "DPDP-CON-006",
-            "DPDP-SEC-006",
             "DPDP-SEC-007",
             "DPDP-SEC-009",
             "DPDP-SEC-010",
             "DPDP-TP-002",
             "DPDP-BR-001",
             "DPDP-RET-003",
-            "DPDP-CH-002",
             "DPDP-RT-001",
             "DPDP-RT-002",
             "DPDP-RT-003"

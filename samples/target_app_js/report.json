@@ -3,7 +3,7 @@
   "tool_version": "0.1.0",
   "rules_version": "0.1.0",
   "target": "target_app_js",
-  "generated_at": "2026-11-23T15:38:14.594222Z",
+  "generated_at": "2026-11-23T19:41:07.926477Z",
   "files_scanned": 6,
   "coverage": {
     "files_by_kind": {
@@ -19,11 +19,13 @@
       "DPDP-SEC-003",
       "DPDP-SEC-004",
       "DPDP-SEC-005",
+      "DPDP-SEC-006",
       "DPDP-SEC-008",
       "DPDP-TP-001",
       "DPDP-RET-001",
       "DPDP-RET-002",
-      "DPDP-CH-001"
+      "DPDP-CH-001",
+      "DPDP-CH-002"
     ],
     "rules_not_checked": [
       "DPDP-NOT-001",
@@ -31,14 +33,12 @@
       "DPDP-CON-004",
       "DPDP-CON-005",
       "DPDP-CON-006",
-      "DPDP-SEC-006",
       "DPDP-SEC-007",
       "DPDP-SEC-009",
       "DPDP-SEC-010",
       "DPDP-TP-002",
       "DPDP-BR-001",
       "DPDP-RET-003",
-      "DPDP-CH-002",
       "DPDP-RT-001",
       "DPDP-RT-002",
       "DPDP-RT-003"
@@ -46,23 +46,23 @@
   },
   "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes.",
   "summary": {
-    "total": 7,
+    "total": 10,
     "by_severity": {
       "critical": 3,
-      "high": 4,
+      "high": 7,
       "medium": 0,
       "low": 0,
       "info": 0
     },
     "by_category": {
-      "Security": 5,
+      "Security": 8,
       "Retention": 1,
       "Consent": 1
     },
     "by_provision": {
-      "s.8(5)": 5,
+      "s.8(5)": 8,
+      "Rule 6(1)(a)": 5,
       "Rule 6(1)(b)": 3,
-      "Rule 6(1)(a)": 2,
       "s.8(7)": 1,
       "s.12(3)": 1,
       "Rule 8": 1,
@@ -289,6 +289,48 @@
       "fix": "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds."
     },
     {
+      "id": "1b3119d44d93",
+      "rule_id": "DPDP-SEC-006",
+      "title": "Excessive data in API responses",
+      "category": "Security",
+      "scope": "line",
+      "file": "routes/customers.ts",
+      "line": 13,
+      "evidence": "res.json(await User.findAll()) [GET /admin/customers (listCustomers) sends User.findAll() with pan, password; pass `attributes` or pick the fields]",
+      "context": {
+        "start_line": 10,
+        "lines": [
+          "}",
+          "",
+          "export const listCustomers = () => async (req: Request, res: Response) => {",
+          "  res.json(await User.findAll())",
+          "}"
+        ]
+      },
+      "pii": [
+        "pan",
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Masking and minimising exposed personal data."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Sensitive fields leak to every client, including logs and caches.",
+      "fix": "Return a response schema/serializer with only the needed fields; mask identifiers."
+    },
+    {
       "id": "efdf12f3087f",
       "rule_id": "DPDP-SEC-001",
       "title": "Personal data written to logs",
@@ -331,6 +373,94 @@
       "severity": "high",
       "severity_reason": "Logs are widely accessible and long-lived; unmasked PII there is a common breach source.",
       "fix": "Mask or tokenise PII before logging (e.g. a***@x.com, ******1234)."
+    },
+    {
+      "id": "bdaa741ac843",
+      "rule_id": "DPDP-SEC-006",
+      "title": "Excessive data in API responses",
+      "category": "Security",
+      "scope": "line",
+      "file": "server.ts",
+      "line": 33,
+      "evidence": "res.json(user) [GET /api/users/:id (handler) sends User.findByPk() with pan, password; pass `attributes` or pick the fields]",
+      "context": {
+        "start_line": 30,
+        "lines": [
+          "",
+          "app.get('/api/users/:id', async (req: Request, res: Response) => {",
+          "  const user = await User.findByPk(req.params.id)",
+          "  res.json(user)",
+          "})",
+          "",
+          "app.get('/api/me', requireAuth, async (req: Request, res: Response) => {"
+        ]
+      },
+      "pii": [
+        "pan",
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Masking and minimising exposed personal data."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Sensitive fields leak to every client, including logs and caches.",
+      "fix": "Return a response schema/serializer with only the needed fields; mask identifiers."
+    },
+    {
+      "id": "a23f6c11e52d",
+      "rule_id": "DPDP-SEC-006",
+      "title": "Excessive data in API responses",
+      "category": "Security",
+      "scope": "line",
+      "file": "server.ts",
+      "line": 42,
+      "evidence": "res.json(await User.findAll()) [GET /admin/users (handler) sends User.findAll() with pan, password; pass `attributes` or pick the fields]",
+      "context": {
+        "start_line": 39,
+        "lines": [
+          "})",
+          "",
+          "app.get('/admin/users', async (req: Request, res: Response) => {",
+          "  res.json(await User.findAll())",
+          "})",
+          "",
+          "app.post('/consent', requireAuth, (req: Request, res: Response) => {"
+        ]
+      },
+      "pii": [
+        "pan",
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Masking and minimising exposed personal data."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Sensitive fields leak to every client, including logs and caches.",
+      "fix": "Return a response schema/serializer with only the needed fields; mask identifiers."
     },
     {
       "id": "4bc3944f1783",

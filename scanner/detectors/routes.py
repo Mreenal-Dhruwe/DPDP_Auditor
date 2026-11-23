@@ -199,12 +199,28 @@ def resolve_js_handler(project: Project, route: Route) -> tuple[str | None, Any]
         factory = node.type == "call_expression"
         target_file, definition = _lookup(files, f, dotted(node))
         if definition is not None and (handler := _handler_from(target_file, definition, factory)) is not None:
-            return target_file.rel, handler
+            if not (factory and arguments(node) and _is_wrapper(definition, handler)):
+                return target_file.rel, handler
+            # utils.asyncHandler(changePassword()): the handler only calls its parameter, so
+            # the real handler is the argument (unwrapped below)
         if factory and arguments(node):  # also a local wrapper like const asyncHandler = (fn) => fn
             node = arguments(node)[-1]  # wrapper: utils.asyncHandler(handler) -> handler
             continue
         return None, None
     return None, None
+
+
+def _is_wrapper(definition: Any, handler: Any) -> bool:
+    """A factory like `asyncHandler = (fn) => (req, res, next) => fn(req, res, next)`: the
+    handler it returns calls one of the factory's own parameters."""
+    factory = definition if definition.type in FUNCTION_TYPES else next(
+        (n for n in walk(definition) if n.type in FUNCTION_TYPES), None)
+    if factory is None or factory == handler:
+        return False
+    params = factory.child_by_field_name("parameters") or factory.child_by_field_name("parameter")
+    names = {n.text.decode() for n in walk(params) if n.type == "identifier"} if params is not None else set()
+    calls = {dotted(n.child_by_field_name("function")) for n in walk(handler) if n.type == "call_expression"}
+    return bool(names & calls)
 
 
 def _strings(node: ast.expr) -> list[str] | None:

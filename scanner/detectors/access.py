@@ -10,6 +10,9 @@ when it RETURNS personal data and nothing on it checks who is asking:
   a FastAPI Depends(get_current_user ...) parameter, a session / current_user / g.user
   check in the body, or an auth before_request hook in the same file
 Reading personal data without returning it (a login route reading password_hash) is fine.
+
+Implemented: DPDP-SEC-006 (whole records with high-sensitivity fields sent in responses),
+for Flask / FastAPI / DRF and Express + Sequelize: see the section at the end.
 """
 
 import ast
@@ -17,8 +20,11 @@ import re
 
 from tree_sitter import Node
 
-from scanner.detectors.javascript import FUNCTION_TYPES, JsPiiRefs, arguments, callee, string_value, text, walk
+from scanner.detectors.javascript import (
+    FUNCTION_TYPES, JsPiiRefs, arguments, callee, line_of, string_value, text, walk,
+)
 from scanner.detectors.routes import Route, find_routes, resolve_js_handler
+from scanner.detectors.schemas import find_tables
 from scanner.detectors.source import PEOPLE_TABLES, dotted_name, python_trees, string_key
 from scanner.ingest import Project
 from scanner.models import Hit
@@ -215,3 +221,269 @@ def unauthenticated_pii_routes(project: Project) -> list[Hit]:
         hits.append(Hit(rule_id=SEC_005, file=route.file, line=route.line, evidence=evidence,
                         pii=sorted(labels), confidence="medium" if broad else "high"))
     return sorted(hits, key=lambda h: (h.file, h.line))
+
+
+# --- DPDP-SEC-006: excessive data in API responses -------------------------------------------
+#
+# A response that sends a whole record holding high-sensitivity data (password hashes,
+# Aadhaar, PAN, passport, card and bank numbers - the "high" field names in the rules YAML),
+# or such a field by name. Authenticated or not: it is about what is sent, not who asks.
+# Whole records:
+#   Python  rows of SELECT * (columns from the schema) or of a SELECT naming such a column;
+#           ORM records (User.query..., User.objects...) sent as __dict__, vars(), dict(),
+#           model_to_dict() or a to_dict()/as_dict() that copies every column; FastAPI
+#           routes with a response_model or a return annotation filter the output and are
+#           skipped; DRF ModelSerializer with fields = "__all__"
+#   Express Sequelize finders (findByPk, findOne, findAll ...) without `attributes`, sent with
+#           res.json / res.send, unless the model hides fields (defaultScope, toJSON)
+
+SEC_006 = "DPDP-SEC-006"
+WHOLE_CALLS = {"dict", "vars", "model_to_dict", "asdict", "jsonable_encoder", "list"}
+RECORD_METHODS = {"to_dict", "as_dict", "serialize", "to_json"}
+GENERIC_COPY = re.compile(r"__table__|__dict__|__mapper__|\binspect\(|\.columns\b|_meta\.fields")
+SEQUELIZE_FINDERS = {"findByPk", "findOne", "findAll", "findAndCountAll", "findOrCreate", "create", "findById"}
+HIDES_FIELDS = re.compile(r"defaultScope[\s\S]{0,300}?exclude|toJSON\s*\(")
+
+
+def _sensitive(name: str, matcher: PiiMatcher) -> str | None:
+    """Label of a high-sensitivity field; a password hash still counts (it can be cracked)."""
+    match = matcher.match(name)
+    if match and match.sensitivity == "high" and (not match.protected or match.label == "password"):
+        return match.label
+    return None
+
+
+class _Records:
+    """Tables with high-sensitivity columns, found by table or model name (User, UserModel, users)."""
+
+    def __init__(self, project: Project, matcher: PiiMatcher) -> None:
+        self.by_name: dict[str, tuple[str, list[str], str]] = {}  # key -> (shown name, labels, model file)
+        for table in find_tables(project):
+            labels = sorted({label for c in table.columns if (label := _sensitive(c.name, matcher))})
+            if not labels:
+                continue
+            shown = table.model or table.name
+            for key in {table.name.lower(), table.name.lower().rstrip("s"), (table.model or "").lower()} - {""}:
+                self.by_name[key] = (shown, labels, table.file)
+
+    def get(self, name: str) -> tuple[str, list[str], str] | None:
+        key = name.lower()
+        return self.by_name.get(key) or self.by_name.get(key.removesuffix("model")) \
+            or self.by_name.get(key.removesuffix("models"))
+
+
+def _select_record(sql: str, records: _Records, matcher: PiiMatcher) -> tuple[str, list[str]] | None:
+    for columns, table in _SELECT.findall(sql):
+        names = [c.strip().split()[-1].split(".")[-1].strip('`"[]') for c in columns.split(",") if c.strip()]
+        if "*" in names and (record := records.get(table)):
+            return f"SELECT * FROM {table}", record[1]
+        labels = sorted({label for n in names if (label := _sensitive(n, matcher))})
+        if labels:
+            return f"SELECT {', '.join(n for n in names if _sensitive(n, matcher))} FROM {table}", labels
+    return None
+
+
+def _python_source(node: ast.AST, records: _Records, matcher: PiiMatcher) -> tuple[str, list[str], str] | None:
+    """(how, labels, confidence) when a value loads a sensitive record."""
+    for sub in ast.walk(node):
+        if isinstance(sub, ast.Constant) and isinstance(sub.value, str) and (hit := _select_record(sub.value, records, matcher)):
+            return hit[0], hit[1], "high"
+        if isinstance(sub, ast.Attribute) and isinstance(sub.value, ast.Name) and sub.attr in {"query", "objects"} \
+                and (record := records.get(sub.value.id)):
+            return f"{sub.value.id} record", record[1], "medium"
+    return None
+
+
+def _generic_methods(project: Project) -> set[str]:
+    """Record methods (to_dict ...) whose body copies every column instead of picking fields."""
+    found = set()
+    for _, tree in python_trees(project):
+        for cls in (n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)):
+            for fn in cls.body:
+                if isinstance(fn, ast.FunctionDef) and fn.name in RECORD_METHODS and GENERIC_COPY.search(ast.unparse(fn)):
+                    found.add(fn.name)
+    return found
+
+
+TEST_ONLY_CALLS = {"len", "bool", "isinstance", "hasattr", "type", "id"}
+
+
+def _masked(field: ast.AST, parents: dict) -> bool:
+    """row["pan"][-4:] or mask(row["pan"]): the value is cut or masked before it is sent."""
+    outer = parents.get(field)
+    return (isinstance(outer, ast.Subscript) and outer.value is field and isinstance(outer.slice, ast.Slice)) or \
+        (isinstance(outer, ast.Call) and "mask" in dotted_name(outer.func).lower())
+
+
+def _only_tested(node: ast.AST, parents: dict) -> bool:
+    """`row is not None`, `not user`, len(rows): the record decides something but is not sent."""
+    parent = parents.get(node)
+    return isinstance(parent, (ast.Compare, ast.BoolOp, ast.UnaryOp)) or (
+        isinstance(parent, ast.Call) and dotted_name(parent.func) in TEST_ONLY_CALLS)
+
+
+def _python_exposed(value: ast.AST, tainted: dict, generic: set[str], matcher: PiiMatcher):
+    """(how, labels, confidence) sent by a returned value: whole tainted records or sensitive fields."""
+    parents = {child: parent for parent in ast.walk(value) for child in ast.iter_child_nodes(parent)}
+    for node in ast.walk(value):
+        if isinstance(node, ast.Name) and node.id in tainted:
+            parent = parents.get(node)
+            if isinstance(parent, ast.Attribute) and parent.value is node:
+                if parent.attr == "__dict__" or (parent.attr in generic and isinstance(parents.get(parent), ast.Call)):
+                    return tainted[node.id]
+                if (label := _sensitive(parent.attr, matcher)) and not _masked(parent, parents):
+                    return f"{node.id}.{parent.attr}", [label], "high"
+                continue
+            if isinstance(parent, ast.Subscript) and parent.value is node:
+                key = string_key(parent.slice)
+                if key and (label := _sensitive(key, matcher)) and not _masked(parent, parents):
+                    return f'{node.id}["{key}"]', [label], "high"
+                continue
+            if _only_tested(node, parents):
+                continue
+            return tainted[node.id]  # the record itself: jsonify(dict(row)), return user, [dict(r) for r in rows]
+    return None
+
+
+def _filtered_by_fastapi(route: Route) -> bool:
+    func = route.node
+    if func.returns is not None and dotted_name(func.returns) not in {"dict", "Any", "list", ""}:
+        return True
+    return any(isinstance(d, ast.Call) and any(k.arg == "response_model" for k in d.keywords)
+               for d in func.decorator_list)
+
+
+def _python_excessive(project: Project, records: _Records, matcher: PiiMatcher) -> list[Hit]:
+    generic = _generic_methods(project)
+    hits = []
+    for route in find_routes(project):
+        if route.language != "python" or _filtered_by_fastapi(route):
+            continue
+        tainted: dict[str, tuple[str, list[str], str]] = {}
+        for node in ast.walk(route.node):
+            if isinstance(node, ast.Assign):
+                source = _python_source(node.value, records, matcher)
+                if source is None:  # row = cur.fetchone() with cur already tainted
+                    names = [n.id for n in ast.walk(node.value) if isinstance(n, ast.Name) and n.id in tainted]
+                    source = tainted[names[0]] if names else None
+                if source:
+                    for target in node.targets:
+                        for name in ast.walk(target):
+                            if isinstance(name, ast.Name):
+                                tainted[name.id] = source
+            elif isinstance(node, ast.For) and isinstance(node.target, ast.Name):
+                names = [n.id for n in ast.walk(node.iter) if isinstance(n, ast.Name) and n.id in tainted]
+                if names:
+                    tainted[node.target.id] = tainted[names[0]]
+        lines = project.read_text(route.file).splitlines()
+        for node in ast.walk(route.node):
+            if not (isinstance(node, ast.Return) and node.value is not None):
+                continue
+            exposed = _python_exposed(node.value, tainted, generic, matcher)
+            if exposed is None and (direct := _python_source(node.value, records, matcher)) \
+                    and any(isinstance(c, ast.Call) and dotted_name(c.func).split(".")[-1] in WHOLE_CALLS | {"jsonify"}
+                            for c in ast.walk(node.value)):
+                exposed = direct  # return jsonify(dict(db.execute("SELECT * ...").fetchone()))
+            if exposed:
+                how, labels, confidence = exposed
+                hits.append(Hit(rule_id=SEC_006, file=route.file, line=node.lineno, pii=labels, confidence=confidence,
+                                evidence=f"{lines[node.lineno - 1].strip()}  [{route.describe()} sends {how} with "
+                                         f"{', '.join(labels)}; return only the fields the client needs]"))
+    return hits
+
+
+def _drf_all_fields(project: Project, records: _Records) -> list[Hit]:
+    hits = []
+    for rel, tree in python_trees(project):
+        for cls in (n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)):
+            if not any("ModelSerializer" in dotted_name(b) for b in cls.bases):
+                continue
+            meta = next((b for b in cls.body if isinstance(b, ast.ClassDef) and b.name == "Meta"), None)
+            fields = model = None
+            for stmt in meta.body if meta else []:
+                if isinstance(stmt, ast.Assign) and isinstance(stmt.targets[0], ast.Name):
+                    if stmt.targets[0].id == "model":
+                        model = dotted_name(stmt.value)
+                    elif stmt.targets[0].id == "fields" and string_key(stmt.value) == "__all__":
+                        fields = stmt
+            if fields and model and (record := records.get(model.split(".")[-1])):
+                line = project.read_text(rel).splitlines()[fields.lineno - 1].strip()
+                hits.append(Hit(rule_id=SEC_006, file=rel, line=fields.lineno, pii=record[1], confidence="high",
+                                evidence=f"{line}  [{cls.name} serialises every field of {record[0]}, including "
+                                         f"{', '.join(record[1])}; list the fields the client needs]"))
+    return hits
+
+
+def _js_finder(node: Node, records: _Records, hidden: set[str]) -> tuple[str, list[str]] | None:
+    """User.findByPk(id) without `attributes` -> ("User.findByPk()", labels)."""
+    for call in walk(node):
+        if call.type != "call_expression":
+            continue
+        called = callee(call)
+        parts = called.split(".")
+        if len(parts) < 2 or parts[-1] not in SEQUELIZE_FINDERS or (record := records.get(parts[-2])) is None:
+            continue
+        if record[2] in hidden or any("attributes" in text(a) for a in arguments(call)):
+            continue
+        return f"{called}()", record[1]
+    return None
+
+
+def _js_excessive(project: Project, records: _Records) -> list[Hit]:
+    hidden = {f for _, _, f in records.by_name.values() if HIDES_FIELDS.search(project.read_text(f))}
+    hits = []
+    for route in find_routes(project):
+        if route.language != "js":
+            continue
+        handler_file, handler = resolve_js_handler(project, route)
+        if handler is None:
+            continue
+        tainted: dict[str, tuple[str, list[str]]] = {}
+        lines = project.read_text(handler_file).splitlines()
+        for node in walk(handler):
+            if node.type == "variable_declarator" and (value := node.child_by_field_name("value")) is not None:
+                if source := _js_finder(value, records, hidden):
+                    for name in _js_names(node.child_by_field_name("name")):
+                        tainted[name] = source
+            elif node.type == "call_expression" and callee(node).endswith(".then"):
+                function = node.child_by_field_name("function")
+                args = arguments(node)
+                source = _js_finder(function.child_by_field_name("object"), records, hidden)
+                if source and args and args[0].type in FUNCTION_TYPES:
+                    params = args[0].child_by_field_name("parameters") or args[0].child_by_field_name("parameter")
+                    for name in _js_names(params):
+                        tainted[name] = source
+            elif node.type == "call_expression" and _JS_SEND.match(callee(node)):
+                exposed = None
+                for arg in arguments(node):
+                    exposed = exposed or _js_finder(arg, records, hidden)  # res.json(await User.findAll())
+                    for sub in walk(arg):
+                        if exposed:
+                            break
+                        if sub.type in {"identifier", "shorthand_property_identifier"} and text(sub) in tainted:
+                            parent = sub.parent
+                            if parent is not None and parent.type == "member_expression" \
+                                    and parent.child_by_field_name("object") == sub:
+                                continue  # user.email: one field, judged below
+                            exposed = tainted[text(sub)]
+                        elif sub.type == "property_identifier" and sub.parent is not None \
+                                and sub.parent.type == "member_expression" \
+                                and text(sub.parent.child_by_field_name("object")) in tainted \
+                                and (label := _sensitive(text(sub), default_matcher())):
+                            exposed = (text(sub.parent), [label])
+                if exposed:
+                    line = line_of(node)
+                    hits.append(Hit(rule_id=SEC_006, file=handler_file, line=line, pii=exposed[1], confidence="high",
+                                    evidence=f"{lines[line - 1].strip()}  [{route.describe()} sends {exposed[0]} "
+                                             f"with {', '.join(exposed[1])}; pass `attributes` or pick the fields]"))
+    return hits
+
+
+def excessive_response_data(project: Project) -> list[Hit]:
+    matcher = default_matcher()
+    records = _Records(project, matcher)
+    if not records.by_name:
+        return []
+    found = _python_excessive(project, records, matcher) + _drf_all_fields(project, records) + _js_excessive(project, records)
+    unique = {(h.file, h.line): h for h in found}  # one handler can serve several routes
+    return sorted(unique.values(), key=lambda h: (h.file, h.line))

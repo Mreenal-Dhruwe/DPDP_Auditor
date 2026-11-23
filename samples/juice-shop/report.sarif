@@ -823,7 +823,7 @@
       "invocations": [
         {
           "executionSuccessful": true,
-          "endTimeUtc": "2026-11-23T15:38:02.938055+00:00"
+          "endTimeUtc": "2026-11-23T19:41:19.115946+00:00"
         }
       ],
       "results": [
@@ -3230,6 +3230,54 @@
           ]
         },
         {
+          "ruleId": "DPDP-SEC-006",
+          "ruleIndex": 12,
+          "level": "error",
+          "message": {
+            "text": "Excessive data in API responses (routes/changePassword.ts:56): res.json({ user }) [GET /rest/user/change-password (asyncHandler) sends UserModel.findByPk() with password; pass `attributes` or pick the fields]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "58e00318212b"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Masking and minimising exposed personal data."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Sensitive fields leak to every client, including logs and caches.",
+            "fix": "Return a response schema/serializer with only the needed fields; mask identifiers."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "routes/changePassword.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 56,
+                  "snippet": {
+                    "text": "res.json({ user }) [GET /rest/user/change-password (asyncHandler) sends UserModel.findByPk() with password; pass `attributes` or pick the fields]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
           "ruleId": "DPDP-SEC-003",
           "ruleIndex": 9,
           "level": "error",
@@ -3395,11 +3443,13 @@
             "DPDP-SEC-003",
             "DPDP-SEC-004",
             "DPDP-SEC-005",
+            "DPDP-SEC-006",
             "DPDP-SEC-008",
             "DPDP-TP-001",
             "DPDP-RET-001",
             "DPDP-RET-002",
-            "DPDP-CH-001"
+            "DPDP-CH-001",
+            "DPDP-CH-002"
           ],
           "rules_not_checked": [
             "DPDP-NOT-001",
@@ -3407,14 +3457,12 @@
             "DPDP-CON-004",
             "DPDP-CON-005",
             "DPDP-CON-006",
-            "DPDP-SEC-006",
             "DPDP-SEC-007",
             "DPDP-SEC-009",
             "DPDP-SEC-010",
             "DPDP-TP-002",
             "DPDP-BR-001",
             "DPDP-RET-003",
-            "DPDP-CH-002",
             "DPDP-RT-001",
             "DPDP-RT-002",
             "DPDP-RT-003"

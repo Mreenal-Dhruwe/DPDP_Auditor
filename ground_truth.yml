@@ -123,6 +123,14 @@ planted:
     clue: pattern
     note: Google Analytics loads for every visitor of the sign-up page, which asks for the date of birth; nothing limits tracking to adults (s.9(3)).
 
+  - id: GT-13
+    rule_id: DPDP-SEC-006
+    file: app.py
+    line: 199
+    anchor: "return jsonify(dict(row))"
+    clue: structure
+    note: GET /api/kyc/<id> sends the whole users row (SELECT *), including aadhaar and password_hash. It requires login; the missing ownership check is not judged here.
+
 compliant:
   - rule_id: DPDP-NOT-001
     note: signup.html shows an itemised notice (each data field and the purpose) above the form.
@@ -143,7 +151,7 @@ compliant:
   - rule_id: DPDP-SEC-005
     note: /api/me, /consent and /grievance require login (login_required).
   - rule_id: DPDP-SEC-006
-    note: API responses select named columns; password_hash and aadhaar are never returned.
+    note: /api/me and /api/users/<id> select named columns without password_hash or aadhaar; login() reads password_hash but never returns it. The exception is GT-13.
   - rule_id: DPDP-SEC-007
     note: Every route that reads or changes personal data calls audit().
   - rule_id: DPDP-CH-002

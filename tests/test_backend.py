@@ -66,9 +66,9 @@ def test_zip_upload_scan_and_downloads(client, settings):
     status = client.get(f"/api/scan/{scan_id}").json()  # TestClient runs background tasks before returning
     assert (status["status"], status["step"], status["target"]) == ("done", "done", "target_app")
     assert status["steps"] == ["queued", "unpacking", "scanning", "writing reports", "done"]
-    assert status["summary"]["total"] == 12
+    assert status["summary"]["total"] == 13
     report = client.get(f"/api/scan/{scan_id}/findings").json()
-    assert report["target"] == "target_app" and len(report["findings"]) == 12
+    assert report["target"] == "target_app" and len(report["findings"]) == 13
     assert all(f["file"] is None or f["file"].startswith("target_app/") for f in report["findings"])
     for fmt in ("json", "html", "sarif"):
         download = client.get(f"/api/scan/{scan_id}/report.{fmt}")
@@ -118,7 +118,7 @@ def test_git_scan(client, monkeypatch):
     response = client.post("/api/scan", json={"git_url": "https://github.com/acme/shop-api.git"})
     status = client.get(f"/api/scan/{response.json()['scan_id']}").json()
     assert (status["status"], status["target"], status["source"]) == ("done", "shop-api", "git")
-    assert status["steps"][1] == "cloning" and status["summary"]["total"] == 7
+    assert status["steps"][1] == "cloning" and status["summary"]["total"] == 10
 
 
 def test_unknown_unfinished_and_expired_scans(client, settings):

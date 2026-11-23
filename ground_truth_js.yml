@@ -67,6 +67,30 @@ planted:
     clue: structure
     note: Handler imported from routes/customers.ts (via require and a wrapper) returns email and phone with no auth.
 
+  - id: JS-08
+    rule_id: DPDP-SEC-006
+    file: server.ts
+    line: 33
+    anchor: "res.json(user)"
+    clue: structure
+    note: The whole User record (PAN and the password hash) from User.findByPk is sent to the client.
+
+  - id: JS-09
+    rule_id: DPDP-SEC-006
+    file: server.ts
+    line: 42
+    anchor: "res.json(await User.findAll())"
+    clue: structure
+    note: Every User record with PAN and password hash is sent; admin-only, but the fields are still not needed.
+
+  - id: JS-10
+    rule_id: DPDP-SEC-006
+    file: routes/customers.ts
+    line: 13
+    anchor: "res.json(await User.findAll())"
+    clue: structure
+    note: Same in a handler defined in routes/customers.ts and wired in server.ts.
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -78,6 +102,8 @@ compliant:
     note: logger.info logs only the internal user id.
   - rule_id: DPDP-SEC-005
     note: GET /api/me uses requireAuth; GET /admin/users and /admin/customers (handler in routes/customers.ts) are guarded by app.use('/admin', requireAuth).
+  - rule_id: DPDP-SEC-006
+    note: GET /api/me (server.ts:38) and getCustomer (routes/customers.ts:8) pick email and phone from the User record.
 
 out_of_scope:
   - {rule_id: DPDP-NOT-001, note: Not judged by the JS fixture app; see target_app.}
@@ -87,7 +113,6 @@ out_of_scope:
   - {rule_id: DPDP-CON-005, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CON-006, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-003, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-SEC-006, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-007, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-008, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-009, note: Not judged by the JS fixture app; see target_app.}

@@ -140,13 +140,15 @@ scanner/
   detectors/        # consent, logs, storage, access, retention, thirdparty, children,
                     # rights, config_files, hardcoded_secrets; shared helpers routes.py,
                     # source.py, schemas.py, pii_refs.py, javascript.py (tree-sitter).
-                    # Rule ownership + status in __init__.py. Done (13): CON-001, CON-002,
-                    # SEC-001..005, SEC-008, TP-001, RET-001, RET-002, CH-001, CH-002.
+                    # Rule ownership + status in __init__.py. Done (14): CON-001, CON-002,
+                    # SEC-001..006, SEC-008, TP-001, RET-001, RET-002, CH-001, CH-002.
+                    # SEC-006 also for Express + Sequelize (whole records sent with res.json).
                     # JS/TS (Express + Sequelize): SEC-001, SEC-005, CON-001 (routes),
                     # SEC-002 + RET-001 (Sequelize models), SEC-003 (createHash/md5 incl.
                     # hash helpers called with passwords), SEC-004 (text). Express handlers
                     # are resolved across files (ES import, require, ns.fn(), factories,
-                    # wrappers like asyncHandler(fn())): 100/163 Juice Shop routes.
+                    # wrappers like utils.asyncHandler(fn()), recognised because they call their
+                    # parameter): 100 Juice Shop handlers.
                     # Known limits: no ownership (IDOR-behind-login) check; data reshaped
                     # via .map()/spread (...user.dataValues) is not traced; handlers from
                     # packages and generated endpoints (finale-rest) are invisible;
