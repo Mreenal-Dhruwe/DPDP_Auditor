@@ -201,7 +201,8 @@ requirements.txt
 Dockerfile          # Phase 2: node:22-slim builds frontend/dist; python:3.13-slim runtime with
                     # Pango + harfbuzz-subset + DejaVu fonts (PDF) and git (clones); non-root
                     # user 10001; code read-only, writable /data (UPLOAD_DIR, REPORT_DIR); PORT
-                    # env (default 8000). Test: npm run e2e -- --pdf with BASE_URL on the container
+                    # env (default 8000); image about 560 MB. Verified on Docker Desktop 4.100:
+                    # npm run e2e -- --pdf --git with BASE_URL=http://localhost:8000 passes
 .dockerignore       # keeps .git, .env, node_modules, uploads and reports out of the build
 ```
 

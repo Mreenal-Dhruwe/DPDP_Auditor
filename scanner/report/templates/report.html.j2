@@ -58,7 +58,9 @@
   footer strong { color: var(--ink); }
   details summary { cursor: pointer; color: var(--accent); }
   @media (max-width: 560px) { dl { grid-template-columns: 1fr; } dt { margin-top: 6px; } }
-  @media print { nav { display: none; } .page { padding: 0; } h2 { break-after: avoid; } a { color: inherit; } }
+  @media print { nav { display: none; } .page { padding: 0; } h2 { break-after: avoid; } a { color: inherit; }
+    /* WeasyPrint (PDF) has no grid auto-fit: fixed columns instead */
+    .tiles { grid-template-columns: repeat(6, 1fr); } .cols { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
