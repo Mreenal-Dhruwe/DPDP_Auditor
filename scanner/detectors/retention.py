@@ -12,7 +12,9 @@ files: a DELETE in a seed or migration file is not a user-erasure path):
 - a function whose name mentions anonymise / anonymize / purge / erase / forget in a file
   that mentions the table or model
 One finding per table, at its definition. Confidence is medium: erasure may also happen
-outside this repository (a database job, another service).
+outside this repository (a database job, another service). It drops to low when the project
+uses a library that generates REST endpoints from models (finale-rest, epilogue,
+json-server, DRF ModelViewSet ...): those can include DELETE routes that are not in the code.
 """
 
 import ast
@@ -34,6 +36,16 @@ LOG_TABLE_WORDS = {"log", "logs", "audit", "history", "event", "events", "activi
 SOFT_DELETE_MARKERS = re.compile(r"deleted_at|is_deleted|soft_delete|deactivated|scheduled_for_deletion|"
                                  r"erase_after|retention|anonymi[sz]e_after", re.IGNORECASE)
 _DELETE_SQL = re.compile(r"\bdelete\s+from\s+[`\"\[]?(?:\w+\.)?(\w+)", re.IGNORECASE)
+# Libraries that generate REST endpoints (often including DELETE) from models.
+# package / requirement name -> name shown in the evidence
+REST_GENERATOR_PACKAGES = {
+    "finale-rest": "finale-rest", "epilogue": "epilogue", "json-server": "json-server",
+    "@nestjsx/crud": "NestJS CRUD", "@dataui/crud": "NestJS CRUD", "@loopback/rest-crud": "LoopBack",
+    "loopback": "LoopBack", "feathers-sequelize": "Feathers", "sails": "Sails blueprints",
+    "flask-restless": "Flask-Restless", "flask-restless-ng": "Flask-Restless",
+    "fastapi-crudrouter": "fastapi-crudrouter", "fastapi-crud": "fastapi-crud",
+}
+REST_GENERATOR_CODE = re.compile(r"\b(finale|epilogue)\.resource\(|\bModelViewSet\b|\bCRUDRouter\(|\bAPIManager\(")
 _ERASE_FUNCTION = re.compile(r"\b(?:def|function|const|let|var)\s+\w*(?:anonymi[sz]|purge|erase|forget)\w*", re.IGNORECASE)
 
 
@@ -70,8 +82,24 @@ def _has_erase_path(table: Table, code: dict[str, tuple[str, str, bool]]) -> boo
     return False
 
 
+def generated_rest_endpoints(project: Project) -> str | None:
+    """Name of a library that generates REST endpoints from models, if the project uses one."""
+    for rel in project.files:
+        name = rel.rsplit("/", 1)[-1].lower()
+        if name == "package.json" or name.startswith("requirements") or name == "pyproject.toml":
+            text = project.read_text(rel).lower()
+            for package, shown in REST_GENERATOR_PACKAGES.items():
+                if re.search(rf"[\"'\s]{re.escape(package)}[\"'\s=<>~^!\[]", text) or text.startswith(package):
+                    return shown
+    for rel in text_files(project):
+        if (m := REST_GENERATOR_CODE.search(project.read_text(rel))) is not None:
+            return {"finale": "finale-rest", "epilogue": "epilogue"}.get(m.group(1) or "", m.group(0).rstrip("("))
+    return None
+
+
 def no_erase_path(project: Project) -> list[Hit]:
     matcher = default_matcher()
+    generator = generated_rest_endpoints(project)
     code = {}
     for rel in text_files(project):
         if suffix_of(rel) not in {".sql", ".md"}:
@@ -88,9 +116,11 @@ def no_erase_path(project: Project) -> list[Hit]:
             continue
         lines = project.read_text(table.file).splitlines()
         defined = lines[table.line - 1].strip() if table.line <= len(lines) else table.name
+        note = (f"; {generator} generates REST endpoints, so a delete path may exist outside the scanned code"
+                if generator else "")
         hits.append(Hit(
-            rule_id=RET_001, file=table.file, line=table.line, pii=labels, confidence="medium",
-            evidence=f"{defined}  [table {table.name} holds {', '.join(labels)}; no code deletes or anonymises it]",
+            rule_id=RET_001, file=table.file, line=table.line, pii=labels, confidence="low" if generator else "medium",
+            evidence=f"{defined}  [table {table.name} holds {', '.join(labels)}; no code deletes or anonymises it{note}]",
         ))
     return sorted(hits, key=lambda h: (h.file, h.line))
 
