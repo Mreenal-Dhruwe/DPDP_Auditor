@@ -138,3 +138,17 @@ def test_upload_names_become_safe_targets():
     assert jobs.safe_target("My App (v2).zip") == "My_App_v2"
     assert jobs.safe_target("..\\..\\evil.zip") == "evil"
     assert jobs.safe_target(".zip") == "upload"
+
+
+def test_serves_the_built_frontend_with_client_side_routes(settings, tmp_path):
+    dist = tmp_path / "dist"
+    (dist / "assets").mkdir(parents=True)
+    (dist / "index.html").write_text("<div id=root></div>", encoding="utf-8")
+    (dist / "assets" / "app.js").write_text("console.log(1)", encoding="utf-8")
+    client = TestClient(create_app(settings, frontend_dist=dist))
+    assert client.get("/").text == "<div id=root></div>"
+    assert client.get("/scans/abc/findings/123").text == "<div id=root></div>"  # react-router route
+    assert client.get("/assets/app.js").text == "console.log(1)"
+    assert client.get("/assets/missing.js").status_code == 404  # a missing asset is not the app
+    assert client.get("/api/nope").status_code == 404
+    assert client.get("/api/health").json()["status"] == "ok"

@@ -5,7 +5,6 @@
 //   report is src/mock/report.json.
 // - the scan id "sample" always shows that mock report, in any mode: an offline demo.
 
-import mockReport from "./mock/report.json";
 import type { Report, ScanStarted, ScanStatus } from "./types/contract";
 
 export const MOCK_MODE = import.meta.env.VITE_API_MODE === "mock";
@@ -13,7 +12,8 @@ export const SAMPLE_ID = "sample";
 export const EXPORT_FORMATS = ["html", "pdf", "sarif", "json"] as const;
 export type ExportFormat = (typeof EXPORT_FORMATS)[number];
 
-const SAMPLE = mockReport as Report;
+/** The sample report, loaded only when needed (it is a separate chunk of the build). */
+const loadSample = () => import("./mock/report.json").then((m) => m.default as Report);
 
 export class ApiError extends Error {
   readonly status: number;
@@ -64,7 +64,7 @@ export function startGitScan(gitUrl: string): Promise<ScanStarted> {
 }
 
 export function getScanStatus(scanId: string): Promise<ScanStatus> {
-  if (MOCK_MODE || scanId === SAMPLE_ID) return Promise.resolve(mockStatus(scanId));
+  if (MOCK_MODE || scanId === SAMPLE_ID) return loadSample().then((sample) => mockStatus(scanId, sample));
   return request<ScanStatus>(`/api/scan/${encodeURIComponent(scanId)}`);
 }
 
@@ -73,7 +73,7 @@ export function getScanStatus(scanId: string): Promise<ScanStatus> {
 const reports = new Map<string, Promise<Report>>(); // a finished report never changes
 
 export function getReport(scanId: string): Promise<Report> {
-  if (MOCK_MODE || scanId === SAMPLE_ID) return Promise.resolve(SAMPLE);
+  if (MOCK_MODE || scanId === SAMPLE_ID) return loadSample();
   let pending = reports.get(scanId);
   if (!pending) {
     pending = request<Report>(`/api/scan/${encodeURIComponent(scanId)}/findings`);
@@ -94,7 +94,7 @@ export async function downloadReport(scanId: string, format: ExportFormat, targe
   const fallbackName = `dpdp-report-${target}.${format}`;
   if (MOCK_MODE || scanId === SAMPLE_ID) {
     if (format !== "json") throw new ApiError(0, "Run a real scan to export this format.");
-    saveBlob(new Blob([JSON.stringify(SAMPLE, null, 2)], { type: "application/json" }), fallbackName);
+    saveBlob(new Blob([JSON.stringify(await loadSample(), null, 2)], { type: "application/json" }), fallbackName);
     return;
   }
   let response: Response;
@@ -129,8 +129,8 @@ function mockStart(target: string, source: "zip" | "git"): Promise<ScanStarted> 
   return new Promise((resolve) => setTimeout(() => resolve({ scan_id: scanId }), 300));
 }
 
-function mockStatus(scanId: string): ScanStatus {
-  const scan = mockScans.get(scanId) ?? { target: SAMPLE.target, source: "zip" as const, started: 0 };
+function mockStatus(scanId: string, sample: Report): ScanStatus {
+  const scan = mockScans.get(scanId) ?? { target: sample.target, source: "zip" as const, started: 0 };
   const steps = MOCK_STEPS[scan.source];
   const index = Math.min(steps.length - 1, Math.floor((Date.now() - scan.started) / STEP_MS));
   const done = index === steps.length - 1;
@@ -144,7 +144,7 @@ function mockStatus(scanId: string): ScanStatus {
     created_at: new Date(scan.started || Date.now()).toISOString(),
     finished_at: done ? new Date().toISOString() : null,
     error: null,
-    summary: done ? SAMPLE.summary : null,
+    summary: done ? sample.summary : null,
   };
 }
 

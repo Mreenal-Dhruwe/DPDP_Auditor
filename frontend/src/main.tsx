@@ -1,12 +1,16 @@
-import { StrictMode } from "react";
+import { lazy, StrictMode, Suspense, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, Link } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { Layout } from "./components/Layout";
-import { Dashboard } from "./pages/Dashboard";
-import { FindingDetail } from "./pages/FindingDetail";
+import { Loading } from "./components/States";
 import { ScanProgress, Upload } from "./pages/Upload";
 import "./index.css";
+
+// The report screens (and Recharts) load on demand, so the upload page stays small.
+const Dashboard = lazy(() => import("./pages/Dashboard").then((m) => ({ default: m.Dashboard })));
+const FindingDetail = lazy(() => import("./pages/FindingDetail").then((m) => ({ default: m.FindingDetail })));
+const page = (element: ReactNode) => <Suspense fallback={<Loading />}>{element}</Suspense>;
 
 const router = createBrowserRouter([
   {
@@ -14,8 +18,8 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <Upload /> },
       { path: "/scans/:scanId/progress", element: <ScanProgress /> },
-      { path: "/scans/:scanId", element: <Dashboard /> },
-      { path: "/scans/:scanId/findings/:findingId", element: <FindingDetail /> },
+      { path: "/scans/:scanId", element: page(<Dashboard />) },
+      { path: "/scans/:scanId/findings/:findingId", element: page(<FindingDetail />) },
       { path: "*", element: <NotFound /> },
     ],
   },

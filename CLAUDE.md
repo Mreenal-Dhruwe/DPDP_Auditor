@@ -157,6 +157,8 @@ scanner/
   report/           # json_out.py, html_out.py (Jinja2, self-contained), pdf_out.py
                     # (WeasyPrint), sarif_out.py (validated against SARIF 2.1.0 schema)
 scripts/make_mock_report.py  # writes frontend/src/mock/report.json from the real models
+scripts/make_ts_types.py     # writes frontend/src/types/contract.ts from the Pydantic models
+                             # (Report, Finding, ScanStatus); a test fails when it is stale
 rules/dpdp_rules.yml
 rules/build_preview.py
 target_app/         # deliberately vulnerable Flask app with ~30 planted issues
@@ -168,18 +170,29 @@ ground_truth_js.yml # its answer key; out_of_scope lists rules it does not judge
 tests/              # pytest: each rule has a vulnerable and a fixed fixture
 backend/
   main.py           # FastAPI app (create_app(settings)), /api routes, serves frontend/dist
-                    # in production. Done: all endpoints; PDF -> 501 when WeasyPrint's Pango
+                    # in production with an SPA fallback (client routes like /scans/<id> get
+                    # index.html; /api/* and missing assets stay 404). Done: all endpoints; PDF -> 501 when WeasyPrint's Pango
                     # libraries are missing (Windows); Docker needs apt libpango-1.0-0
                     # libpangoft2-1.0-0 for PDF
-  jobs.py           # in-memory scan jobs + BackgroundTasks; per-job temp folder always
+  jobs.py           # in-memory scan jobs + BackgroundTasks; ScanStatus model (a failed scan
+                    # keeps the step it failed at); per-job temp folder always
                     # deleted (ingest.remove_tree also clears read-only git files); reports in
                     # REPORT_DIR/<scan_id>/ expire after REPORT_TTL_DAYS. Git ingest: https on
                     # ALLOWED_GIT_HOSTS only, shallow clone via the git CLI (no GitPython)
-frontend/           # React + Vite + TypeScript + Tailwind
-  src/pages/        # Upload.tsx, Dashboard.tsx, FindingDetail.tsx
-  src/components/   # SeverityBadge, LawCard, CodeViewer, FindingsTable, StatTiles
-  src/api.ts        # typed calls to /api; types mirror the Finding contract
-  vite.config.ts    # proxy /api -> http://localhost:8000
+frontend/           # React 19 + Vite 8 + TypeScript 7 + Tailwind 4 + react-router 8 + Recharts 3
+  src/pages/        # Upload.tsx (upload + ScanProgress), Dashboard.tsx, FindingDetail.tsx
+                    # routes: / , /scans/:id/progress , /scans/:id , /scans/:id/findings/:fid
+                    # dashboard filters live in the URL (?sev=&rule=&prov=&conf=&q=)
+  src/components/   # SeverityBadge, StatTiles, ProvisionChart, CoverageBox, FindingsTable,
+                    # CodeViewer, LawCard, ExportButtons, ReportError, States, Layout
+  src/types/contract.ts  # GENERATED (scripts/make_ts_types.py) - never edit by hand
+  src/api.ts        # typed calls to /api. `npm run dev:mock` (.env.mock) simulates scans with
+                    # the mock report; scan id "sample" always shows it (offline demo)
+  src/index.css     # design tokens (light + dark); severity colours always next to a label
+  e2e/smoke.mjs     # `npm run e2e [-- --git]`: headless Chrome (playwright-core, local Chrome/
+                    # Edge) drives upload -> progress -> dashboard -> detail -> exports against
+                    # the live API; BASE_URL=http://localhost:8000 tests the production build
+  vite.config.ts    # proxy /api -> http://localhost:8000 (API_URL overrides)
 requirements.txt
 .env.example
 Dockerfile          # added in Phase 2
@@ -195,7 +208,8 @@ Dockerfile          # added in Phase 2
 
 ### Phase 2 — Package in Docker, still local (around hours 24–30)
 - Write a multi-stage Dockerfile:
-  1. `node:20-slim` stage builds the frontend (`npm ci && npm run build` -> frontend/dist).
+  1. `node:22-slim` stage builds the frontend (`npm ci && npm run build` -> frontend/dist);
+     Node 22.22+ is required by react-router 8 (node:20 fails).
   2. `python:3.13-slim` stage installs requirements, copies the code and frontend/dist,
      runs as a non-root user, exposes 8000, starts
      `uvicorn backend.main:app --host 0.0.0.0 --port 8000`.

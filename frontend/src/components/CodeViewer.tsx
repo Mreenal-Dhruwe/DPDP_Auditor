@@ -33,7 +33,8 @@ export function CodeViewer({ finding }: { finding: Finding }) {
           lines {context.start_line}–{last}
         </span>
       </figcaption>
-      <div className="overflow-x-auto rounded-lg border border-line bg-code-bg">
+      {/* relative: keeps the screen-reader text (absolutely positioned) inside the scroll box */}
+      <div className="relative overflow-x-auto rounded-lg border border-line bg-code-bg">
         <pre className="min-w-full py-2 font-mono text-[13px] leading-6">
           {context.lines.map((text, i) => {
             const number = context.start_line + i;

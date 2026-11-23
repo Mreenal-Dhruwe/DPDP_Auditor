@@ -4,11 +4,11 @@ import { Link, useParams, useSearchParams } from "react-router";
 import { CodeViewer } from "../components/CodeViewer";
 import { ExportButtons } from "../components/ExportButtons";
 import { LawCard } from "../components/LawCard";
+import { ReportError } from "../components/ReportError";
 import { ConfidenceTag, SeverityBadge } from "../components/SeverityBadge";
 import { Card, ErrorBox, Loading } from "../components/States";
 import { applyFilters, describeLocation, isFiltered, readFilters } from "../lib/findings";
 import { useReport } from "../lib/useReport";
-import { ReportError } from "./Dashboard";
 
 const CONFIDENCE_TEXT = {
   high: "The detector matched a clear pattern.",

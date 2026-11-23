@@ -14,11 +14,14 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Frontend (needs Node.js 20+):
+Frontend (needs Node.js 22.22+, required by react-router 8):
 ```
 cd frontend
 npm install
 npm run dev        # http://localhost:5173
+npm run dev:mock   # same UI with a simulated API (no backend needed)
+npm run e2e        # end-to-end test against the running backend + dev server (-- --git adds Juice Shop)
+npm run build      # frontend/dist, then served by uvicorn on http://localhost:8000
 ```
 Backend:
 ```
@@ -32,6 +35,7 @@ python -m scanner.cli target_app --out report/    # scan a folder -> report/repo
 python -m scanner.evaluate                        # precision/recall on target_app vs ground_truth.yml
 python -m scanner.evaluate target_app_js --ground-truth ground_truth_js.yml   # the JS/TS target
 python -m scripts.make_mock_report                # regenerate frontend/src/mock/report.json
+python -m scripts.make_ts_types                   # regenerate frontend/src/types/contract.ts
 python -m pytest                                  # all tests
 ```
 `target_app/` is the deliberately vulnerable demo app; `ground_truth.yml` is its answer key.

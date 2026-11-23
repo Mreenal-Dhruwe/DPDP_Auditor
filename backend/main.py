@@ -10,7 +10,8 @@ Endpoints:
     GET  /api/scan/{scan_id}/report.{fmt}       download: json, html, sarif, pdf (501 without Pango)
     GET  /api/rules                             the rule catalogue (+ which rules have detectors)
     GET  /api/health
-In production (frontend/dist exists) it also serves the built React app from "/".
+In production (frontend/dist exists) it also serves the built React app from "/"; client-side
+routes such as /scans/<id> get index.html, so reloading or sharing those links works.
 
 Upload safety: size checked from Content-Length and again while saving (MAX_UPLOAD_MB),
 .zip only, unpacked by scanner.ingest.safe_unzip in a temp folder that is deleted after
@@ -26,6 +27,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from starlette.datastructures import UploadFile
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from backend.jobs import Job, JobStore, run_scan, safe_target
 from scanner import __version__
@@ -43,7 +45,22 @@ DOWNLOADS = {
 }
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+class SpaFiles(StaticFiles):
+    """The built React app. A path that is not a file and has no extension (a react-router
+    route like /scans/<id>) gets index.html; unknown /api/... paths and missing assets stay 404."""
+
+    async def get_response(self, path: str, scope):
+        try:
+            return await super().get_response(path, scope)
+        except StarletteHTTPException as exc:
+            route = path.replace("\\", "/")  # Starlette gives an OS path: api\nope on Windows
+            last = route.rsplit("/", 1)[-1]
+            if exc.status_code != 404 or route == "api" or route.startswith("api/") or "." in last:
+                raise
+            return await super().get_response("index.html", scope)
+
+
+def create_app(settings: Settings | None = None, frontend_dist: Path | None = None) -> FastAPI:
     settings = settings or get_settings()
     catalogue = load_rules(settings.rules_file)
     store = JobStore()
@@ -151,9 +168,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         name, media_type = DOWNLOADS[fmt]
         return FileResponse(job.report_dir / name, media_type=media_type, filename=filename)
 
-    dist = PROJECT_ROOT / "frontend" / "dist"
+    dist = frontend_dist or PROJECT_ROOT / "frontend" / "dist"
     if dist.is_dir():  # production: one server for the UI and the API
-        app.mount("/", StaticFiles(directory=dist, html=True), name="frontend")
+        app.mount("/", SpaFiles(directory=dist, html=True), name="frontend")
     return app
 
 
