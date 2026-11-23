@@ -43,6 +43,16 @@ def test_javascript_age_gate(tmp_path):
     assert (hit.file, hit.line, hit.confidence) == ("tracking.ts", 2, "medium")
 
 
+def test_node_server_sdks(tmp_path):
+    (tmp_path / "signup.html").write_text('<form><input name="dob" type="date"></form>\n', encoding="utf-8")
+    (tmp_path / "track.ts").write_text(
+        "import Mixpanel from 'mixpanel'\nimport { PostHog } from 'posthog-node'\n"
+        "export const mp = Mixpanel.init(process.env.MP_TOKEN)\nexport const ph = new PostHog(process.env.PH_KEY)\n",
+        encoding="utf-8")
+    assert [(h.line, h.evidence.split("[")[1].split(" runs")[0]) for h in scan(tmp_path)] == [
+        (3, "Mixpanel"), (4, "PostHog")]
+
+
 def test_error_monitoring_is_not_tracking(tmp_path):
     (tmp_path / "app.py").write_text(
         "import sentry_sdk\n\ndef signup(form):\n    age = form['age']\n"
