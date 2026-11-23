@@ -147,3 +147,20 @@ function mockStatus(scanId: string): ScanStatus {
     summary: done ? SAMPLE.summary : null,
   };
 }
+
+// --- rule catalogue (titles for rule ids; optional) --------------------------------------
+
+let ruleTitles: Promise<Record<string, string>> | null = null;
+
+/** {rule id: title} from GET /api/rules, or {} when there is no backend (mock mode). */
+export function getRuleTitles(): Promise<Record<string, string>> {
+  if (MOCK_MODE) return Promise.resolve({});
+  ruleTitles ??= request<{ rules: { id: string; title: string }[] }>("/api/rules").then(
+    (body) => Object.fromEntries(body.rules.map((r) => [r.id, r.title])),
+    () => {
+      ruleTitles = null;
+      return {};
+    },
+  );
+  return ruleTitles;
+}

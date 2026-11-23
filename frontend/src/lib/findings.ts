@@ -50,7 +50,7 @@ export function writeFilters(filters: Filters): URLSearchParams {
   if (filters.rule) params.set("rule", filters.rule);
   if (filters.provision) params.set("prov", filters.provision);
   if (filters.confidence) params.set("conf", filters.confidence);
-  if (filters.query.trim()) params.set("q", filters.query.trim());
+  if (filters.query.trim()) params.set("q", filters.query); // untrimmed: the user may still be typing
   return params;
 }
 
