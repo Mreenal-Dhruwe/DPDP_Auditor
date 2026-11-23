@@ -1,0 +1,485 @@
+# DPDP Compliance Auditor - Rule Catalogue
+# Hackasol 5.0 | Track 3 Cybersecurity | CS-01
+#
+# Each rule turns one obligation from the DPDP Act, 2023 or the DPDP Rules, 2025
+# into a pattern the scanner can look for in code or configuration.
+# Legal mapping is indicative, not legal advice.
+
+meta:
+  version: "0.1.0"
+  sources:
+    act: "Digital Personal Data Protection Act, 2023 (Act No. 22 of 2023) - India Code"
+    rules: "Digital Personal Data Protection Rules, 2025 - G.S.R. 846(E), Gazette of India, 13 Nov 2025"
+  commencement:
+    rules_1_2_17_to_21: "13 Nov 2025"
+    rule_4_consent_manager: "13 Nov 2026"
+    rules_3_5_to_16_22_23: "13 May 2027"
+  disclaimer: "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes."
+
+# Penalty caps from the Schedule to the Act (section 33). Used to anchor severity.
+penalty_caps:
+  P1: { schedule_item: 1, provision: "s.8(5) security safeguards", cap: "Rs 250 crore" }
+  P2: { schedule_item: 2, provision: "s.8(6) breach intimation", cap: "Rs 200 crore" }
+  P3: { schedule_item: 3, provision: "s.9 children", cap: "Rs 200 crore" }
+  P4: { schedule_item: 4, provision: "s.10 Significant Data Fiduciary", cap: "Rs 150 crore" }
+  P7: { schedule_item: 7, provision: "any other provision of the Act or Rules", cap: "Rs 50 crore" }
+
+# Severity = sensitivity x exposure x exploitability, adjusted by penalty cap.
+severity_model:
+  critical: "Penalty cap >= Rs 200 crore AND directly exploitable or exposed (e.g. PII reachable without auth)"
+  high: "Penalty cap >= Rs 200 crore but not directly exploitable, OR Rs 50 crore cap with clear user impact"
+  medium: "Rs 50 crore cap, partial control present or impact limited"
+  low: "Weak signal, needs manual review, or best-practice gap"
+  info: "Not a violation by itself; flag for verification"
+
+# Personal-data detectors shared by many rules
+personal_data:
+  identifiers:
+    - { name: aadhaar, pattern: '\b[2-9]\d{3}\s?\d{4}\s?\d{4}\b', validate: verhoeff, sensitivity: high }
+    - { name: pan, pattern: '\b[A-Z]{5}\d{4}[A-Z]\b', sensitivity: high }
+    - { name: upi_id, pattern: '\b[\w.\-]{2,}@[a-zA-Z]{2,}\b', sensitivity: medium }
+    - { name: ifsc, pattern: '\b[A-Z]{4}0[A-Z0-9]{6}\b', sensitivity: medium }
+    - { name: indian_mobile, pattern: '(\+91[\-\s]?)?\b[6-9]\d{9}\b', sensitivity: medium }
+    - { name: email, pattern: '\b[\w.+\-]+@[\w\-]+\.[\w.]+\b', sensitivity: medium }
+  field_names:
+    high: [aadhaar, aadhar, pan, passport, voter_id, health, diagnosis, medical, biometric, fingerprint, password, card_number, account_number, bank_account]
+    medium: [email, phone, mobile, dob, date_of_birth, address, pincode, full_name, upi, ifsc, location, lat, lng, ip_address]
+    child_markers: [dob, date_of_birth, age, is_minor, guardian, parent_email]
+
+rules:
+
+  # ---------------- NOTICE & CONSENT ----------------
+  - id: DPDP-NOT-001
+    category: Notice
+    title: Personal data collected without a notice of data and purpose
+    detects:
+      - "Form or API that collects personal-data fields"
+      - "No nearby purpose/notice text, privacy link or notice component"
+    targets: [frontend, api]
+    law:
+      act: ["s.5(1)"]
+      rules: ["Rule 3(b)"]
+      requirement: "Notice must give an itemised description of the personal data and the specified purpose."
+    penalty: P7
+    severity: medium
+    severity_reason: "Notice is a precondition for valid consent; impact is on transparency, not direct exposure."
+    fix: "Show an itemised notice (data fields + purpose) before or with the consent request."
+
+  - id: DPDP-CON-001
+    category: Consent
+    title: Consent can be given but not withdrawn
+    detects:
+      - "Route or handler that grants consent (consent, agree, accept, opt_in)"
+      - "No route that withdraws or revokes consent (withdraw, revoke, opt_out, DELETE /consent)"
+    targets: [api]
+    law:
+      act: ["s.6(4)", "s.6(6)"]
+      rules: ["Rule 3(c)(i)"]
+      requirement: "Withdrawal must be possible at any time, with ease comparable to giving consent; processing must then stop."
+    penalty: P7
+    severity: high
+    severity_reason: "Consent is the legal basis for processing; with no withdrawal path the user cannot stop it."
+    fix: "Add DELETE /consent (or POST /consent/withdraw) that clears consent and stops downstream processing."
+
+  - id: DPDP-CON-002
+    category: Consent
+    title: Pre-ticked or default-true consent
+    detects:
+      - "Checkbox with checked/defaultChecked for consent fields"
+      - "Model field consent = True by default"
+    targets: [frontend, schema]
+    law:
+      act: ["s.6(1)"]
+      rules: []
+      requirement: "Consent must be unambiguous with a clear affirmative action."
+    penalty: P7
+    severity: high
+    severity_reason: "A default 'yes' is not an affirmative action, so consent may be invalid for all users."
+    fix: "Default consent to false and require an explicit user action."
+
+  - id: DPDP-CON-003
+    category: Consent
+    title: No evidence of consent stored
+    detects:
+      - "Consent stored only as a boolean with no timestamp, notice version or purpose"
+      - "No consent table or log at all"
+    targets: [schema]
+    law:
+      act: ["s.6(10)"]
+      rules: []
+      requirement: "The Data Fiduciary must be able to prove notice was given and consent obtained."
+    penalty: P7
+    severity: medium
+    severity_reason: "Burden of proof is on the fiduciary; without a record it cannot defend its processing."
+    fix: "Store consent records with user id, purpose, notice version, timestamp and channel."
+
+  - id: DPDP-CON-004
+    category: Consent
+    title: Personal data used without checking consent
+    detects:
+      - "Handler reads or sends personal data with no consent check on that path"
+      - "Marketing/analytics call not guarded by a consent flag"
+    targets: [api, backend]
+    law:
+      act: ["s.4(1)", "s.6(1)"]
+      rules: []
+      requirement: "Process only on consent or a legitimate use, limited to the specified purpose."
+    penalty: P7
+    severity: high
+    severity_reason: "Processing happens without the legal basis the app itself relies on."
+    fix: "Add a consent guard (middleware or decorator) before purpose-specific processing."
+
+  - id: DPDP-CON-005
+    category: Consent
+    title: Over-collection beyond the stated purpose
+    detects:
+      - "Requests for contacts, location, SMS or device permissions not used by the feature"
+      - "Form fields never read by any handler"
+    targets: [frontend, mobile]
+    law:
+      act: ["s.6(1)"]
+      rules: []
+      requirement: "Consent is limited to personal data necessary for the specified purpose."
+    penalty: P7
+    severity: medium
+    severity_reason: "Unnecessary data increases breach impact and invalidates part of the consent."
+    fix: "Remove unused fields and permissions, or tie each one to a stated purpose."
+
+  - id: DPDP-CON-006
+    category: Consent
+    title: Consent request offered in one language only
+    detects:
+      - "Consent/notice UI with hard-coded English strings and no i18n"
+    targets: [frontend]
+    law:
+      act: ["s.6(3)"]
+      rules: []
+      requirement: "Option to access the consent request in English or an Eighth Schedule language."
+    penalty: P7
+    severity: low
+    severity_reason: "Accessibility gap; static detection is a heuristic."
+    fix: "Use i18n resources for notice and consent text with at least one Indian language."
+
+  # ---------------- SECURITY SAFEGUARDS ----------------
+  - id: DPDP-SEC-001
+    category: Security
+    title: Personal data written to logs
+    detects:
+      - "logger/print/console.log calls whose arguments contain personal-data variables"
+      - "Error handlers that dump request bodies"
+    targets: [backend, api]
+    law:
+      act: ["s.8(5)"]
+      rules: ["Rule 6(1)(a)"]
+      requirement: "Secure personal data through encryption, obfuscation, masking or virtual tokens."
+    penalty: P1
+    severity: high
+    severity_reason: "Logs are widely accessible and long-lived; unmasked PII there is a common breach source."
+    fix: "Mask or tokenise PII before logging (e.g. a***@x.com, ******1234)."
+
+  - id: DPDP-SEC-002
+    category: Security
+    title: Personal data stored in plaintext
+    detects:
+      - "Schema columns for high-sensitivity fields with no encryption/tokenisation"
+    targets: [schema]
+    law:
+      act: ["s.8(5)"]
+      rules: ["Rule 6(1)(a)"]
+      requirement: "Encryption, obfuscation, masking or virtual tokens."
+    penalty: P1
+    severity: high
+    severity_reason: "A database leak exposes the data directly."
+    fix: "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+
+  - id: DPDP-SEC-003
+    category: Security
+    title: Weak password hashing
+    detects:
+      - "md5/sha1/plain sha256 used on password fields"
+    targets: [backend]
+    law:
+      act: ["s.8(5)"]
+      rules: ["Rule 6(1)(a)"]
+      requirement: "Reasonable security safeguards to prevent personal data breach."
+    penalty: P1
+    severity: high
+    severity_reason: "Fast hashes are easily cracked after a leak."
+    fix: "Use bcrypt, scrypt or argon2 with per-user salt."
+
+  - id: DPDP-SEC-004
+    category: Security
+    title: Hardcoded secrets or credentials
+    detects:
+      - "API keys, DB passwords or JWT secrets in source or committed .env"
+    targets: [backend, config]
+    law:
+      act: ["s.8(5)"]
+      rules: ["Rule 6(1)(b)"]
+      requirement: "Measures to control access to computer resources."
+    penalty: P1
+    severity: critical
+    severity_reason: "Anyone with repo access can reach the systems that hold personal data."
+    fix: "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+
+  - id: DPDP-SEC-005
+    category: Security
+    title: Personal data exposed by an unauthenticated route
+    detects:
+      - "Route returning user objects with no auth decorator or middleware"
+      - "IDOR pattern: /user/<id> without ownership check"
+    targets: [api]
+    law:
+      act: ["s.8(5)"]
+      rules: ["Rule 6(1)(b)"]
+      requirement: "Appropriate measures to control access."
+    penalty: P1
+    severity: critical
+    severity_reason: "Directly exploitable over the network by anyone."
+    fix: "Require authentication and check that the requester owns the record."
+
+  - id: DPDP-SEC-006
+    category: Security
+    title: Excessive data in API responses
+    detects:
+      - "Handler returns full user/ORM object including password hash, Aadhaar, PAN"
+    targets: [api]
+    law:
+      act: ["s.8(5)"]
+      rules: ["Rule 6(1)(a)"]
+      requirement: "Masking and minimising exposed personal data."
+    penalty: P1
+    severity: high
+    severity_reason: "Sensitive fields leak to every client, including logs and caches."
+    fix: "Return a response schema/serializer with only the needed fields; mask identifiers."
+
+  - id: DPDP-SEC-007
+    category: Security
+    title: No access logging on personal-data reads
+    detects:
+      - "Routes reading PII with no audit-log call"
+    targets: [backend]
+    law:
+      act: ["s.8(5)"]
+      rules: ["Rule 6(1)(c)"]
+      requirement: "Visibility on access to personal data through logs, monitoring and review."
+    penalty: P1
+    severity: medium
+    severity_reason: "Unauthorised access cannot be detected or investigated."
+    fix: "Write an audit event (who, what record, when) for every PII read and change."
+
+  - id: DPDP-SEC-008
+    category: Security
+    title: Insecure infrastructure configuration
+    detects:
+      - "Container runs as root; DEBUG=true; CORS '*'; TLS disabled; public storage bucket"
+    targets: [config, iac]
+    law:
+      act: ["s.8(5)"]
+      rules: ["Rule 6(1)(b)", "Rule 6(1)(g)"]
+      requirement: "Access control and appropriate technical and organisational measures."
+    penalty: P1
+    severity: high
+    severity_reason: "Raises the chance and impact of a breach of stored personal data."
+    fix: "Run as non-root, disable debug in production, restrict CORS, enforce TLS, block public buckets."
+
+  - id: DPDP-SEC-009
+    category: Security
+    title: No backup configured for personal-data stores
+    detects:
+      - "Database services in compose/IaC with no backup or snapshot setting"
+    targets: [iac]
+    law:
+      act: ["s.8(5)"]
+      rules: ["Rule 6(1)(d)"]
+      requirement: "Reasonable measures for continued processing, such as data backups."
+    penalty: P1
+    severity: low
+    severity_reason: "Backups are often configured outside the repo; needs manual check."
+    fix: "Configure automated, encrypted backups with tested restore."
+
+  - id: DPDP-SEC-010
+    category: Security
+    title: Log retention shorter than one year
+    detects:
+      - "Log rotation or TTL settings under 365 days"
+    targets: [config, iac]
+    law:
+      act: ["s.8(5)"]
+      rules: ["Rule 6(1)(e)", "Rule 8(3)"]
+      requirement: "Retain logs and personal data for one year for detecting and investigating unauthorised access."
+    penalty: P1
+    severity: medium
+    severity_reason: "Breaches discovered late cannot be investigated."
+    fix: "Retain access/processing logs for at least 365 days in protected storage."
+
+  # ---------------- THIRD PARTIES & TRANSFERS ----------------
+  - id: DPDP-TP-001
+    category: Third parties
+    title: Personal data sent to a third-party SDK
+    detects:
+      - "PII passed to analytics/monitoring SDKs (Segment, Mixpanel, Sentry, Firebase, CleverTap, GA)"
+    targets: [frontend, backend]
+    law:
+      act: ["s.8(1)", "s.8(2)"]
+      rules: ["Rule 6(1)(f)"]
+      requirement: "Fiduciary is responsible for processors, which must work under a valid contract with security terms."
+    penalty: P7
+    severity: medium
+    severity_reason: "Data leaves your control; contract status cannot be verified from code."
+    fix: "Send pseudonymous IDs instead of PII, scrub events, and confirm a DPA exists with the vendor."
+
+  - id: DPDP-TP-002
+    category: Transfers
+    title: Personal data stored or sent outside India
+    detects:
+      - "Cloud region outside India (e.g. us-east-1) for PII stores"
+      - "Outbound calls with PII to foreign endpoints"
+    targets: [iac, backend]
+    law:
+      act: ["s.16(1)"]
+      rules: ["Rule 15"]
+      requirement: "Transfers allowed unless the Government restricts a country or sets requirements by order."
+    penalty: P7
+    severity: info
+    severity_reason: "Not a violation by itself; verify against Government notifications."
+    fix: "Record transfer destinations and review them against current Government orders."
+
+  # ---------------- BREACH ----------------
+  - id: DPDP-BR-001
+    category: Breach
+    title: No breach notification mechanism
+    detects:
+      - "No incident/alert hook, no code path to notify users or the Board"
+    targets: [backend]
+    law:
+      act: ["s.8(6)"]
+      rules: ["Rule 7(1)", "Rule 7(2)"]
+      requirement: "Inform affected users without delay; send the Board a detailed report within 72 hours."
+    penalty: P2
+    severity: medium
+    severity_reason: "Process often lives outside code; absence is a signal, not proof."
+    fix: "Add an incident module that can notify affected users and generate the Board report."
+
+  # ---------------- RETENTION & ERASURE ----------------
+  - id: DPDP-RET-001
+    category: Retention
+    title: Personal data with no erase or anonymise path
+    detects:
+      - "Tables/collections holding PII with no delete, anonymise or TTL anywhere in code"
+    targets: [schema, backend]
+    law:
+      act: ["s.8(7)", "s.12(3)"]
+      rules: ["Rule 8"]
+      requirement: "Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+    penalty: P7
+    severity: high
+    severity_reason: "Data is kept indefinitely and erasure requests cannot be honoured."
+    fix: "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds."
+
+  - id: DPDP-RET-002
+    category: Retention
+    title: Immediate hard delete with no minimum retention
+    detects:
+      - "Account deletion that hard-deletes data and processing logs at once"
+    targets: [backend]
+    law:
+      act: []
+      rules: ["Rule 8(3)"]
+      requirement: "Retain personal data, traffic data and processing logs for at least one year, then erase."
+    penalty: P7
+    severity: medium
+    severity_reason: "Counter-intuitive gap: deleting too early also breaches the Rules."
+    fix: "Soft-delete and restrict access, keep processing logs for one year, then purge."
+
+  - id: DPDP-RET-003
+    category: Retention
+    title: No pre-erasure notice to the user
+    detects:
+      - "Inactivity-based erasure job with no notification step"
+    targets: [backend]
+    law:
+      act: ["s.8(8)"]
+      rules: ["Rule 8(2)"]
+      requirement: "Inform the user at least 48 hours before erasure (applies to Third Schedule classes)."
+    penalty: P7
+    severity: low
+    severity_reason: "Applies only to large e-commerce, gaming and social media fiduciaries."
+    fix: "Send a notice 48 hours before scheduled erasure."
+
+  # ---------------- CHILDREN ----------------
+  - id: DPDP-CH-001
+    category: Children
+    title: Child data collected without parental consent flow
+    detects:
+      - "DOB/age field, but no parent/guardian verification flow"
+    targets: [frontend, backend, schema]
+    law:
+      act: ["s.9(1)"]
+      rules: ["Rule 10"]
+      requirement: "Verifiable consent of the parent before processing a child's personal data."
+    penalty: P3
+    severity: high
+    severity_reason: "Rs 200 crore cap; affects a protected group."
+    fix: "Gate under-18 sign-ups behind verified parental consent (Rule 10 methods)."
+
+  - id: DPDP-CH-002
+    category: Children
+    title: Tracking or targeted ads possible for children
+    detects:
+      - "Analytics/ad SDK initialised without an age check where DOB/age is collected"
+    targets: [frontend, mobile]
+    law:
+      act: ["s.9(3)"]
+      rules: []
+      requirement: "No tracking, behavioural monitoring or targeted advertising directed at children."
+    penalty: P3
+    severity: critical
+    severity_reason: "Rs 200 crore cap and an outright prohibition."
+    fix: "Disable tracking and ad SDKs for users under 18."
+
+  # ---------------- RIGHTS & GRIEVANCE ----------------
+  - id: DPDP-RT-001
+    category: Rights
+    title: No way to access or export one's data
+    detects:
+      - "No endpoint returning a user's own data summary"
+    targets: [api]
+    law:
+      act: ["s.11"]
+      rules: ["Rule 14(1)"]
+      requirement: "Right to access information about personal data; publish how to make requests."
+    penalty: P7
+    severity: medium
+    severity_reason: "Users cannot exercise a statutory right."
+    fix: "Add GET /me/data returning stored data and processing summary."
+
+  - id: DPDP-RT-002
+    category: Rights
+    title: No correction or erasure endpoint
+    detects:
+      - "No update/delete route for the user's own profile data"
+    targets: [api]
+    law:
+      act: ["s.12"]
+      rules: ["Rule 14"]
+      requirement: "Right to correction, completion, updating and erasure."
+    penalty: P7
+    severity: medium
+    severity_reason: "Users cannot exercise a statutory right."
+    fix: "Add PATCH /me and an erasure request endpoint."
+
+  - id: DPDP-RT-003
+    category: Rights
+    title: No grievance mechanism or contact published
+    detects:
+      - "No grievance route/form; no DPO or contact page in the frontend"
+    targets: [frontend, api]
+    law:
+      act: ["s.8(9)", "s.8(10)", "s.13"]
+      rules: ["Rule 9", "Rule 14(3)"]
+      requirement: "Publish a contact for processing questions; respond to grievances within 90 days."
+    penalty: P7
+    severity: low
+    severity_reason: "Often handled outside the app; verify manually."
+    fix: "Add a grievance form with tracking and a published DPO/contact page."

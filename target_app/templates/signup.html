@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Open a loan account</title>
+</head>
+<body>
+  <h1>Open a loan account</h1>
+
+  <section class="notice">
+    <p>We collect your full name, email, mobile number, date of birth, Aadhaar number and city
+      to verify your identity (KYC) and to process your loan application.</p>
+    <p lang="hi">हम आपकी पहचान सत्यापित करने (KYC) और आपके ऋण आवेदन पर कार्रवाई करने के लिए
+      आपका पूरा नाम, ईमेल, मोबाइल नंबर, जन्म तिथि, आधार संख्या और शहर एकत्र करते हैं।</p>
+  </section>
+
+  <form method="post" action="/signup">
+    <label>Full name <input name="full_name" required></label>
+    <label>Email <input type="email" name="email" required></label>
+    <label>Mobile number <input type="tel" name="phone" required></label>
+    <label>Date of birth <input type="date" name="dob" required></label>
+    <label>Aadhaar number <input name="aadhaar" inputmode="numeric" maxlength="12" required></label>
+    <label>City <input name="city" required></label>
+    <label>Password <input type="password" name="password" required></label>
+
+    <label>
+      <input type="checkbox" name="kyc_consent" value="yes" required>
+      I agree to the processing of my data for KYC and my loan application.
+      <span lang="hi">मैं KYC और अपने ऋण आवेदन के लिए अपने डेटा के प्रसंस्करण से सहमत हूँ।</span>
+    </label>
+    <label>
+      <input type="checkbox" name="marketing_consent" value="yes" checked>
+      Send me offers and product updates.
+      <span lang="hi">मुझे ऑफ़र और उत्पाद अपडेट भेजें।</span>
+    </label>
+
+    <button type="submit">Sign up</button>
+  </form>
+
+  <footer>Grievance Officer: grievance@example.com (we reply within 90 days)</footer>
+</body>
+</html>

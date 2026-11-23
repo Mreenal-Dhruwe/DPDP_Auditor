@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+tmp_uploads/
+reports/
+# CLI output (python -m scanner.cli ... --out report/). Leading slash: don't ignore scanner/report/
+/report/
+*.pdf
+.pytest_cache/
+.DS_Store
+node_modules/
+frontend/dist/

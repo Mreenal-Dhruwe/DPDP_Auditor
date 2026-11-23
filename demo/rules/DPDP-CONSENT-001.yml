@@ -1,0 +1,10 @@
+id: DPDP-CONSENT-001
+title: Consent can be given but there is no way to withdraw it
+detects: A route that grants consent exists, but no route that withdraws or revokes it
+law:
+  act: "Section 6(4) - withdraw consent at any time, as easy as giving it"
+  also: "Section 6(6) - processing must stop after withdrawal; Rule 3(c)(i) - notice must say how to withdraw"
+penalty_cap: "Rs 50 crore (Schedule item 7, any other provision)"
+severity: High
+severity_reason: "Consent is the legal basis for processing; with no withdrawal path the user cannot stop it"
+fix: "Add DELETE /consent (or POST /consent/withdraw) that clears consent and stops processing"

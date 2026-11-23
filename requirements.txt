@@ -1,0 +1,18 @@
+# Core engine
+pyyaml>=6.0
+pydantic>=2.0
+sqlglot>=20.0
+networkx>=3.0
+python-dotenv>=1.0
+dockerfile-parse>=2.0
+# Reports
+jinja2>=3.1
+weasyprint>=60.0
+# Backend API (React frontend talks to this)
+fastapi>=0.110
+uvicorn[standard]>=0.27
+python-multipart>=0.0.9
+# Ingest from git URLs
+gitpython>=3.1
+# Testing
+pytest>=8.0

@@ -1,0 +1,165 @@
+# Answer key for target_app/ - used for precision/recall (hours 31-36) and checked by
+# tests/test_ground_truth.py. It lives OUTSIDE target_app/ so the scanner never reads it.
+#
+# planted: every real problem in target_app. Each entry has
+#   id       GT-nn, a stable name for the issue
+#   rule_id  a rule in rules/dpdp_rules.yml
+#   scope    same meaning as Finding.scope, and decides what counts as detecting it
+#            (scanner/evaluate.py):
+#              line    one place: same rule and file, reported within 3 lines
+#              file    a whole file ("this Dockerfile never sets USER"): same rule and file
+#              project something missing everywhere: same rule, anywhere
+#   file     path relative to target_app/ (for project scope: related code, optional)
+#   line     the line a reviewer would point at (function-level issues: the `def` line,
+#            which is what ast reports); none for file scope
+#   anchor   text that must be on that line (or, without a line, in the file) - the test
+#            fails, and prints the new line number, when code moves
+#   clue     pattern | structure | absence | config (the four kinds of clue in CLAUDE.md)
+#   note     what is wrong
+# compliant: code that looks related to a rule but is fine on purpose. A finding there
+#            is a false positive.
+# not_applicable: rules with nothing to check in target_app yet.
+# Every rule must appear in at least one list, so a new rule forces a decision here.
+# must_not_appear_in_report: raw secret values planted in target_app; reports must mask them.
+
+target: target_app
+
+planted:
+  - id: GT-01
+    rule_id: DPDP-SEC-003
+    file: app.py
+    line: 69
+    anchor: "hashlib.md5("
+    clue: structure
+    note: Passwords are hashed with unsalted MD5 (hash_password, used by signup and login).
+
+  - id: GT-02
+    rule_id: DPDP-CH-001
+    file: app.py
+    line: 90
+    anchor: 'dob = form["dob"]'
+    scope: project
+    clue: absence
+    note: Date of birth is collected and minors can sign up, but there is no parent or guardian consent flow anywhere.
+
+  - id: GT-03
+    rule_id: DPDP-SEC-001
+    file: app.py
+    line: 101
+    anchor: 'log.info("New signup:'
+    clue: structure
+    note: Signup writes email, phone and Aadhaar to the application log in clear text.
+
+  - id: GT-04
+    rule_id: DPDP-TP-001
+    file: app.py
+    line: 105
+    anchor: "mp.track("
+    clue: structure
+    note: Email and phone are sent to Mixpanel where a pseudonymous id would do. The call is consent- and age-gated, so CON-004 and CH-002 do not apply.
+
+  - id: GT-05
+    rule_id: DPDP-CON-001
+    file: app.py
+    line: 125
+    anchor: "def give_consent"
+    scope: project
+    clue: absence
+    note: POST /consent grants consent; no route anywhere withdraws it.
+
+  - id: GT-06
+    rule_id: DPDP-RET-002
+    file: app.py
+    line: 164
+    anchor: "DELETE FROM users"
+    clue: structure
+    note: Account deletion hard-deletes the user, their consent records and their audit log at once; Rule 8(3) requires keeping data and processing logs for one year.
+
+  - id: GT-07
+    rule_id: DPDP-SEC-005
+    file: app.py
+    line: 172
+    anchor: "def get_user"
+    clue: structure
+    note: GET /api/users/<id> returns name, email and phone with no login and no ownership check (IDOR).
+
+  - id: GT-08
+    rule_id: DPDP-SEC-004
+    file: config.py
+    line: 3
+    anchor: 'SECRET_KEY = "'
+    clue: pattern
+    note: Flask SECRET_KEY is hard-coded in source.
+
+  - id: GT-09
+    rule_id: DPDP-SEC-002
+    file: schema.sql
+    line: 8
+    anchor: "aadhaar"
+    clue: structure
+    note: users.aadhaar is stored as plain TEXT, with no encryption or token.
+
+  - id: GT-10
+    rule_id: DPDP-CON-002
+    file: templates/signup.html
+    line: 32
+    anchor: 'name="marketing_consent" value="yes" checked'
+    clue: pattern
+    note: The marketing consent checkbox is pre-ticked.
+
+  - id: GT-11
+    rule_id: DPDP-SEC-008
+    scope: file
+    file: Dockerfile
+    anchor: "FROM python"
+    clue: config
+    note: The Dockerfile has no USER instruction, so the app runs as root.
+
+compliant:
+  - rule_id: DPDP-NOT-001
+    note: signup.html shows an itemised notice (each data field and the purpose) above the form.
+  - rule_id: DPDP-CON-003
+    note: Consent is stored as records with purpose, notice_version, granted_at and channel (record_consent, consents table).
+  - rule_id: DPDP-CON-004
+    note: The only analytics call (mp.track) runs after the marketing-consent check.
+  - rule_id: DPDP-CON-005
+    note: Every field on the signup form is read and stored by signup(); no device permissions are requested.
+  - rule_id: DPDP-CON-006
+    note: Notice and consent text are offered in English and Hindi (lang="hi").
+  - rule_id: DPDP-SEC-001
+    note: login() logs only the internal user id ("User %s logged in").
+  - rule_id: DPDP-SEC-002
+    note: users.password_hash holds a hash, not a plaintext password (its weakness is GT-01).
+  - rule_id: DPDP-SEC-004
+    note: MIXPANEL_TOKEN and DATABASE_PATH come from environment variables.
+  - rule_id: DPDP-SEC-005
+    note: /api/me, /consent and /grievance require login (login_required).
+  - rule_id: DPDP-SEC-006
+    note: API responses select named columns; password_hash and aadhaar are never returned.
+  - rule_id: DPDP-SEC-007
+    note: Every route that reads or changes personal data calls audit().
+  - rule_id: DPDP-CH-002
+    note: Analytics runs only for adults (is_adult(dob) is checked before mp.track).
+  - rule_id: DPDP-BR-001
+    note: incident.py notifies affected users and builds the Board report with a 72-hour deadline.
+  - rule_id: DPDP-RET-001
+    note: Personal data has an erasure path (DELETE /api/me); the way it erases is GT-06.
+  - rule_id: DPDP-RT-001
+    note: GET /api/me returns the user's own profile and consent records.
+  - rule_id: DPDP-RT-002
+    note: PATCH /api/me corrects data and DELETE /api/me erases it.
+  - rule_id: DPDP-RT-003
+    note: POST /grievance, plus a published Grievance Officer contact in the page footer.
+
+not_applicable:
+  - rule_id: DPDP-SEC-009
+    note: No database service in IaC (the app uses a SQLite file).
+  - rule_id: DPDP-SEC-010
+    note: No log rotation or retention settings anywhere.
+  - rule_id: DPDP-TP-002
+    note: No cloud region or foreign endpoint is configured.
+  - rule_id: DPDP-RET-003
+    note: No inactivity-based erasure job.
+
+must_not_appear_in_report:
+  - lending-demo-4f9a7c2e81b64d0c9e3a5b7d1f2c8e60

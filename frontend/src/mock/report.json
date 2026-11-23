@@ -1,0 +1,597 @@
+{
+  "tool": "DPDP Compliance Auditor",
+  "tool_version": "0.1.0",
+  "rules_version": "0.1.0",
+  "target": "target_app",
+  "generated_at": "2026-11-23T09:00:00Z",
+  "files_scanned": 7,
+  "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes.",
+  "summary": {
+    "total": 14,
+    "by_severity": {
+      "critical": 2,
+      "high": 7,
+      "medium": 3,
+      "low": 1,
+      "info": 1
+    },
+    "by_category": {
+      "Security": 7,
+      "Consent": 2,
+      "Children": 1,
+      "Breach": 1,
+      "Third parties": 1,
+      "Retention": 1,
+      "Transfers": 1
+    },
+    "by_provision": {
+      "s.8(5)": 7,
+      "Rule 6(1)(b)": 3,
+      "Rule 6(1)(a)": 3,
+      "Rule 6(1)(g)": 1,
+      "s.9(1)": 1,
+      "Rule 10": 1,
+      "s.6(4)": 1,
+      "s.6(6)": 1,
+      "Rule 3(c)(i)": 1,
+      "s.6(1)": 1,
+      "s.8(6)": 1,
+      "Rule 7(1)": 1,
+      "Rule 7(2)": 1,
+      "s.8(1)": 1,
+      "s.8(2)": 1,
+      "Rule 6(1)(f)": 1,
+      "Rule 8(3)": 1,
+      "Rule 6(1)(d)": 1,
+      "s.16(1)": 1,
+      "Rule 15": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "35ee5d20f594",
+      "rule_id": "DPDP-SEC-005",
+      "title": "Personal data exposed by an unauthenticated route",
+      "category": "Security",
+      "scope": "line",
+      "file": "app.py",
+      "line": 172,
+      "evidence": "def get_user(user_id):",
+      "context": {
+        "start_line": 169,
+        "lines": [
+          "",
+          "",
+          "@app.route(\"/api/users/<int:user_id>\")",
+          "def get_user(user_id):",
+          "    audit(None, \"read\", \"users\", user_id)",
+          "    row = db().execute(",
+          "        \"SELECT full_name, email, phone, city FROM users WHERE id = ?\", (user_id,)"
+        ]
+      },
+      "pii": [
+        "full_name",
+        "email",
+        "phone"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Appropriate measures to control access."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Directly exploitable over the network by anyone.",
+      "fix": "Require authentication and check that the requester owns the record."
+    },
+    {
+      "id": "ce5264ca2125",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "config.py",
+      "line": 3,
+      "evidence": "SECRET_KEY = \"lend********\"",
+      "context": {
+        "start_line": 1,
+        "lines": [
+          "import os",
+          "",
+          "SECRET_KEY = \"lend********\"",
+          "DATABASE_PATH = os.environ.get(\"DATABASE_PATH\", \"lending.db\")",
+          "MIXPANEL_TOKEN = os.environ.get(\"MIXPANEL_TOKEN\", \"\")"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "ee0ffecd6c5a",
+      "rule_id": "DPDP-SEC-008",
+      "title": "Insecure infrastructure configuration",
+      "category": "Security",
+      "scope": "file",
+      "file": "Dockerfile",
+      "line": null,
+      "evidence": "The Dockerfile has no USER instruction, so the app runs as root.",
+      "context": null,
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)",
+          "Rule 6(1)(g)"
+        ],
+        "requirement": "Access control and appropriate technical and organisational measures."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Raises the chance and impact of a breach of stored personal data.",
+      "fix": "Run as non-root, disable debug in production, restrict CORS, enforce TLS, block public buckets."
+    },
+    {
+      "id": "2d39c8d02717",
+      "rule_id": "DPDP-SEC-003",
+      "title": "Weak password hashing",
+      "category": "Security",
+      "scope": "line",
+      "file": "app.py",
+      "line": 69,
+      "evidence": "return hashlib.md5(password.encode()).hexdigest()",
+      "context": {
+        "start_line": 66,
+        "lines": [
+          "",
+          "",
+          "def hash_password(password):",
+          "    return hashlib.md5(password.encode()).hexdigest()",
+          "",
+          "",
+          "def is_adult(dob):"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Reasonable security safeguards to prevent personal data breach."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Fast hashes are easily cracked after a leak.",
+      "fix": "Use bcrypt, scrypt or argon2 with per-user salt."
+    },
+    {
+      "id": "48b171ec8ed6",
+      "rule_id": "DPDP-CH-001",
+      "title": "Child data collected without parental consent flow",
+      "category": "Children",
+      "scope": "project",
+      "file": "app.py",
+      "line": 90,
+      "evidence": "Date of birth is collected and minors can sign up, but there is no parent or guardian consent flow anywhere.",
+      "context": {
+        "start_line": 87,
+        "lines": [
+          "    if not form.get(\"kyc_consent\"):",
+          "        return jsonify(error=\"consent to KYC processing is required\"), 400",
+          "    full_name, email, phone = form[\"full_name\"], form[\"email\"], form[\"phone\"]",
+          "    dob = form[\"dob\"]",
+          "    aadhaar, city = form[\"aadhaar\"], form[\"city\"]",
+          "    cur = db().execute(",
+          "        \"INSERT INTO users (full_name, email, phone, dob, aadhaar, city, password_hash, created_at)\""
+        ]
+      },
+      "pii": [
+        "dob"
+      ],
+      "confidence": "medium",
+      "law": {
+        "act": [
+          "s.9(1)"
+        ],
+        "rules": [
+          "Rule 10"
+        ],
+        "requirement": "Verifiable consent of the parent before processing a child's personal data."
+      },
+      "penalty": {
+        "schedule_item": 3,
+        "provision": "s.9 children",
+        "cap": "Rs 200 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Rs 200 crore cap; affects a protected group.",
+      "fix": "Gate under-18 sign-ups behind verified parental consent (Rule 10 methods)."
+    },
+    {
+      "id": "9f095ae33003",
+      "rule_id": "DPDP-SEC-001",
+      "title": "Personal data written to logs",
+      "category": "Security",
+      "scope": "line",
+      "file": "app.py",
+      "line": 101,
+      "evidence": "log.info(\"New signup: %s, %s, aadhaar %s\", email, phone, aadhaar)",
+      "context": {
+        "start_line": 98,
+        "lines": [
+          "    user_id = cur.lastrowid",
+          "    audit(user_id, \"create\", \"users\", user_id)",
+          "    record_consent(user_id, \"kyc\")",
+          "    log.info(\"New signup: %s, %s, aadhaar %s\", email, phone, aadhaar)",
+          "    if form.get(\"marketing_consent\"):",
+          "        record_consent(user_id, \"marketing\")",
+          "        if is_adult(dob):"
+        ]
+      },
+      "pii": [
+        "email",
+        "phone",
+        "aadhaar"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Secure personal data through encryption, obfuscation, masking or virtual tokens."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Logs are widely accessible and long-lived; unmasked PII there is a common breach source.",
+      "fix": "Mask or tokenise PII before logging (e.g. a***@x.com, ******1234)."
+    },
+    {
+      "id": "7888e159da61",
+      "rule_id": "DPDP-CON-001",
+      "title": "Consent can be given but not withdrawn",
+      "category": "Consent",
+      "scope": "project",
+      "file": "app.py",
+      "line": 125,
+      "evidence": "POST /consent grants consent; no route anywhere withdraws it.",
+      "context": {
+        "start_line": 122,
+        "lines": [
+          "",
+          "@app.route(\"/consent\", methods=[\"POST\"])",
+          "@login_required",
+          "def give_consent():",
+          "    record_consent(session[\"user_id\"], request.form[\"purpose\"])",
+          "    return jsonify(ok=True)",
+          ""
+        ]
+      },
+      "pii": [],
+      "confidence": "medium",
+      "law": {
+        "act": [
+          "s.6(4)",
+          "s.6(6)"
+        ],
+        "rules": [
+          "Rule 3(c)(i)"
+        ],
+        "requirement": "Withdrawal must be possible at any time, with ease comparable to giving consent; processing must then stop."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Consent is the legal basis for processing; with no withdrawal path the user cannot stop it.",
+      "fix": "Add DELETE /consent (or POST /consent/withdraw) that clears consent and stops downstream processing."
+    },
+    {
+      "id": "b4ab0a7f3ef2",
+      "rule_id": "DPDP-SEC-002",
+      "title": "Personal data stored in plaintext",
+      "category": "Security",
+      "scope": "line",
+      "file": "schema.sql",
+      "line": 8,
+      "evidence": "aadhaar TEXT NOT NULL,",
+      "context": {
+        "start_line": 5,
+        "lines": [
+          "    email         TEXT NOT NULL UNIQUE,",
+          "    phone         TEXT NOT NULL,",
+          "    dob           TEXT NOT NULL,",
+          "    aadhaar       TEXT NOT NULL,",
+          "    city          TEXT NOT NULL,",
+          "    password_hash TEXT NOT NULL,",
+          "    created_at    TEXT NOT NULL"
+        ]
+      },
+      "pii": [
+        "aadhaar"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Encryption, obfuscation, masking or virtual tokens."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "A database leak exposes the data directly.",
+      "fix": "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+    },
+    {
+      "id": "6e6b09551500",
+      "rule_id": "DPDP-CON-002",
+      "title": "Pre-ticked or default-true consent",
+      "category": "Consent",
+      "scope": "line",
+      "file": "templates/signup.html",
+      "line": 32,
+      "evidence": "<input type=\"checkbox\" name=\"marketing_consent\" value=\"yes\" checked>",
+      "context": {
+        "start_line": 29,
+        "lines": [
+          "      <span lang=\"hi\">मैं KYC और अपने ऋण आवेदन के लिए अपने डेटा के प्रसंस्करण से सहमत हूँ।</span>",
+          "    </label>",
+          "    <label>",
+          "      <input type=\"checkbox\" name=\"marketing_consent\" value=\"yes\" checked>",
+          "      Send me offers and product updates.",
+          "      <span lang=\"hi\">मुझे ऑफ़र और उत्पाद अपडेट भेजें।</span>",
+          "    </label>"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.6(1)"
+        ],
+        "rules": [],
+        "requirement": "Consent must be unambiguous with a clear affirmative action."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "high",
+      "severity_reason": "A default 'yes' is not an affirmative action, so consent may be invalid for all users.",
+      "fix": "Default consent to false and require an explicit user action."
+    },
+    {
+      "id": "b6ad6fc783f0",
+      "rule_id": "DPDP-BR-001",
+      "title": "No breach notification mechanism",
+      "category": "Breach",
+      "scope": "project",
+      "file": null,
+      "line": null,
+      "evidence": "No code path notifies affected users or prepares a report for the Data Protection Board",
+      "context": null,
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(6)"
+        ],
+        "rules": [
+          "Rule 7(1)",
+          "Rule 7(2)"
+        ],
+        "requirement": "Inform affected users without delay; send the Board a detailed report within 72 hours."
+      },
+      "penalty": {
+        "schedule_item": 2,
+        "provision": "s.8(6) breach intimation",
+        "cap": "Rs 200 crore"
+      },
+      "severity": "medium",
+      "severity_reason": "Process often lives outside code; absence is a signal, not proof.",
+      "fix": "Add an incident module that can notify affected users and generate the Board report."
+    },
+    {
+      "id": "f95d332b9409",
+      "rule_id": "DPDP-TP-001",
+      "title": "Personal data sent to a third-party SDK",
+      "category": "Third parties",
+      "scope": "line",
+      "file": "app.py",
+      "line": 105,
+      "evidence": "mp.track(str(user_id), \"Signed Up\", {\"$email\": email, \"$phone\": phone, \"city\": city})",
+      "context": {
+        "start_line": 102,
+        "lines": [
+          "    if form.get(\"marketing_consent\"):",
+          "        record_consent(user_id, \"marketing\")",
+          "        if is_adult(dob):",
+          "            mp.track(str(user_id), \"Signed Up\", {\"$email\": email, \"$phone\": phone, \"city\": city})",
+          "    session[\"user_id\"] = user_id",
+          "    return jsonify(ok=True, user_id=user_id)",
+          ""
+        ]
+      },
+      "pii": [
+        "email",
+        "phone"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(1)",
+          "s.8(2)"
+        ],
+        "rules": [
+          "Rule 6(1)(f)"
+        ],
+        "requirement": "Fiduciary is responsible for processors, which must work under a valid contract with security terms."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "medium",
+      "severity_reason": "Data leaves your control; contract status cannot be verified from code.",
+      "fix": "Send pseudonymous IDs instead of PII, scrub events, and confirm a DPA exists with the vendor."
+    },
+    {
+      "id": "0985a17268ae",
+      "rule_id": "DPDP-RET-002",
+      "title": "Immediate hard delete with no minimum retention",
+      "category": "Retention",
+      "scope": "line",
+      "file": "app.py",
+      "line": 164,
+      "evidence": "db().execute(\"DELETE FROM users WHERE id = ?\", (user_id,))",
+      "context": {
+        "start_line": 161,
+        "lines": [
+          "def delete_account():",
+          "    user_id = session.pop(\"user_id\")",
+          "    audit(user_id, \"delete\", \"users\", user_id)",
+          "    db().execute(\"DELETE FROM users WHERE id = ?\", (user_id,))",
+          "    db().execute(\"DELETE FROM consents WHERE user_id = ?\", (user_id,))",
+          "    db().execute(\"DELETE FROM audit_log WHERE actor_id = ?\", (user_id,))",
+          "    db().commit()"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [],
+        "rules": [
+          "Rule 8(3)"
+        ],
+        "requirement": "Retain personal data, traffic data and processing logs for at least one year, then erase."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "medium",
+      "severity_reason": "Counter-intuitive gap: deleting too early also breaches the Rules.",
+      "fix": "Soft-delete and restrict access, keep processing logs for one year, then purge."
+    },
+    {
+      "id": "7cf549d96f11",
+      "rule_id": "DPDP-SEC-009",
+      "title": "No backup configured for personal-data stores",
+      "category": "Security",
+      "scope": "file",
+      "file": "docker-compose.yml",
+      "line": null,
+      "evidence": "Service 'db' (postgres) has no backup or snapshot setting",
+      "context": null,
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(d)"
+        ],
+        "requirement": "Reasonable measures for continued processing, such as data backups."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "low",
+      "severity_reason": "Backups are often configured outside the repo; needs manual check.",
+      "fix": "Configure automated, encrypted backups with tested restore."
+    },
+    {
+      "id": "bedf86f61491",
+      "rule_id": "DPDP-TP-002",
+      "title": "Personal data stored or sent outside India",
+      "category": "Transfers",
+      "scope": "line",
+      "file": "docker-compose.yml",
+      "line": 14,
+      "evidence": "AWS_REGION: us-east-1",
+      "context": null,
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.16(1)"
+        ],
+        "rules": [
+          "Rule 15"
+        ],
+        "requirement": "Transfers allowed unless the Government restricts a country or sets requirements by order."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "info",
+      "severity_reason": "Not a violation by itself; verify against Government notifications.",
+      "fix": "Record transfer destinations and review them against current Government orders."
+    }
+  ]
+}
