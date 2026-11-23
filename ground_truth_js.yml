@@ -188,6 +188,14 @@ planted:
     clue: absence
     note: The app holds user data but has no breach or incident handling, no user or Board notification and no alert hook.
 
+  - id: JS-23
+    rule_id: DPDP-CON-005
+    file: public/lead.html
+    line: 14
+    anchor: 'name="aadhaar"'
+    clue: absence
+    note: The quote form asks for an Aadhaar number that no handler reads and the Lead model does not store.
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -201,6 +209,8 @@ compliant:
     note: GET /api/leads/:id uses requireAuth; GET /admin/users and /admin/customers (handler in routes/customers.ts) are guarded by app.use('/admin', requireAuth).
   - rule_id: DPDP-CON-004
     note: "sendNewsletter (routes/marketing.ts) checks Consent.findOne(... marketing: true) before emailing."
+  - rule_id: DPDP-CON-005
+    note: name, email and mobile on the quote form are Lead columns, stored by Lead.create(req.body).
   - rule_id: DPDP-SEC-007
     note: GET /api/leads/:id and the marketing handlers (routes/marketing.ts) log each read with logger.info.
   - rule_id: DPDP-SEC-006
@@ -208,7 +218,6 @@ compliant:
 
 out_of_scope:
   - {rule_id: DPDP-CON-002, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-CON-005, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CON-006, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-003, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-008, note: Not judged by the JS fixture app; see target_app.}

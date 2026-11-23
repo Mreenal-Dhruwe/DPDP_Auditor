@@ -2,7 +2,8 @@
 
 Implemented: DPDP-CON-001 (consent can be given but not withdrawn), DPDP-CON-002
 (pre-ticked or default-true consent), DPDP-CON-003 (no evidence of consent) and DPDP-CON-004
-(personal data used without a consent check), and DPDP-NOT-001 (no notice); see their sections.
+(personal data used without a consent check), DPDP-CON-005 (over-collection) and DPDP-NOT-001
+(no notice); see their sections.
 """
 
 import ast
@@ -447,3 +448,81 @@ def missing_notice(project: Project) -> list[Hit]:
                                  f"the page shows no notice of what is collected and why; verify manually: the "
                                  f"notice may be in a modal or an earlier step]"))
     return hits
+
+
+# --- DPDP-CON-005: over-collection beyond the stated purpose ---------------------------------
+#
+# s.6(1): collect only what the purpose needs. Two signs of data collected for nothing:
+# - a personal-data form field whose name appears in no code file (not .html/.jsx pages) and
+#   in no table column, so no handler reads or stores it (Model.create(req.body) stores only
+#   the fields that are columns)
+# - a mobile permission (AndroidManifest.xml, iOS Info.plist) for contacts, location, SMS, call
+#   log, microphone, camera, phone state, accounts or calendar with no code using that API
+# Low confidence with a "verify manually" note: another service may read the field.
+
+CON_005 = "DPDP-CON-005"
+CODE_FILE_SUFFIXES = {".py", ".js", ".ts", ".mjs", ".cjs", ".java", ".kt", ".swift", ".dart", ".go", ".rb", ".php",
+                      ".cs", ".sql"}
+# permission -> (what it gives, code that uses it)
+PERMISSIONS = {
+    "READ_CONTACTS": ("contacts", r"ContactsContract|react-native-contacts|\bContacts\.|expo-contacts|CNContactStore"),
+    "ACCESS_FINE_LOCATION": ("precise location", r"LocationManager|FusedLocation|[Gg]eolocation|expo-location|CLLocationManager"),
+    "ACCESS_COARSE_LOCATION": ("location", r"LocationManager|FusedLocation|[Gg]eolocation|expo-location|CLLocationManager"),
+    "READ_SMS": ("SMS messages", r"SmsManager|Telephony\.Sms|SmsRetriever|read-sms|content://sms"),
+    "RECEIVE_SMS": ("incoming SMS", r"SmsManager|Telephony\.Sms|SmsRetriever|SMS_RECEIVED"),
+    "READ_CALL_LOG": ("call log", r"CallLog"),
+    "RECORD_AUDIO": ("microphone", r"MediaRecorder|AudioRecord|getUserMedia|expo-av|AVAudioRecorder"),
+    "CAMERA": ("camera", r"\bCamera|launchCamera|ImagePicker|getUserMedia|expo-camera|AVCapture"),
+    "READ_PHONE_STATE": ("phone state and identifiers", r"TelephonyManager|getDeviceId|getImei"),
+    "GET_ACCOUNTS": ("device accounts", r"AccountManager"),
+    "READ_CALENDAR": ("calendar", r"CalendarContract|expo-calendar|EKEventStore"),
+}
+IOS_KEYS = {"NSContactsUsageDescription": "READ_CONTACTS", "NSLocationWhenInUseUsageDescription": "ACCESS_FINE_LOCATION",
+            "NSLocationAlwaysAndWhenInUseUsageDescription": "ACCESS_FINE_LOCATION",
+            "NSMicrophoneUsageDescription": "RECORD_AUDIO", "NSCameraUsageDescription": "CAMERA",
+            "NSCalendarsUsageDescription": "READ_CALENDAR"}
+_ANDROID_PERMISSION = re.compile(r"android\.permission\.([A-Z_]+)")
+
+
+def _norm(name: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", name.lower())
+
+
+def over_collection(project: Project) -> list[Hit]:
+    matcher = default_matcher()
+    code_files = [rel for rel in text_files(project) if suffix_of(rel) in CODE_FILE_SUFFIXES and not is_test_file(rel)]
+    code = "\n".join(project.read_text(rel) for rel in code_files)
+    words = {_norm(w) for w in re.findall(r"[A-Za-z_][\w-]*", code)}
+    columns = {_norm(c.name) for t in find_tables(project) for c in t.columns}
+    hits = []
+    for rel in project.files:
+        if suffix_of(rel) not in TEMPLATE_SUFFIXES or is_test_file(rel):
+            continue
+        text = project.read_text(rel)
+        for offset, tag in input_tags(text):
+            name = attribute(tag, "name") or ""
+            match = matcher.match(name) if name else None
+            if not match or _norm(name) in words or _norm(name) in columns:
+                continue
+            line = text.count("\n", 0, offset) + 1
+            hits.append(Hit(rule_id=CON_005, file=rel, line=line, pii=[match.label], confidence="low",
+                            evidence=f"{text.splitlines()[line - 1].strip()}  [the form asks for '{name}' but no code "
+                                     f"or table uses it; verify manually: another service may read it]"))
+    for rel in project.files:
+        filename = rel.rsplit("/", 1)[-1]
+        if filename not in {"AndroidManifest.xml", "Info.plist"} or is_test_file(rel):
+            continue
+        text = project.read_text(rel)
+        found = [(m.start(), m.group(1)) for m in _ANDROID_PERMISSION.finditer(text)] + \
+                [(m.start(), IOS_KEYS[m.group(0)]) for m in re.finditer("|".join(IOS_KEYS), text)]
+        for offset, permission in found:
+            if permission not in PERMISSIONS:
+                continue
+            what, usage = PERMISSIONS[permission]
+            if re.search(usage, code):
+                continue
+            line = text.count("\n", 0, offset) + 1
+            hits.append(Hit(rule_id=CON_005, file=rel, line=line, confidence="low",
+                            evidence=f"{text.splitlines()[line - 1].strip()}  [the app asks for {what} access but no "
+                                     f"code uses it; verify manually: a library may need it]"))
+    return sorted(hits, key=lambda h: (h.file, h.line))
