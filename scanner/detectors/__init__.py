@@ -13,7 +13,7 @@ To add a detector:
 
 Module            Rules it owns
 consent.py        DPDP-NOT-001, DPDP-CON-001 to DPDP-CON-006   (CON-001 to CON-004 done)
-logs.py           DPDP-SEC-001, DPDP-SEC-007                   (SEC-001 done, Python)
+logs.py           DPDP-SEC-001, DPDP-SEC-007                   (both done; Python + JS)
 storage.py        DPDP-SEC-002, DPDP-SEC-003                   (SEC-002 done)
 access.py         DPDP-SEC-005, DPDP-SEC-006                   (both done; Python + Express)
 retention.py      DPDP-RET-001 to DPDP-RET-003                 (RET-001 done)
@@ -67,6 +67,7 @@ DETECTORS: list[Detector] = [
     Detector("no access to own data", ("DPDP-RT-001",), rights.no_access_route),
     Detector("no correction or erasure", ("DPDP-RT-002",), rights.no_correction_or_erasure),
     Detector("no grievance channel", ("DPDP-RT-003",), rights.no_grievance_channel),
+    Detector("personal-data reads with no audit log", ("DPDP-SEC-007",), logs.unaudited_reads),
 ]
 
 

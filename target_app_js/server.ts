@@ -35,6 +35,7 @@ app.get('/api/users/:id', async (req: Request, res: Response) => {
 
 app.get('/api/leads/:id', requireAuth, async (req: Request, res: Response) => {
   const lead = await Lead.findByPk(req.params.id)
+  logger.info(`lead ${req.params.id} read by user ${req.headers['x-user-id']}`)
   res.json({ name: lead?.name, source: lead?.source })
 })
 

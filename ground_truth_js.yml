@@ -54,7 +54,7 @@ planted:
     rule_id: DPDP-CON-001
     scope: project
     file: server.ts
-    line: 45
+    line: 46
     anchor: "app.post('/consent'"
     clue: absence
     note: POST /consent grants consent; no route withdraws it.
@@ -62,7 +62,7 @@ planted:
   - id: JS-07
     rule_id: DPDP-SEC-005
     file: server.ts
-    line: 59
+    line: 60
     anchor: "app.get('/api/customers/:id', asyncHandler(getCustomer()))"
     clue: structure
     note: Handler imported from routes/customers.ts (via require and a wrapper) returns email and phone with no auth.
@@ -78,7 +78,7 @@ planted:
   - id: JS-09
     rule_id: DPDP-SEC-006
     file: server.ts
-    line: 42
+    line: 43
     anchor: "res.json(await User.findAll())"
     clue: structure
     note: Every User record with PAN and password hash is sent; admin-only, but the fields are still not needed.
@@ -131,6 +131,38 @@ planted:
     clue: absence
     note: No grievance or contact route or page and no grievance officer or DPO contact anywhere.
 
+  - id: JS-16
+    rule_id: DPDP-SEC-007
+    file: server.ts
+    line: 31
+    anchor: "app.get('/api/users/:id'"
+    clue: absence
+    note: Reads a user (email, phone, PAN) and writes no audit or log entry, although the app has a winston logger.
+
+  - id: JS-17
+    rule_id: DPDP-SEC-007
+    file: server.ts
+    line: 42
+    anchor: "app.get('/admin/users'"
+    clue: absence
+    note: Lists every user with no audit entry.
+
+  - id: JS-18
+    rule_id: DPDP-SEC-007
+    file: server.ts
+    line: 60
+    anchor: "app.get('/api/customers/:id'"
+    clue: absence
+    note: The handler in routes/customers.ts reads a user with no audit entry.
+
+  - id: JS-19
+    rule_id: DPDP-SEC-007
+    file: server.ts
+    line: 61
+    anchor: "app.get('/admin/customers'"
+    clue: absence
+    note: The handler in routes/customers.ts lists users with no audit entry.
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -144,8 +176,10 @@ compliant:
     note: GET /api/leads/:id uses requireAuth; GET /admin/users and /admin/customers (handler in routes/customers.ts) are guarded by app.use('/admin', requireAuth).
   - rule_id: DPDP-CON-004
     note: "sendNewsletter (routes/marketing.ts) checks Consent.findOne(... marketing: true) before emailing."
+  - rule_id: DPDP-SEC-007
+    note: GET /api/leads/:id and the marketing handlers (routes/marketing.ts) log each read with logger.info.
   - rule_id: DPDP-SEC-006
-    note: getCustomer (routes/customers.ts:8) picks email and phone from the User record; GET /api/leads/:id (server.ts:38) picks name and source.
+    note: getCustomer (routes/customers.ts:8) picks email and phone from the User record; GET /api/leads/:id (server.ts:39) picks name and source.
 
 out_of_scope:
   - {rule_id: DPDP-NOT-001, note: Not judged by the JS fixture app; see target_app.}
@@ -153,7 +187,6 @@ out_of_scope:
   - {rule_id: DPDP-CON-005, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CON-006, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-003, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-SEC-007, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-008, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-009, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-010, note: Not judged by the JS fixture app; see target_app.}
