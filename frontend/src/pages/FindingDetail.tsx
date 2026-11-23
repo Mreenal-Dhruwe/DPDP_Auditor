@@ -70,7 +70,10 @@ export function FindingView({ finding, inDrawer = false }: { finding: Finding; i
       <Heading
         eyebrow={
           <>
-            <span className="mono">{finding.rule_id}</span> · {finding.category}
+            <Link className="mono rulelink" to={`/rules?q=${finding.rule_id}#${finding.rule_id}`}>
+              {finding.rule_id}
+            </Link>{" "}
+            · {finding.category}
           </>
         }
         title={finding.title}

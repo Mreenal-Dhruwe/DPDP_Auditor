@@ -1212,3 +1212,129 @@ td.review {
     opacity: 0.6;
   }
 }
+
+/* --- report and rule catalogue ------------------------------------------------------------- */
+
+.reporthead {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-bottom: 18px;
+  padding: 26px;
+  border-radius: 12px;
+  color: #181b21;
+  background: linear-gradient(110deg, #e4dcfb, #d8eff1 65%, #caf0d7);
+}
+.reporthead > svg {
+  flex: none;
+}
+.reporthead h2 {
+  margin-top: 4px;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  letter-spacing: -0.05em;
+}
+.reporthead .fieldlabel,
+.reporthead p {
+  color: #3c444a;
+}
+.reporthead p {
+  margin-top: 6px;
+  font-size: 0.88rem;
+}
+.summaryrow {
+  display: grid;
+  grid-template-columns: 96px 1fr 30px;
+  align-items: center;
+  gap: 14px;
+  margin: 12px 0;
+  font-size: 0.86rem;
+}
+.summaryrow .track i {
+  background: var(--sev, var(--violet));
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.summaryrow b {
+  text-align: right;
+  font-weight: 500;
+}
+.reportpage .chips b {
+  color: var(--text);
+  font-weight: 600;
+}
+.ruleline {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--edge-soft);
+  font-size: 0.86rem;
+}
+.ruleline code {
+  color: var(--violet);
+  white-space: nowrap;
+  font-size: 0.8rem;
+}
+.textlink.spaced {
+  display: inline-block;
+  margin-top: 16px;
+}
+.reportpage .btn.ghost {
+  margin-top: 16px;
+}
+.reportpage .panel > p.muted {
+  margin-top: 10px;
+  line-height: 1.6;
+  font-size: 0.88rem;
+}
+.rulestable td {
+  min-width: 90px;
+}
+.ruleid {
+  color: var(--violet);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.detects {
+  margin: 6px 0 0;
+  padding-left: 16px;
+  color: var(--faint);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+.yes {
+  color: var(--mint);
+  font-weight: 600;
+}
+:target {
+  scroll-margin-top: 80px;
+}
+tr:target {
+  background: #c4aeff12;
+}
+
+@media (max-width: 760px) {
+  .reporthead {
+    padding: 18px;
+    gap: 12px;
+  }
+  .reporthead > svg {
+    display: none;
+  }
+  .ruleline {
+    flex-direction: column;
+    gap: 2px;
+  }
+  .summaryrow {
+    grid-template-columns: 80px 1fr 26px;
+  }
+}
+
+@media print {
+  body,
+  .workspace,
+  .page,
+  .panel {
+    background: #fff !important;
+    color: #000 !important;
+  }
+}
