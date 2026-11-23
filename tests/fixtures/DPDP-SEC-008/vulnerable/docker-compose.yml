@@ -1,0 +1,7 @@
+services:
+  web:
+    build: .
+    privileged: true
+    environment:
+      DEBUG: "true"
+      DATABASE_URL: postgres://app@db/app?sslmode=disable

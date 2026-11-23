@@ -1,4 +1,5 @@
-"""ground_truth.yml is the answer key for target_app/. These tests keep it honest."""
+"""The answer keys (ground_truth.yml, ground_truth_js.yml) for the target apps. These tests
+keep them honest."""
 
 import ast
 
@@ -6,46 +7,56 @@ import pytest
 import sqlglot
 
 from scanner.config import PROJECT_ROOT
-from scanner.evaluate import GroundTruth
+from scanner.detectors.javascript import GRAMMARS, _parser
+from scanner.detectors.source import suffix_of
+from scanner.evaluate import GroundTruth, load_ground_truth
 
-TARGET_APP = PROJECT_ROOT / "target_app"
-
-
-@pytest.fixture(scope="module")
-def gt(ground_truth):
-    return GroundTruth.model_validate(ground_truth)
+TARGETS = [("target_app", "ground_truth.yml"), ("target_app_js", "ground_truth_js.yml")]
 
 
-def test_ids_and_locations_are_unique(gt):
-    assert gt.target == "target_app"
+@pytest.fixture(scope="module", params=TARGETS, ids=[t for t, _ in TARGETS])
+def target(request):
+    folder, key = request.param
+    return PROJECT_ROOT / folder, load_ground_truth(PROJECT_ROOT / key)
+
+
+def test_ids_and_locations_are_unique(target):
+    folder, gt = target
+    assert gt.target == folder.name
     ids = [p.id for p in gt.planted]
     assert len(ids) == len(set(ids))
     spots = [(p.rule_id, p.file, p.line) for p in gt.planted]
     assert len(spots) == len(set(spots))
 
 
-def test_every_rule_id_exists(gt, catalogue):
+def test_every_rule_id_exists(target, catalogue):
+    _, gt = target
     known = {r.id for r in catalogue.rules}
-    used = {p.rule_id for p in gt.planted} | {n.rule_id for n in gt.compliant + gt.not_applicable}
+    notes = gt.compliant + gt.not_applicable + gt.out_of_scope
+    used = {p.rule_id for p in gt.planted} | {n.rule_id for n in notes}
     assert used - known == set()
 
 
-def test_every_rule_has_a_status(gt, catalogue):
-    """Planted, deliberately compliant or not applicable, so a new rule forces a decision."""
+def test_every_rule_has_a_status(target, catalogue):
+    """Planted, compliant, not applicable or out of scope, so a new rule forces a decision."""
+    _, gt = target
     planted = {p.rule_id for p in gt.planted}
     compliant = {n.rule_id for n in gt.compliant}
     not_applicable = {n.rule_id for n in gt.not_applicable}
-    unaccounted = {r.id for r in catalogue.rules} - planted - compliant - not_applicable
-    assert unaccounted == set(), f"give these rules a status in ground_truth.yml: {sorted(unaccounted)}"
+    out_of_scope = {n.rule_id for n in gt.out_of_scope}
+    unaccounted = {r.id for r in catalogue.rules} - planted - compliant - not_applicable - out_of_scope
+    assert unaccounted == set(), f"give these rules a status in the answer key: {sorted(unaccounted)}"
     assert not_applicable & (planted | compliant) == set()
+    assert out_of_scope & (planted | compliant | not_applicable) == set()
 
 
-def test_anchors_are_where_the_entries_say(gt):
+def test_anchors_are_where_the_entries_say(target):
+    folder, gt = target
     problems = []
     for p in gt.planted:
         if p.file is None:
             continue
-        path = TARGET_APP / p.file
+        path = folder / p.file
         if not path.is_file():
             problems.append(f"{p.id}: {p.file} does not exist")
             continue
@@ -58,16 +69,27 @@ def test_anchors_are_where_the_entries_say(gt):
     assert problems == [], "\n".join(problems)
 
 
-def test_planted_secrets_really_are_in_target_app(gt):
+def test_planted_secrets_really_are_in_the_target(target):
+    folder, gt = target
     text = "\n".join(path.read_text(encoding="utf-8", errors="replace")
-                     for path in TARGET_APP.rglob("*") if path.is_file())
+                     for path in folder.rglob("*") if path.is_file())
+    assert gt.must_not_appear_in_report
     assert [value for value in gt.must_not_appear_in_report if value not in text] == []
 
 
-def test_target_app_sources_parse():
-    """Detectors read target_app with ast and sqlglot (they never run it). A syntax error
-    there would silently hide planted issues."""
-    for path in TARGET_APP.rglob("*.py"):
-        ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-    for path in TARGET_APP.rglob("*.sql"):
-        sqlglot.parse(path.read_text(encoding="utf-8"), read="sqlite")
+def test_target_sources_parse(target):
+    """Detectors read the targets with ast, sqlglot and tree-sitter (they never run them).
+    A syntax error there would silently hide planted issues."""
+    folder, _ = target
+    for path in folder.rglob("*"):
+        if path.suffix == ".py":
+            ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        elif path.suffix == ".sql":
+            sqlglot.parse(path.read_text(encoding="utf-8"), read="sqlite")
+        elif suffix_of(path.name) in GRAMMARS:
+            tree = _parser(GRAMMARS[suffix_of(path.name)]).parse(path.read_bytes())
+            assert not tree.root_node.has_error, f"{path.name} does not parse"
+
+
+def test_ground_truth_fixture_still_matches(ground_truth):
+    assert GroundTruth.model_validate(ground_truth).target == "target_app"

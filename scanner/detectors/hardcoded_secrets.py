@@ -7,9 +7,11 @@ Three kinds of clue, all reading files only:
    also unquoted NAME=value.
 3. Any text file: known key formats (AWS, GitHub, Slack, Google, Stripe, Razorpay, JWT),
    private-key blocks, and passwords inside connection URLs.
-Placeholders (changeme, ${VAR}, <your-key>, os.environ lookups) are not secrets. Secrets in
-test files are still reported, with low confidence. Evidence is masked here (the detector
-knows where the secret is) and again by the safety net in to_finding().
+Placeholders (changeme, ${VAR}, <your-key>, os.environ lookups) and non-ASCII text are not
+secrets. In test files, translation files (i18n/, locales/) and .env.example only the
+third kind of clue counts (test logins like admin123 are noise), with low confidence in tests.
+Evidence is masked here (the detector knows where the secret is) and again by the safety
+net in to_finding().
 """
 
 import ast
@@ -31,7 +33,7 @@ NOT_A_SECRET_WORDS = {
     "hash", "field", "label", "name", "url", "uri", "endpoint", "header", "param", "type", "length",
     "min", "max", "policy", "reset", "prompt", "placeholder", "regex", "pattern", "expiry", "expires",
     "expiration", "ttl", "count", "file", "path", "env", "var", "id", "algorithm", "alg", "scheme",
-    "prefix", "format", "input", "location",
+    "prefix", "format", "input", "location", "address",  # BeeTokenAddress: a public address
 }
 PLACEHOLDERS = {
     "changeme", "change_me", "change-me", "password", "secret", "token", "xxx", "todo", "none", "null",
@@ -56,7 +58,13 @@ def looks_like_secret(name: str, value: str) -> bool:
         or re.fullmatch(r"[A-Z][A-Z0-9_]+", v) is not None  # names an env var instead of holding a value
         or re.search(r"\s", v) is not None  # sentences ("Enter your password") are not secrets
         or len(set(v)) <= 2  # "xxxxxxxx", "00000000"
+        or not v.isascii()  # translated UI text ("パスワード..."): secrets are ASCII
     )
+
+
+def is_translation_file(rel: str) -> bool:
+    """i18n files map keys like PASSWORD_HINT to UI text, never to secrets."""
+    return any(part.lower() in {"i18n", "locale", "locales", "translations", "lang", "l10n"} for part in rel.split("/")[:-1])
 
 
 def _python_candidates(tree: ast.Module):
@@ -107,8 +115,11 @@ def hardcoded_secrets(project: Project) -> list[Hit]:
                 report(rel, n, line, "", "private key", "high")
             elif (url := CONNECTION_PASSWORD.search(line)) and not looks_like_placeholder(url.group(1)):
                 report(rel, n, line, url.group(1), "password in connection URL", "high")
-        if example:
-            continue  # .env.example and friends hold placeholders by design
+        if example or is_test_file(rel) or is_translation_file(rel):
+            # Name-based checks are skipped here: .env.example holds placeholders, tests hold
+            # throwaway logins (admin123), translations hold UI text. Real key formats,
+            # private keys and connection-URL passwords above are still reported.
+            continue
         if rel in trees:
             for n, name, value in _python_candidates(trees[rel]):
                 if looks_like_secret(name, value) and n <= len(lines):

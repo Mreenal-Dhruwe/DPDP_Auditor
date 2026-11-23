@@ -1,7 +1,7 @@
-"""Scan target_app and compare with ground_truth.yml (scanner/evaluate.py).
+"""Scan the target apps and compare with their answer keys (scanner/evaluate.py).
 
-test_target_app_regression grows with the project: every new detector must find all of
-its planted issues in target_app and must not flag anything else.
+test_target_regression grows with the project: every detector must find all of its
+planted issues in each target and must not flag anything else (decoys included).
 """
 
 import pytest
@@ -9,21 +9,31 @@ import pytest
 from scanner.config import PROJECT_ROOT
 from scanner.detectors import covered_rules
 from scanner.engine import scan_folder
-from scanner.evaluate import GroundTruth, Planted, detects, evaluate, main
+from scanner.evaluate import Planted, detects, evaluate, load_ground_truth, main
 from scanner.models import Finding
 
-TARGET_APP = PROJECT_ROOT / "target_app"
+TARGETS = [("target_app", "ground_truth.yml"), ("target_app_js", "ground_truth_js.yml")]
 
 
-@pytest.fixture(scope="module")
-def result(ground_truth, catalogue):
-    return evaluate(scan_folder(TARGET_APP, catalogue), GroundTruth.model_validate(ground_truth), covered_rules())
+@pytest.fixture(scope="module", params=TARGETS, ids=[t for t, _ in TARGETS])
+def scanned(request, catalogue):
+    folder, key = request.param
+    truth = load_ground_truth(PROJECT_ROOT / key)
+    report = scan_folder(PROJECT_ROOT / folder, catalogue)
+    return report, truth, evaluate(report, truth, covered_rules())
 
 
-def test_target_app_regression(result):
+def test_target_regression(scanned):
+    _, _, result = scanned
     assert [f"{f.rule_id} {f.location}" for f in result.false_positives] == []
     assert [p.id for p in result.missed_with_detector] == []
     assert result.detected, "at least one planted issue should be detected"
+
+
+def test_no_planted_secret_reaches_the_report(scanned):
+    report, truth, _ = scanned
+    text = report.model_dump_json()
+    assert [value for value in truth.must_not_appear_in_report if value in text] == []
 
 
 def finding(catalogue, **location):
@@ -53,3 +63,5 @@ def test_command_line_report(capsys):
     out = capsys.readouterr().out
     assert "found   GT-05  DPDP-CON-001" in out
     assert "False positives: none" in out
+    assert main([str(PROJECT_ROOT / "target_app_js"), "--ground-truth", str(PROJECT_ROOT / "ground_truth_js.yml")]) == 0
+    assert "out of scope" in capsys.readouterr().out

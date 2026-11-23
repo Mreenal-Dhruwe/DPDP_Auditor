@@ -137,8 +137,13 @@ scanner/
   evaluate.py       # python -m scanner.evaluate: precision/recall vs ground_truth.yml
   detectors/        # consent, logs, storage, access, retention, thirdparty, children,
                     # rights, config_files, hardcoded_secrets; shared helpers routes.py,
-                    # source.py, schemas.py. Rule ownership + status in __init__.py.
-                    # Done: CON-001, SEC-004, SEC-001, SEC-005, SEC-002, RET-001
+                    # source.py, schemas.py, pii_refs.py, javascript.py (tree-sitter).
+                    # Rule ownership + status in __init__.py. Done (12): CON-001, CON-002,
+                    # SEC-001..005, SEC-008, TP-001, RET-001, RET-002, CH-001.
+                    # JS/TS (Express + Sequelize): SEC-001, SEC-005, CON-001 (routes),
+                    # SEC-002 + RET-001 (Sequelize models), SEC-004 (text). Express handlers
+                    # are resolved within the same file only; Prisma/Mongoose not yet.
+                    # Parsed files, routes and tables are cached on Project per scan.
   models.py         # Pydantic Finding, Report
   severity.py
   masking.py        # mask secrets and PII in evidence
@@ -147,8 +152,11 @@ scripts/make_mock_report.py  # writes frontend/src/mock/report.json from the rea
 rules/dpdp_rules.yml
 rules/build_preview.py
 target_app/         # deliberately vulnerable Flask app with ~30 planted issues
-ground_truth.yml    # answer key: planted issues (rule_id, file, line, anchor, match),
+ground_truth.yml    # answer key: planted issues (rule_id, file, line, anchor, scope),
                     # compliant decoys, not-applicable rules; format in its header
+target_app_js/      # small Express + Sequelize app (JS/TS) for the JavaScript support
+ground_truth_js.yml # its answer key; out_of_scope lists rules it does not judge
+                    # (their findings are set aside by the evaluator, not counted as FPs)
 tests/              # pytest: each rule has a vulnerable and a fixed fixture
 backend/
   main.py           # FastAPI app, /api routes, serves frontend/dist in production

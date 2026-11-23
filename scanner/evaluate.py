@@ -31,7 +31,7 @@ LINE_TOLERANCE = 3
 
 
 class Planted(ContractModel):
-    id: str = Field(pattern=r"^GT-\d{2,}$")
+    id: str = Field(pattern=r"^[A-Z]+-\d{2,}$")  # GT-01, JS-01 ...
     rule_id: RuleId
     scope: Scope = "line"
     file: RelPath | None = None
@@ -62,6 +62,9 @@ class GroundTruth(ContractModel):
     planted: list[Planted] = Field(min_length=1)
     compliant: list[RuleNote] = []
     not_applicable: list[RuleNote] = []
+    # Rules this answer key does not judge (e.g. a small fixture app built to test one
+    # language). Findings for them are set aside, not counted as false positives.
+    out_of_scope: list[RuleNote] = []
     must_not_appear_in_report: list[str] = []
 
 
@@ -88,6 +91,7 @@ class Evaluation:
     false_positives: list[Finding]
     findings: int
     covered: set[str]
+    ignored: int = 0  # findings for out-of-scope rules
 
     @property
     def missed_with_detector(self) -> list[Planted]:
@@ -103,16 +107,20 @@ class Evaluation:
 
 
 def evaluate(report: Report, truth: GroundTruth, covered: set[str]) -> Evaluation:
+    out_of_scope = {n.rule_id for n in truth.out_of_scope}
+    findings = [f for f in report.findings if f.rule_id not in out_of_scope]
+    covered = covered - out_of_scope
     detected, missed, true_positive_ids = [], [], set()
     for planted in truth.planted:
-        matching = [f for f in report.findings if detects(f, planted)]
+        matching = [f for f in findings if detects(f, planted)]
         if matching:
             detected.append((planted, matching[0]))
             true_positive_ids.update(f.id for f in matching)
         else:
             missed.append(planted)
-    false_positives = [f for f in report.findings if f.id not in true_positive_ids]
-    return Evaluation(detected, missed, false_positives, len(report.findings), covered)
+    false_positives = [f for f in findings if f.id not in true_positive_ids]
+    return Evaluation(detected, missed, false_positives, len(findings), covered,
+                      ignored=len(report.findings) - len(findings))
 
 
 def _ratio(name: str, hit: int, total: int) -> str:
@@ -134,7 +142,11 @@ def main(argv: list[str] | None = None) -> int:
     not_applicable = {n.rule_id for n in truth.not_applicable}
 
     print(f"Evaluating {report.target} against {args.ground_truth.name}: {len(truth.planted)} planted issues")
-    print(f"Detectors cover {len(covered)} of {len(catalogue.rules)} rules: {', '.join(sorted(covered)) or 'none'}\n")
+    print(f"Detectors cover {len(covered)} of {len(catalogue.rules)} rules: {', '.join(sorted(covered)) or 'none'}")
+    if truth.out_of_scope:
+        print(f"Judged here: {len(catalogue.rules) - len(truth.out_of_scope)} rules; "
+              f"{len(truth.out_of_scope)} out of scope ({result.ignored} findings for them set aside)")
+    print()
     found = {p.id: f for p, f in result.detected}
     for p in truth.planted:
         if p.id in found:

@@ -11,8 +11,10 @@ Next (hours 4-14): safe unzip (reject absolute paths and '..', skip symlinks, ca
 """
 
 import os
-from dataclasses import dataclass
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 from scanner.config import get_settings
 
@@ -33,10 +35,18 @@ class Project:
 
     root: Path
     files: list[str]
+    # Work shared by detectors within one scan (parsed files, routes, tables), so each file
+    # is parsed once instead of once per detector.
+    cache: dict[str, Any] = field(default_factory=dict, repr=False, compare=False)
 
     @property
     def name(self) -> str:
         return self.root.name
+
+    def cached(self, key: str, compute: Callable[[], Any]) -> Any:
+        if key not in self.cache:
+            self.cache[key] = compute()
+        return self.cache[key]
 
     def read_text(self, rel_path: str) -> str:
         """Read a file as text. Undecodable bytes become U+FFFD instead of crashing the scan."""

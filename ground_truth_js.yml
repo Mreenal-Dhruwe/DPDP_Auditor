@@ -1,0 +1,99 @@
+# Answer key for target_app_js/ (Express + Sequelize, JavaScript and TypeScript).
+# Same format as ground_truth.yml - see its header. Run:
+#   python -m scanner.evaluate target_app_js --ground-truth ground_truth_js.yml
+#
+# This small app exists to test the JavaScript / TypeScript support, so it only judges the
+# rules whose detectors read JS (out_of_scope lists the rest; findings for them are set
+# aside, not counted as false positives). Every planted issue sits next to a decoy that
+# must NOT be reported.
+
+target: target_app_js
+
+planted:
+  - id: JS-01
+    rule_id: DPDP-SEC-004
+    file: config.js
+    line: 4
+    anchor: "jwtSecret: '"
+    clue: pattern
+    note: JWT signing secret hard-coded in config.js.
+
+  - id: JS-02
+    rule_id: DPDP-SEC-002
+    file: models.js
+    line: 10
+    anchor: "pan: DataTypes.STRING"
+    clue: structure
+    note: Sequelize User model stores the PAN as a plain STRING.
+
+  - id: JS-03
+    rule_id: DPDP-RET-001
+    file: models.js
+    line: 20
+    anchor: "Lead.init({"
+    clue: absence
+    note: Lead holds email and mobile number, but no code ever destroys or anonymises leads.
+
+  - id: JS-04
+    rule_id: DPDP-SEC-001
+    file: server.ts
+    line: 21
+    anchor: "console.log('New signup', req.body.email, req.body.phone)"
+    clue: structure
+    note: Signup writes email and phone to the console log.
+
+  - id: JS-05
+    rule_id: DPDP-SEC-005
+    file: server.ts
+    line: 31
+    anchor: "app.get('/api/users/:id'"
+    clue: structure
+    note: GET /api/users/:id returns the whole user record with no auth middleware (IDOR).
+
+  - id: JS-06
+    rule_id: DPDP-CON-001
+    scope: project
+    file: server.ts
+    line: 45
+    anchor: "app.post('/consent'"
+    clue: absence
+    note: POST /consent grants consent; no route withdraws it.
+
+compliant:
+  - rule_id: DPDP-SEC-004
+    note: dbPassword and dbStorage come from process.env.
+  - rule_id: DPDP-SEC-002
+    note: User.password is hashed with bcrypt in the model's setter.
+  - rule_id: DPDP-RET-001
+    note: users can be erased (User.destroy in DELETE /api/me).
+  - rule_id: DPDP-SEC-001
+    note: logger.info logs only the internal user id.
+  - rule_id: DPDP-SEC-005
+    note: GET /api/me uses requireAuth; GET /admin/users is guarded by app.use('/admin', requireAuth).
+
+out_of_scope:
+  - {rule_id: DPDP-NOT-001, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-CON-002, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-CON-003, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-CON-004, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-CON-005, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-CON-006, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-SEC-003, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-SEC-006, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-SEC-007, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-SEC-008, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-SEC-009, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-SEC-010, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-TP-001, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-TP-002, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-BR-001, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-RET-002, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-RET-003, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-CH-001, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-CH-002, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-RT-001, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-RT-002, note: Not judged by the JS fixture app; see target_app.}
+  - {rule_id: DPDP-RT-003, note: Not judged by the JS fixture app; see target_app.}
+
+must_not_appear_in_report:
+  - shop-demo-91b7e3c04d2a46f8a1c5e9d7b3f20c68

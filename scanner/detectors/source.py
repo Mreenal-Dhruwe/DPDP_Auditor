@@ -16,6 +16,10 @@ TEXT_NAMES = {"dockerfile", ".env", "procfile", "makefile", "id_rsa", "id_dsa", 
 # Files where KEY=value / KEY: value lines are configuration (unquoted values allowed)
 CONFIG_SUFFIXES = {".env", ".ini", ".cfg", ".conf", ".properties", ".yml", ".yaml", ".toml", ".tfvars"}
 TEST_DIRS = {"test", "tests", "__tests__", "spec"}
+# Table / model names that hold people even when their columns are not visible
+PEOPLE_TABLES = {"user", "users", "customer", "customers", "patient", "patients", "member", "members",
+                 "account", "accounts", "profile", "profiles", "employee", "employees", "student",
+                 "students", "person", "people", "contact", "contacts", "borrower", "borrowers"}
 
 
 def name_of(rel: str) -> str:
@@ -59,15 +63,21 @@ def text_files(project: Project) -> Iterator[str]:
                 yield rel
 
 
-def python_trees(project: Project) -> Iterator[tuple[str, ast.Module]]:
-    """(relative path, syntax tree) for every .py file that parses. Others are skipped:
-    one broken or newer-syntax file must not stop the scan."""
-    for rel in project.files:
-        if rel.endswith(".py"):
-            try:
-                yield rel, ast.parse(project.read_text(rel), filename=rel)
-            except (SyntaxError, ValueError):
-                continue
+def python_trees(project: Project) -> list[tuple[str, ast.Module]]:
+    """(relative path, syntax tree) for every .py file that parses, parsed once per scan.
+    Files that don't parse are skipped: one broken file must not stop the scan."""
+
+    def parse_all() -> list[tuple[str, ast.Module]]:
+        trees = []
+        for rel in project.files:
+            if rel.endswith(".py"):
+                try:
+                    trees.append((rel, ast.parse(project.read_text(rel), filename=rel)))
+                except (SyntaxError, ValueError):
+                    continue
+        return trees
+
+    return project.cached("python_trees", parse_all)
 
 
 def dotted_name(node: ast.AST) -> str:

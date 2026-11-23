@@ -92,8 +92,15 @@ class PiiMatcher:
         self.fuzzy_words = sorted(w for w in self.sensitivity if "_" not in w and len(w) >= 4)
 
     def _label(self, key: str) -> str | None:
-        label = SYNONYMS.get(key, key)
-        return label if label in self.sensitivity else None
+        candidates = [key]
+        base, _, last = key.rpartition("_")
+        if base and last in {"no", "num", "nbr", "number"}:  # card_num -> card_number, aadhaar_no -> aadhaar
+            candidates += [f"{base}_number", base]
+        for candidate in candidates:
+            label = SYNONYMS.get(candidate, candidate)
+            if label in self.sensitivity:
+                return label
+        return None
 
     def match(self, name: str) -> PiiMatch | None:
         words = split_words(name)

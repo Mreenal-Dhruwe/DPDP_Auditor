@@ -33,7 +33,9 @@ tests/test_naming.py enforces it.
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from scanner.detectors import access, consent, hardcoded_secrets, logs, retention, storage
+from scanner.detectors import (
+    access, children, config_files, consent, hardcoded_secrets, logs, retention, storage, thirdparty,
+)
 from scanner.ingest import Project
 from scanner.models import Hit
 
@@ -52,6 +54,12 @@ DETECTORS: list[Detector] = [
     Detector("unauthenticated personal-data routes", ("DPDP-SEC-005",), access.unauthenticated_pii_routes),
     Detector("plaintext sensitive columns", ("DPDP-SEC-002",), storage.plaintext_sensitive_columns),
     Detector("personal data with no erase path", ("DPDP-RET-001",), retention.no_erase_path),
+    Detector("weak password hashing", ("DPDP-SEC-003",), storage.weak_password_hashing),
+    Detector("personal data sent to third-party SDKs", ("DPDP-TP-001",), thirdparty.pii_to_third_parties),
+    Detector("pre-ticked consent", ("DPDP-CON-002",), consent.pre_ticked_consent),
+    Detector("insecure infrastructure config", ("DPDP-SEC-008",), config_files.insecure_infrastructure),
+    Detector("immediate hard delete", ("DPDP-RET-002",), retention.immediate_hard_delete),
+    Detector("child data without parental consent", ("DPDP-CH-001",), children.no_parental_consent),
 ]
 
 

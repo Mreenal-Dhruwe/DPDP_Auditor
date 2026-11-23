@@ -22,6 +22,8 @@ def test_split_words():
     ("aadhaar_encrypted", "aadhaar", "high", "medium", True),
     ("emial", "email", "medium", "low", False),            # typo, fuzzy
     ("adress", "address", "medium", "low", False),
+    ("cardNum", "card_number", "high", "high", False),     # _num / _no / _nbr mean "number"
+    ("aadhaar_no", "aadhaar", "high", "high", False),
 ])
 def test_personal_data_names(name, label, sensitivity, confidence, protected):
     match = default_matcher().match(name)

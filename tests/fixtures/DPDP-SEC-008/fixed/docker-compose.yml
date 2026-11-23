@@ -1,0 +1,6 @@
+services:
+  web:
+    build: .
+    environment:
+      DEBUG: "false"
+      DATABASE_URL: postgres://app@db/app?sslmode=require

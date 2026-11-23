@@ -76,6 +76,14 @@ def test_placeholders_and_non_secrets(tmp_path, code):
     assert scan(write(tmp_path, "app.py", code + "\n")) == []
 
 
-def test_secrets_in_test_files_have_low_confidence(tmp_path):
-    [hit] = scan(write(tmp_path, "tests/test_login.py", 'PASSWORD = "Adm1n-Pass-2026"\n'))
-    assert hit.confidence == "low"
+def test_test_files_report_only_real_key_formats(tmp_path):
+    write(tmp_path, "tests/test_login.py", 'PASSWORD = "Adm1n-Pass-2026"\n')   # throwaway test login: skipped
+    write(tmp_path, "tests/test_aws.py", 'KEY = "' + "AKIA" + 'Q3EXAMPLEZ7XK2PL"\n')
+    [hit] = scan(tmp_path)
+    assert (hit.file, hit.confidence) == ("tests/test_aws.py", "low")
+
+
+def test_translations_are_not_secrets(tmp_path):
+    write(tmp_path, "i18n/ja_JP.json", '{\n  "MANDATORY_PASSWORD": "パスワードを入力してください"\n}\n')
+    write(tmp_path, "web/lang.json", '{"PASSWORD_HINT": "パスワードは8文字以上"}\n')  # non-ASCII outside i18n/
+    assert scan(tmp_path) == []

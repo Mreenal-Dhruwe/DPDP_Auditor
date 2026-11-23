@@ -15,8 +15,11 @@ Reading personal data without returning it (a login route reading password_hash)
 import ast
 import re
 
+from tree_sitter import Node
+
+from scanner.detectors.javascript import FUNCTION_TYPES, JsPiiRefs, arguments, callee, string_value, text, walk
 from scanner.detectors.routes import Route, find_routes
-from scanner.detectors.source import dotted_name, python_trees, string_key
+from scanner.detectors.source import PEOPLE_TABLES, dotted_name, python_trees, string_key
 from scanner.ingest import Project
 from scanner.models import Hit
 from scanner.pii import PiiMatcher, default_matcher
@@ -25,11 +28,13 @@ SEC_005 = "DPDP-SEC-005"
 AUTH_WORDS = ("login_required", "auth", "jwt", "token_required", "permission", "role", "admin_required",
               "protected", "authenticated", "current_user", "verify", "requires_user")
 AUTH_NAMES = {"session", "current_user", "get_jwt_identity", "verify_jwt_in_request"}
-PEOPLE_TABLES = {"user", "users", "customer", "customers", "patient", "patients", "member", "members",
-                 "account", "accounts", "profile", "profiles", "employee", "employees", "student",
-                 "students", "person", "people", "contact", "contacts", "borrower", "borrowers"}
 _SELECT = re.compile(r"\bselect\s+(.+?)\s+from\s+[`\"\[]?(\w+)", re.IGNORECASE | re.DOTALL)
-_PATH_ID = re.compile(r"[<{](?:\w+:)?(\w*id)[>}]", re.IGNORECASE)
+_PATH_ID = re.compile(r"[<{](?:\w+:)?(\w*id)[>}]|:(\w*id)\b", re.IGNORECASE)  # <int:user_id>, {id}, :id
+# Express: middleware names that check the user, and in-handler checks
+JS_AUTH_WORDS = AUTH_WORDS + ("deny", "passport", "ensure", "logged")
+JS_AUTH_HINTS = re.compile(r"req\.user\b|req\.session\b|isAuthenticated\(|jwt\.verify|verifyToken|"
+                           r"authenticatedUsers|req\.auth\b|getCurrentUser", re.IGNORECASE)
+_JS_SEND = re.compile(r"^(?:res|response|reply)(?:\.\w+)*\.(?:json|send|jsonp|end|render)$")
 
 
 def _is_auth(name: str) -> bool:
@@ -72,16 +77,22 @@ def _auth_hook_files(project: Project) -> set[str]:
 def _labels_in_sql(node: ast.AST, matcher: PiiMatcher) -> set[str]:
     labels = set()
     for const in ast.walk(node):
-        if not (isinstance(const, ast.Constant) and isinstance(const.value, str)):
-            continue
-        for columns, table in _SELECT.findall(const.value):
-            for column in columns.split(","):
-                name = column.strip().split()[-1].split(".")[-1].strip('`"[]')  # "u.email AS e" -> e
-                if name == "*":
-                    if table.lower() in PEOPLE_TABLES:
-                        labels.add(f"all columns of {table}")
-                elif (match := matcher.match(name)) and not match.protected:
-                    labels.add(match.label)
+        if isinstance(const, ast.Constant) and isinstance(const.value, str):
+            labels |= labels_in_select(const.value, matcher)
+    return labels
+
+
+def labels_in_select(sql: str, matcher: PiiMatcher) -> set[str]:
+    """Personal data selected by SQL text: 'SELECT email, phone FROM users' -> {email, phone}."""
+    labels = set()
+    for columns, table in _SELECT.findall(sql):
+        for column in columns.split(","):
+            name = column.strip().split()[-1].split(".")[-1].strip('`"[]') if column.strip() else ""
+            if name == "*":
+                if table.lower() in PEOPLE_TABLES:
+                    labels.add(f"all columns of {table}")
+            elif name and (match := matcher.match(name)) and not match.protected:
+                labels.add(match.label)
     return labels
 
 
@@ -127,20 +138,105 @@ def _returned_pii(route: Route, matcher: PiiMatcher) -> set[str]:
     return returned
 
 
+# --- Express (JavaScript / TypeScript) ------------------------------------------------------
+
+def _js_handler(route: Route) -> Node | None:
+    """The function that handles an Express route: inline, or defined in the same file
+    (handler or handler(): a factory returning the real (req, res) => ... function)."""
+    node = route.node
+    if node.type in FUNCTION_TYPES:
+        return node
+    if not route.function or route.module is None:
+        return None
+    for candidate in walk(route.module):
+        target = None
+        if candidate.type == "function_declaration" and text(candidate.child_by_field_name("name")) == route.function:
+            target = candidate
+        elif candidate.type == "variable_declarator" and text(candidate.child_by_field_name("name")) == route.function:
+            value = candidate.child_by_field_name("value")
+            target = value if value is not None and value.type in FUNCTION_TYPES else None
+        if target is None:
+            continue
+        if node.type != "call_expression":
+            return target
+        body = target.child_by_field_name("body")
+        if body is not None and body.type in FUNCTION_TYPES:
+            return body  # () => (req, res) => ...
+        for ret in walk(target):
+            if ret.type == "return_statement" and ret.named_children and ret.named_children[0].type in FUNCTION_TYPES:
+                return ret.named_children[0]
+    return None
+
+
+def _js_has_auth(route: Route, handler: Node | None) -> bool:
+    if any(any(word in name.lower() for word in JS_AUTH_WORDS) for name in route.decorators):
+        return True
+    return handler is not None and JS_AUTH_HINTS.search(text(handler)) is not None
+
+
+def _js_names(pattern: Node | None) -> list[str]:
+    """Variable names bound by `user` or `{ email, phone }` or `[row]`."""
+    if pattern is None:
+        return []
+    return [text(n) for n in walk(pattern) if n.type in {"identifier", "shorthand_property_identifier_pattern"}]
+
+
+def _js_value_labels(value: Node, matcher: PiiMatcher, tainted: dict[str, set[str]]) -> set[str]:
+    refs = JsPiiRefs(matcher, tainted)
+    refs.visit(value)
+    labels = set(refs.found)
+    for n in walk(value):
+        sql = string_value(n) if n.type == "string" else text(n) if n.type == "template_string" else None
+        if sql:
+            labels |= labels_in_select(sql, matcher)
+    return labels
+
+
+def _js_returned_pii(handler: Node, matcher: PiiMatcher) -> set[str]:
+    tainted: dict[str, set[str]] = {}
+    returned: set[str] = set()
+    for node in walk(handler):  # pre-order: an assignment is seen before the code that uses it
+        if node.type == "variable_declarator" and (value := node.child_by_field_name("value")) is not None:
+            labels = _js_value_labels(value, matcher, tainted)
+            for name in _js_names(node.child_by_field_name("name")) if labels else []:
+                tainted[name] = tainted.get(name, set()) | labels
+        elif node.type == "call_expression" and callee(node).endswith(".then"):
+            function = node.child_by_field_name("function")
+            labels = _js_value_labels(function.child_by_field_name("object"), matcher, tainted)
+            args = arguments(node)
+            if labels and args and args[0].type in FUNCTION_TYPES:  # User.findByPk(id).then(user => ...)
+                params = args[0].child_by_field_name("parameters") or args[0].child_by_field_name("parameter")
+                for name in _js_names(params):
+                    tainted[name] = tainted.get(name, set()) | labels
+        elif node.type == "call_expression" and _JS_SEND.match(callee(node)):
+            refs = JsPiiRefs(matcher, tainted)
+            for arg in arguments(node):
+                refs.visit(arg)
+            returned |= set(refs.found)
+    returned.discard("request body")  # echoing what the client itself sent is not exposure
+    return returned
+
+
 def unauthenticated_pii_routes(project: Project) -> list[Hit]:
     matcher = default_matcher()
     guarded = _auth_hook_files(project)
     hits = []
     for route in find_routes(project):
-        if _has_auth(route, guarded):
-            continue
-        labels = _returned_pii(route, matcher)
+        if route.language == "js":
+            handler = _js_handler(route)
+            if handler is None or _js_has_auth(route, handler):
+                continue
+            labels = _js_returned_pii(handler, matcher)
+        else:
+            if _has_auth(route, guarded):
+                continue
+            labels = _returned_pii(route, matcher)
         if not labels:
             continue
         idor = _PATH_ID.search(route.path)
         evidence = f"{route.describe()} returns {', '.join(sorted(labels))} with no authentication check"
         if idor:
-            evidence += f"; anyone can change <{idor.group(1)}> to read other people's data (IDOR)"
+            evidence += f"; anyone can change {idor.group(0)} to read other people's data (IDOR)"
         broad = any(label.startswith("all columns") or label.endswith("record") for label in labels)
         hits.append(Hit(rule_id=SEC_005, file=route.file, line=route.line, evidence=evidence,
                         pii=sorted(labels), confidence="medium" if broad else "high"))

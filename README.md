@@ -30,6 +30,7 @@ uvicorn backend.main:app --reload --port 8000
 python -m scanner.rules_loader                    # validate rules/dpdp_rules.yml, print a summary
 python -m scanner.cli target_app --out report/    # scan a folder -> report/report.json
 python -m scanner.evaluate                        # precision/recall on target_app vs ground_truth.yml
+python -m scanner.evaluate target_app_js --ground-truth ground_truth_js.yml   # the JS/TS target
 python -m scripts.make_mock_report                # regenerate frontend/src/mock/report.json
 python -m pytest                                  # all tests
 ```

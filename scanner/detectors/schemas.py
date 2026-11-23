@@ -5,14 +5,21 @@ Sources:
 - CREATE TABLE statements in .sql files and in SQL strings inside Python code
 - SQLAlchemy models (x = Column(...), db.Column(...), mapped_column(...))
 - Django models (class X(models.Model): x = models.CharField(...))
+- Sequelize models (JS/TS): const User = sequelize.define('User', {...}, {tableName}) and
+  UserModel.init({...}, {tableName, sequelize}). A column whose setter hashes or encrypts
+  the value (set(v) { this.setDataValue('password', bcrypt.hashSync(v)) }) gets type
+  "<TYPE>_HASHED" so storage checks treat it as protected.
 """
 
 import ast
 import re
 from dataclasses import dataclass, field
 
-from scanner.detectors.source import dotted_name, python_trees, string_key, suffix_of
+from scanner.detectors.javascript import arguments, callee, dotted, js_files, line_of, string_value, text, walk
+from scanner.detectors.source import PEOPLE_TABLES, dotted_name, python_trees, string_key, suffix_of  # noqa: F401
 from scanner.ingest import Project
+
+_HASHING_SETTER = re.compile(r"hash|encrypt|bcrypt|argon|scrypt|cipher", re.IGNORECASE)
 
 _CREATE = re.compile(
     r"\bcreate\s+(?:temporary\s+|temp\s+)?table\s+(?:if\s+not\s+exists\s+)?([`\"\[\]\w.]+)\s*\(", re.IGNORECASE
@@ -104,8 +111,59 @@ def _orm_tables(tree: ast.Module, file: str) -> list[Table]:
     return tables
 
 
-def find_tables(project: Project) -> list[Table]:
+def _sequelize_column(pair) -> Column | None:
+    key = pair.child_by_field_name("key")
+    value = pair.child_by_field_name("value")
+    name = string_value(key) if key is not None and key.type == "string" else text(key)
+    if not name or value is None:
+        return None
+    if value.type == "object":  # { type: DataTypes.STRING, allowNull: false, set (v) {...} }
+        col_type = "UNKNOWN"
+        for item in value.named_children:
+            item_key = text(item.child_by_field_name("key") or item.child_by_field_name("name"))
+            if item.type == "pair" and item_key == "type":
+                col_type = dotted(item.child_by_field_name("value")).rsplit(".", 1)[-1].upper() or "UNKNOWN"
+            elif item_key == "set" and _HASHING_SETTER.search(text(item)):
+                col_type += "_HASHED"
+    else:  # phone: DataTypes.STRING
+        col_type = (dotted(value).rsplit(".", 1)[-1] or value.type).upper()
+    return Column(name, col_type, line_of(pair))
+
+
+def _sequelize_tables(project: Project) -> list[Table]:
     tables = []
+    for f in js_files(project):
+        for node in walk(f.root):
+            if node.type != "call_expression":
+                continue
+            called, args = callee(node), arguments(node)
+            if called.endswith(".define") and len(args) >= 2 and string_value(args[0]) and args[1].type == "object":
+                model, attributes, options = string_value(args[0]), args[1], args[2] if len(args) > 2 else None
+                parent = node.parent.parent if node.parent is not None and node.parent.type == "await_expression" \
+                    else node.parent
+                if parent is not None and parent.type == "variable_declarator":
+                    model = text(parent.child_by_field_name("name"))  # code refers to the variable: User.destroy()
+            elif called.endswith(".init") and called.count(".") == 1 and args and args[0].type == "object":
+                model, attributes, options = called.split(".")[0], args[0], args[1] if len(args) > 1 else None
+            else:
+                continue
+            table_name = model
+            for item in options.named_children if options is not None and options.type == "object" else []:
+                if item.type == "pair" and text(item.child_by_field_name("key")) == "tableName":
+                    table_name = string_value(item.child_by_field_name("value")) or table_name
+            columns = [c for p in attributes.named_children if p.type == "pair" and (c := _sequelize_column(p))]
+            if columns:
+                tables.append(Table(table_name, f.rel, line_of(node), model=model, columns=columns))
+    return tables
+
+
+def find_tables(project: Project) -> list[Table]:
+    """All tables, computed once per scan (storage, retention and children all need them)."""
+    return project.cached("tables", lambda: _find_tables(project))
+
+
+def _find_tables(project: Project) -> list[Table]:
+    tables = _sequelize_tables(project)
     for rel in project.files:
         if suffix_of(rel) == ".sql":
             tables += sql_tables(project.read_text(rel), rel)

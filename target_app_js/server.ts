@@ -1,0 +1,54 @@
+// Demo target for the DPDP Compliance Auditor (Express + Sequelize, TypeScript).
+// Deliberately insecure: never deploy it. Answer key: ../ground_truth_js.yml
+import express, { NextFunction, Request, Response } from 'express'
+import { Lead, User } from './models'
+import { logger } from './logger'
+
+const app = express()
+app.use(express.json())
+
+function requireAuth (req: Request, res: Response, next: NextFunction) {
+  if (!req.headers.authorization) {
+    return res.status(401).json({ error: 'login required' })
+  }
+  next()
+}
+
+app.use('/admin', requireAuth)
+
+app.post('/signup', async (req: Request, res: Response) => {
+  const user = await User.create(req.body)
+  console.log('New signup', req.body.email, req.body.phone)
+  logger.info(`user ${user.id} created`)
+  res.status(201).json({ id: user.id })
+})
+
+app.post('/leads', async (req: Request, res: Response) => {
+  await Lead.create(req.body)
+  res.status(201).end()
+})
+
+app.get('/api/users/:id', async (req: Request, res: Response) => {
+  const user = await User.findByPk(req.params.id)
+  res.json(user)
+})
+
+app.get('/api/me', requireAuth, async (req: Request, res: Response) => {
+  const user = await User.findByPk(String(req.headers['x-user-id']))
+  res.json({ email: user?.email, phone: user?.phone })
+})
+
+app.get('/admin/users', async (req: Request, res: Response) => {
+  res.json(await User.findAll())
+})
+
+app.post('/consent', requireAuth, (req: Request, res: Response) => {
+  res.json({ ok: true, purpose: req.body.purpose })
+})
+
+app.delete('/api/me', requireAuth, async (req: Request, res: Response) => {
+  await User.destroy({ where: { id: String(req.headers['x-user-id']) } })
+  res.status(204).end()
+})
+
+app.listen(3000, () => logger.info('listening on 3000'))
