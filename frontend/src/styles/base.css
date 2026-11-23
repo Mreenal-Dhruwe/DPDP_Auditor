@@ -120,6 +120,14 @@ button {
   font-size: 0.78rem;
   letter-spacing: 0.05em;
 }
+/* small sans labels for data (legal references, field names): readable, never pixel */
+.fieldlabel {
+  display: block;
+  color: var(--faint);
+  font-size: 0.74rem;
+  font-weight: 550;
+  letter-spacing: 0.01em;
+}
 .mono,
 code,
 pre,

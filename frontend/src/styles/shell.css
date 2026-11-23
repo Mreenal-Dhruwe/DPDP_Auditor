@@ -251,7 +251,11 @@
     padding: 12px 16px;
   }
   .crumb .scope {
-    max-width: 55%;
+    max-width: 60%;
+  }
+  .crumb > span:first-child,
+  .crumb > svg {
+    display: none;
   }
   .heading {
     flex-direction: column;

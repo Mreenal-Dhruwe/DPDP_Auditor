@@ -1,144 +1,184 @@
-// Screen 3: one finding, with its code, the law behind it, severity and the fix.
+// One finding: masked code with the flagged line, what the detector saw, the scanner's
+// severity and reason, detection confidence, the legal mapping, the fix, review status and
+// exports. Rendered as a full page for direct links and inside the board's evidence drawer.
+// Every scanner field is shown as reported; only the review status can change here.
 
-import { Link, useParams, useSearchParams } from "react-router";
+import { ArrowLeft, ArrowRight, CircleCheck, FileCode2 } from "lucide-react";
+import { Link, useLocation, useParams, useSearchParams } from "react-router";
 import { CodeViewer } from "../components/CodeViewer";
 import { ExportButtons } from "../components/ExportButtons";
 import { LawCard } from "../components/LawCard";
-import { ReportError } from "../components/ReportError";
-import { ConfidenceTag, SeverityBadge } from "../components/SeverityBadge";
-import { Card, ErrorBox, Loading } from "../components/States";
-import { applyFilters, describeLocation, isFiltered, readFilters } from "../lib/findings";
-import { useReport } from "../lib/useReport";
+import { ReviewSelect } from "../components/ReviewSelect";
+import { ConfidenceMeter, Heading, Notice, SeverityBadge } from "../components/ui";
+import { applyFilters, describeLocation, isFiltered, piiLabel, readFilters } from "../lib/findings";
+import type { Finding } from "../types/contract";
+import { useScan } from "./ScanLayout";
 
 const CONFIDENCE_TEXT = {
   high: "The detector matched a clear pattern.",
   medium: "Likely, but the code may handle this elsewhere.",
-  low: "A weak signal: check it by hand before acting.",
+  low: "A weak signal: verify it by hand before acting.",
 } as const;
+const SCOPE_TEXT = { line: "One place in the code", file: "A whole file", project: "Missing across the project" } as const;
 
-export function FindingDetail() {
-  const { scanId = "", findingId = "" } = useParams();
+export function FindingView({ finding, inDrawer = false }: { finding: Finding; inDrawer?: boolean }) {
+  const { scanId, report } = useScan();
+  const location = useLocation();
   const [params] = useSearchParams();
-  const { report, error } = useReport(scanId);
-
-  if (error) return <ReportError scanId={scanId} status={error.status} message={error.message} />;
-  if (!report) return <Loading label="Loading the finding…" />;
-
   const search = params.toString() ? `?${params}` : "";
-  const back = `/scans/${scanId}${search}`;
-  const finding = report.findings.find((f) => f.id === findingId);
-  if (!finding) {
-    return (
-      <div className="mx-auto max-w-xl py-8">
-        <ErrorBox title="Finding not found">This report has no finding with id {findingId}.</ErrorBox>
-        <Link to={back} className="mt-4 inline-block text-sm font-medium text-accent hover:underline">
-          Back to all findings
-        </Link>
-      </div>
-    );
-  }
-
-  // Previous / next follow the dashboard's filters; if this finding is filtered out, use all.
   const filtered = applyFilters(report.findings, readFilters(params));
   const list = filtered.some((f) => f.id === finding.id) ? filtered : report.findings;
   const index = list.findIndex((f) => f.id === finding.id);
-  const prev = list[index - 1];
-  const next = list[index + 1];
-  const link = (id: string) => `/scans/${scanId}/findings/${id}${search}`;
+  const [prev, next] = [list[index - 1], list[index + 1]];
+  const link = (f: Finding) => ({ pathname: `/scans/${scanId}/findings/${f.id}`, search });
+  const navState = inDrawer ? location.state : undefined;
 
   return (
-    <div className="space-y-6">
-      <nav className="flex flex-wrap items-center justify-between gap-3 text-sm" aria-label="Findings">
-        <Link to={back} className="font-medium text-accent hover:underline">
-          ← {report.target}: all findings
-        </Link>
-        <div className="flex items-center gap-2">
-          <span className="tabular text-xs text-muted">
+    <article className={`findingview${inDrawer ? " indrawer" : ""}`}>
+      <div className="findingnav">
+        {!inDrawer && (
+          <Link className="textlink" to={`/scans/${scanId}${search}`}>
+            <ArrowLeft aria-hidden="true" /> {report.target}: all findings
+          </Link>
+        )}
+        <div className="stepper" aria-label="Findings">
+          <span className="tabular">
             {index + 1} of {list.length}
             {list === filtered && isFiltered(readFilters(params)) ? " (filtered)" : ""}
           </span>
-          <NavButton to={prev && link(prev.id)} label="Previous finding">←</NavButton>
-          <NavButton to={next && link(next.id)} label="Next finding">→</NavButton>
-        </div>
-      </nav>
-
-      <header>
-        <div className="flex flex-wrap items-center gap-2">
-          <SeverityBadge severity={finding.severity} size="lg" />
-          <span className="font-mono text-sm text-ink-2">{finding.rule_id}</span>
-          <span className="text-sm text-muted">· {finding.category}</span>
-        </div>
-        <h1 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">{finding.title}</h1>
-        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-          <span className="break-all font-mono text-ink-2">{describeLocation(finding)}</span>
-          <ConfidenceTag confidence={finding.confidence} />
-          {finding.pii.length > 0 && (
-            <span className="flex flex-wrap items-center gap-1">
-              <span className="text-xs text-muted">Personal data:</span>
-              {finding.pii.map((p) => (
-                <span key={p} className="rounded bg-accent-soft px-1.5 py-0.5 text-xs font-medium text-accent">
-                  {p.replaceAll("_", " ")}
-                </span>
-              ))}
+          {prev ? (
+            <Link className="icon-btn" to={link(prev)} state={navState} replace={inDrawer} aria-label="Previous finding" title="Previous finding">
+              <ArrowLeft aria-hidden="true" />
+            </Link>
+          ) : (
+            <span className="icon-btn" aria-hidden="true" data-disabled>
+              <ArrowLeft />
+            </span>
+          )}
+          {next ? (
+            <Link className="icon-btn" to={link(next)} state={navState} replace={inDrawer} aria-label="Next finding" title="Next finding">
+              <ArrowRight aria-hidden="true" />
+            </Link>
+          ) : (
+            <span className="icon-btn" aria-hidden="true" data-disabled>
+              <ArrowRight />
             </span>
           )}
         </div>
-      </header>
-
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="min-w-0 space-y-6">
-          <Card title="Code">
-            <CodeViewer finding={finding} />
-          </Card>
-          <Card title="Evidence">
-            <p className="break-words font-mono text-[13px] leading-relaxed text-ink">{finding.evidence}</p>
-            <p className="mt-2 text-xs text-muted">What the detector saw, on one line, with secrets and personal data masked.</p>
-          </Card>
-          <Card title="Recommended fix">
-            <div className="flex gap-3">
-              <svg viewBox="0 0 20 20" className="mt-0.5 size-5 shrink-0 text-ok-ink" aria-hidden="true">
-                <circle cx="10" cy="10" r="9" fill="currentColor" opacity=".14" />
-                <path d="M6 10.5l2.7 2.7L14 7.8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <p className="leading-relaxed text-ink">{finding.fix}</p>
-            </div>
-          </Card>
-        </div>
-
-        <div className="min-w-0 space-y-6">
-          <Card title="Severity">
-            <div className="space-y-3 text-sm">
-              <SeverityBadge severity={finding.severity} />
-              <p className="leading-relaxed text-ink">{finding.severity_reason}</p>
-              <p className="border-t border-line pt-3 text-xs text-ink-2">
-                <span className="font-medium text-ink">Confidence {finding.confidence}.</span> {CONFIDENCE_TEXT[finding.confidence]}
-              </p>
-            </div>
-          </Card>
-          <Card title="Law">
-            <LawCard law={finding.law} penalty={finding.penalty} />
-          </Card>
-          <Card title="Export the report">
-            <ExportButtons scanId={scanId} target={report.target} align="start" />
-            <p className="mt-2 text-xs text-muted">Every format holds all {report.summary.total} findings.</p>
-          </Card>
-        </div>
       </div>
 
-      <p className="text-xs text-muted">{report.disclaimer}</p>
-    </div>
+      <Heading
+        eyebrow={
+          <>
+            <span className="mono">{finding.rule_id}</span> · {finding.category}
+          </>
+        }
+        title={finding.title}
+      />
+      <div className="findingmeta">
+        <SeverityBadge severity={finding.severity} large />
+        <ConfidenceMeter confidence={finding.confidence} />
+        <span className="mono location">
+          <FileCode2 aria-hidden="true" />
+          {describeLocation(finding)}
+        </span>
+      </div>
+
+      <div className="detailgrid">
+        <div className="maincol">
+          <section className="panel">
+            <div className="between">
+              <h2 className="type-pixel">Evidence</h2>
+              <span className="chip">{SCOPE_TEXT[finding.scope]}</span>
+            </div>
+            <CodeViewer finding={finding} />
+            <h3>What the detector saw</h3>
+            <p className="evidence mono">{finding.evidence}</p>
+            <small className="note">Saved at scan time with secrets and personal data masked. The uploaded code itself was deleted.</small>
+            {finding.pii.length > 0 && (
+              <>
+                <h3>Personal data involved</h3>
+                <ul className="chips">
+                  {finding.pii.map((p) => (
+                    <li key={p} className="chip pii">
+                      {piiLabel(p)}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </section>
+          <section className="panel">
+            <h2 className="type-pixel">Recommended fix</h2>
+            <div className="fix">
+              <CircleCheck aria-hidden="true" />
+              <p>{finding.fix}</p>
+            </div>
+          </section>
+        </div>
+
+        <aside className="sidecol">
+          <section className="panel properties">
+            <h2 className="type-pixel">Finding properties</h2>
+            <dl>
+              <div>
+                <dt>Severity</dt>
+                <dd>
+                  <SeverityBadge severity={finding.severity} />
+                  <p>{finding.severity_reason}</p>
+                </dd>
+              </div>
+              <div>
+                <dt>Detection confidence</dt>
+                <dd>
+                  <ConfidenceMeter confidence={finding.confidence} />
+                  <p>{CONFIDENCE_TEXT[finding.confidence]}</p>
+                </dd>
+              </div>
+              <div>
+                <dt>Review status</dt>
+                <dd>
+                  <ReviewSelect id={finding.id} title={finding.title} />
+                  <p>Saved in this browser only.</p>
+                </dd>
+              </div>
+            </dl>
+          </section>
+          <LawCard law={finding.law} penalty={finding.penalty} disclaimer={report.disclaimer} />
+          <section className="panel">
+            <h2 className="type-pixel">Export the report</h2>
+            <ExportButtons scanId={scanId} target={report.target} />
+            <small className="note">Every format holds all {report.summary.total} findings.</small>
+          </section>
+        </aside>
+      </div>
+    </article>
   );
 }
 
-function NavButton({ to, label, children }: { to?: string; label: string; children: string }) {
-  const style = "inline-flex size-8 items-center justify-center rounded-md border border-line-strong bg-surface text-ink";
-  return to ? (
-    <Link to={to} aria-label={label} title={label} className={`${style} hover:border-accent hover:text-accent`}>
-      {children}
-    </Link>
-  ) : (
-    <span aria-hidden="true" className={`${style} opacity-40`}>
-      {children}
-    </span>
+/** Direct link to a finding: a full page. */
+export function FindingDetailPage() {
+  const { findingId = "" } = useParams();
+  const { scanId, report } = useScan();
+  const finding = report.findings.find((f) => f.id === findingId);
+  if (!finding) {
+    return (
+      <section className="page narrow arrive">
+        <Heading eyebrow="Finding" title="Finding not found" />
+        <Notice kind="error" title="Unknown finding">
+          This report has no finding with id {findingId}.
+        </Notice>
+        <div className="formactions">
+          <Link className="btn mint" to={`/scans/${scanId}`}>
+            Back to the overview
+          </Link>
+        </div>
+      </section>
+    );
+  }
+  return (
+    <section className="page arrive">
+      <FindingView finding={finding} />
+    </section>
   );
 }
