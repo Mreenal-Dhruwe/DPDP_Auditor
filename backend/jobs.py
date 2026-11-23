@@ -21,7 +21,9 @@ from typing import Any, Literal
 from scanner.config import Settings
 from scanner.engine import scan_folder
 from scanner.ingest import IngestError, clone_git, remove_tree, safe_unzip
-from scanner.models import Report
+from pydantic import BaseModel, ConfigDict
+
+from scanner.models import Report, Summary
 from scanner.report.html_out import write_html
 from scanner.report.json_out import write_json
 from scanner.report.sarif_out import write_sarif
@@ -29,6 +31,7 @@ from scanner.rules_loader import RuleCatalogue, RulesError
 
 log = logging.getLogger("dpdp.jobs")
 Status = Literal["queued", "running", "done", "failed"]
+Source = Literal["zip", "git"]
 STEPS = {
     "zip": ["queued", "unpacking", "scanning", "writing reports", "done"],
     "git": ["queued", "cloning", "scanning", "writing reports", "done"],
@@ -47,11 +50,35 @@ def now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+class ScanStarted(BaseModel):
+    """Response of POST /api/scan."""
+
+    model_config = ConfigDict(extra="forbid")
+    scan_id: str
+
+
+class ScanStatus(BaseModel):
+    """Response of GET /api/scan/{id}: never paths, never raw evidence. `steps` lists every
+    step of this kind of scan in order; `step` is the current one ("failed" on failure)."""
+
+    model_config = ConfigDict(extra="forbid", json_schema_serialization_defaults_required=True)
+    scan_id: str
+    target: str
+    source: Source
+    status: Status
+    step: str
+    steps: list[str]
+    created_at: datetime
+    finished_at: datetime | None = None
+    error: str | None = None
+    summary: Summary | None = None  # set when the scan is done
+
+
 @dataclass
 class Job:
     id: str
     target: str
-    source: str  # "zip" | "git"
+    source: Source
     status: Status = "queued"
     step: str = "queued"
     created_at: datetime = field(default_factory=now)
@@ -61,19 +88,12 @@ class Job:
     report_dir: Path | None = None
 
     def public(self) -> dict[str, Any]:
-        """What GET /api/scan/{id} returns: never paths, never raw evidence."""
-        return {
-            "scan_id": self.id,
-            "target": self.target,
-            "source": self.source,
-            "status": self.status,
-            "step": self.step,
-            "steps": STEPS[self.source],
-            "created_at": self.created_at.isoformat(),
-            "finished_at": self.finished_at.isoformat() if self.finished_at else None,
-            "error": self.error,
-            "summary": self.report.summary.model_dump() if self.report else None,
-        }
+        """What GET /api/scan/{id} returns (a ScanStatus)."""
+        return ScanStatus(
+            scan_id=self.id, target=self.target, source=self.source, status=self.status, step=self.step,
+            steps=STEPS[self.source], created_at=self.created_at, finished_at=self.finished_at,
+            error=self.error, summary=self.report.summary if self.report else None,
+        ).model_dump(mode="json")
 
 
 class JobStore:

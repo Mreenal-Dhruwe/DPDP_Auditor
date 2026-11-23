@@ -1,7 +1,8 @@
 """The Finding contract, shared by the engine, the reports, the backend and the frontend.
 
-Frozen in hours 0-4. Change it only as a team decision, and then update CLAUDE.md, the
-TypeScript types in frontend/src/api.ts and the mock report together.
+Frozen in hours 0-4. Change it only as a team decision, and then update CLAUDE.md and
+regenerate the TypeScript types (python -m scripts.make_ts_types) and the mock report
+(python -m scripts.make_mock_report); tests fail while either is out of date.
 
 How a finding is made:
     detector     -> Hit       rule_id, file, line, evidence, pii, confidence (no legal text)
@@ -130,9 +131,11 @@ def describe_location(scope: str, file: str | None, line: int | None) -> str:
 
 
 class ContractModel(BaseModel):
-    """Base for every contract model: unknown keys are errors, so typos fail loudly."""
+    """Base for every contract model: unknown keys are errors, so typos fail loudly.
+    Fields with defaults are always present in the JSON output, so the generated
+    TypeScript types mark them as required."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", json_schema_serialization_defaults_required=True)
 
 
 class Law(ContractModel):
