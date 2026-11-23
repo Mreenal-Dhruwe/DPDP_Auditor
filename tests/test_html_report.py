@@ -31,7 +31,9 @@ def test_sections_and_disclaimer(html, target_report):
     for section in ('id="summary"', 'id="coverage"', 'id="findings"', 'id="disclaimer"'):
         assert section in html
     assert target_report.disclaimer in html
-    assert "Automated checks ran for" in html and "need a manual review" in html
+    assert "Automated checks ran for" in html
+    # all 28 rules are automated now: the report says so and points at "verify manually" findings
+    assert "need a manual review" in html or "Every rule has an automated check" in html
 
 
 def test_context_is_shown_masked_with_the_line_highlighted(html, target_report):

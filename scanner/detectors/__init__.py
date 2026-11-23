@@ -16,7 +16,7 @@ consent.py        DPDP-NOT-001, DPDP-CON-001 to DPDP-CON-006   (all done)
 logs.py           DPDP-SEC-001, DPDP-SEC-007                   (both done; Python + JS)
 storage.py        DPDP-SEC-002, DPDP-SEC-003                   (SEC-002 done)
 access.py         DPDP-SEC-005, DPDP-SEC-006                   (both done; Python + Express)
-retention.py      DPDP-RET-001 to DPDP-RET-003                 (RET-001 done)
+retention.py      DPDP-RET-001 to DPDP-RET-003                 (all done)
 thirdparty.py     DPDP-TP-001 (done); TP-002 lives in config_files.py (cloud regions)
 children.py       DPDP-CH-001, DPDP-CH-002                     (both done)
 rights.py         DPDP-RT-001 to DPDP-RT-003, DPDP-BR-001        (all done)
@@ -75,6 +75,7 @@ DETECTORS: list[Detector] = [
     Detector("consent in one language", ("DPDP-CON-006",), consent.single_language_consent),
     Detector("no backups", ("DPDP-SEC-009",), config_files.missing_backups),
     Detector("data stored outside India", ("DPDP-TP-002",), config_files.regions_outside_india),
+    Detector("no notice before inactivity erasure", ("DPDP-RET-003",), retention.no_inactivity_notice),
 ]
 
 

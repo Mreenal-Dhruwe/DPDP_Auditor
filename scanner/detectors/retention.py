@@ -20,6 +20,7 @@ json-server, DRF ModelViewSet ...): those can include DELETE routes that are not
 import ast
 import re
 
+from scanner.detectors.javascript import FUNCTION_TYPES, js_files, line_of, text, walk
 from scanner.detectors.routes import find_routes
 from scanner.detectors.schemas import Table, find_tables
 from scanner.detectors.source import PEOPLE_TABLES, dotted_name, is_test_file, python_trees, suffix_of, text_files
@@ -191,4 +192,77 @@ def immediate_hard_delete(project: Project) -> list[Hit]:
                 rule_id=RET_002, file=rel, line=line, confidence="high" if logs else "medium",
                 evidence=f"{lines[line - 1].strip()}  [{func.name}() hard-deletes {table} immediately{also}]",
             ))
+    return sorted(hits, key=lambda h: (h.file, h.line))
+
+
+# --- DPDP-RET-003: no notice before erasing inactive accounts ---------------------------------
+#
+# Rule 8(2) (Third Schedule fiduciaries: large e-commerce, gaming, social media): erase after
+# the inactivity period, but tell the user at least 48 hours before. A function or job that
+# deletes or anonymises accounts selected by inactivity (last_login, last_seen, inactive,
+# dormant ...) is reported when nothing in it - or in a same-file function it calls - notifies
+# the user (notify, notice, email, SMS, warn, remind). Python and JavaScript / TypeScript.
+# Low confidence: the notice may be sent by another job, and the rule only binds Third
+# Schedule classes.
+
+RET_003 = "DPDP-RET-003"
+INACTIVITY = re.compile(r"inactiv|dormant|last_?login|lastLogin|last_?seen|lastSeen|last_?active|lastActive"
+                        r"|last_?activity|lastActivity|idle_?since", re.IGNORECASE)
+ERASES = re.compile(r"\bdelete\s+from\b|\.delete\(|\.destroy\(|\bdelete_many\(|\bdeleteMany\(|anonymi[sz]|\berase"
+                    r"|\bpurge|\btruncate\b", re.IGNORECASE)
+# a message to the user - not the word "email" alone (`email: null` wipes the field)
+NOTIFIES = re.compile(r"notif|notice|send_?e?-?mail|sendMail|mail(?:er)?\.send|\bsms\b|sendSms|send_sms"
+                      r"|\bwarn(?!ing\()|remind|alert_user|push_message", re.IGNORECASE)
+
+
+def _py_inactive_purges(project: Project) -> list[tuple[str, int, str]]:
+    found = []
+    for rel, tree in python_trees(project):
+        if is_test_file(rel):
+            continue
+        lines = project.read_text(rel).splitlines()
+        functions = {n.name: n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
+        source = {name: "\n".join(lines[f.lineno - 1:f.end_lineno]) for name, f in functions.items()}
+        for name, func in functions.items():
+            body = source[name]
+            if not (INACTIVITY.search(body) and ERASES.search(body)):
+                continue
+            called = {dotted_name(c.func).rsplit(".", 1)[-1] for c in ast.walk(func) if isinstance(c, ast.Call)}
+            if NOTIFIES.search(body) or any(NOTIFIES.search(source[c]) for c in called if c in source and c != name):
+                continue
+            found.append((rel, func.lineno, name))
+    return found
+
+
+def _js_inactive_purges(project: Project) -> list[tuple[str, int, str]]:
+    found = []
+    for f in js_files(project):
+        if is_test_file(f.rel):
+            continue
+        matches = []
+        for node in walk(f.root):
+            if node.type in FUNCTION_TYPES:
+                body = text(node)
+                if INACTIVITY.search(body) and ERASES.search(body) and not NOTIFIES.search(body):
+                    matches.append(node)
+        for node in matches:  # keep the outermost function only
+            parent = node.parent
+            while parent is not None and parent not in matches:
+                parent = parent.parent
+            if parent is None:
+                name = text(node.child_by_field_name("name"))
+                if not name and node.parent is not None and node.parent.type == "variable_declarator":
+                    name = text(node.parent.child_by_field_name("name"))
+                found.append((f.rel, line_of(node), name or "job"))
+    return found
+
+
+def no_inactivity_notice(project: Project) -> list[Hit]:
+    hits = []
+    for rel, line, name in _py_inactive_purges(project) + _js_inactive_purges(project):
+        source = project.read_text(rel).splitlines()[line - 1].strip()
+        hits.append(Hit(rule_id=RET_003, file=rel, line=line, confidence="low",
+                        evidence=f"{source}  [{name}() erases inactive accounts but nothing warns the user first; "
+                                 f"Rule 8(2) asks for 48 hours' notice; verify manually: the notice may be another "
+                                 f"job, and the rule binds Third Schedule fiduciaries]"))
     return sorted(hits, key=lambda h: (h.file, h.line))

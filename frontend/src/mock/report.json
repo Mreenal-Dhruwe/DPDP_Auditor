@@ -4,10 +4,10 @@
   "rules_version": "0.1.0",
   "target": "target_app",
   "generated_at": "2026-11-23T09:00:00Z",
-  "files_scanned": 9,
+  "files_scanned": 10,
   "coverage": {
     "files_by_kind": {
-      "python": 4,
+      "python": 5,
       "config": 2,
       "other": 1,
       "sql": 1,
@@ -36,15 +36,14 @@
       "DPDP-BR-001",
       "DPDP-RET-001",
       "DPDP-RET-002",
+      "DPDP-RET-003",
       "DPDP-CH-001",
       "DPDP-CH-002",
       "DPDP-RT-001",
       "DPDP-RT-002",
       "DPDP-RT-003"
     ],
-    "rules_not_checked": [
-      "DPDP-RET-003"
-    ]
+    "rules_not_checked": []
   },
   "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes.",
   "summary": {
@@ -477,7 +476,7 @@
           "    aadhaar       TEXT NOT NULL,",
           "    city          TEXT NOT NULL,",
           "    password_hash TEXT NOT NULL,",
-          "    created_at    TEXT NOT NULL"
+          "    created_at    TEXT NOT NULL,"
         ]
       },
       "pii": [

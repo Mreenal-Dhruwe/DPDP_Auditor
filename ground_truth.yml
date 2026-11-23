@@ -164,6 +164,8 @@ compliant:
     note: Backend analytics runs only for adults (is_adult(dob) is checked before mp.track); the page tracker is GT-12.
   - rule_id: DPDP-BR-001
     note: incident.py notifies affected users and builds the Board report with a 72-hour deadline.
+  - rule_id: DPDP-RET-003
+    note: jobs.py emails a 48-hour notice first; purge_inactive_users only erases accounts noticed more than 48 hours ago.
   - rule_id: DPDP-RET-001
     note: Personal data has an erasure path (DELETE /api/me); the way it erases is GT-06.
   - rule_id: DPDP-RT-001
@@ -173,9 +175,7 @@ compliant:
   - rule_id: DPDP-RT-003
     note: POST /grievance, plus a published Grievance Officer contact in the page footer.
 
-not_applicable:
-  - rule_id: DPDP-RET-003
-    note: No inactivity-based erasure job.
+not_applicable: []  # every rule now has a planted issue or a compliant look-alike
 
 must_not_appear_in_report:
   - lending-demo-4f9a7c2e81b64d0c9e3a5b7d1f2c8e60

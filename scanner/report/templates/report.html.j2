@@ -138,6 +138,10 @@
       </table>
     </div>
   </details>
+  {% else %}
+  <p>Every rule has an automated check. Some rules can only be judged partly from code (a notice in a
+     modal, backups set up in a cloud console): their findings have low confidence and say
+     <em>verify manually</em>.</p>
   {% endif %}
   {% endif %}
 </section>

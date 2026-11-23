@@ -220,6 +220,14 @@ planted:
     clue: config
     note: The database holding user data is in us-east-1, outside India (info - allowed unless restricted).
 
+  - id: JS-27
+    rule_id: DPDP-RET-003
+    file: jobs/purgeInactive.ts
+    line: 8
+    anchor: "export async function purgeInactiveUsers ()"
+    clue: absence
+    note: The nightly job deletes accounts unused for three years without warning users 48 hours before.
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -246,7 +254,6 @@ out_of_scope:
   - {rule_id: DPDP-SEC-008, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-TP-001, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-RET-002, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-RET-003, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CH-001, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CH-002, note: Not judged by the JS fixture app; see target_app.}
 

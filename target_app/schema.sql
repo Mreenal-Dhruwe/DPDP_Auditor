@@ -8,7 +8,9 @@ CREATE TABLE users (
     aadhaar       TEXT NOT NULL,
     city          TEXT NOT NULL,
     password_hash TEXT NOT NULL,
-    created_at    TEXT NOT NULL
+    created_at    TEXT NOT NULL,
+    last_login_at TEXT,
+    erasure_notice_sent_at TEXT
 );
 
 CREATE TABLE consents (
