@@ -35,6 +35,9 @@ class Settings(BaseModel):
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     api_port: int = Field(8000, ge=1, le=65535)
     allowed_origins: list[str] = ["http://localhost:5173"]
+    # Git URLs the backend may clone: https only, these hosts only (no file://, no internal hosts)
+    allowed_git_hosts: list[str] = ["github.com", "gitlab.com", "bitbucket.org"]
+    git_clone_timeout: int = Field(120, gt=0)  # seconds
 
     @field_validator("upload_dir", "report_dir", "rules_file")
     @classmethod
@@ -46,7 +49,7 @@ class Settings(BaseModel):
     def _upper_case(cls, value):
         return value.upper() if isinstance(value, str) else value
 
-    @field_validator("allowed_origins", mode="before")
+    @field_validator("allowed_origins", "allowed_git_hosts", mode="before")
     @classmethod
     def _comma_separated(cls, value):
         if isinstance(value, str):

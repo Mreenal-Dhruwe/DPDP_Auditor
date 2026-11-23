@@ -16,7 +16,7 @@ weasyprint>=60.0
 fastapi>=0.110
 uvicorn[standard]>=0.27
 python-multipart>=0.0.9
-# Ingest from git URLs
-gitpython>=3.1
+# Ingest from git URLs uses the git command-line tool (install Git; no Python package needed)
 # Testing
 pytest>=8.0
+httpx>=0.27  # FastAPI TestClient

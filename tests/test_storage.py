@@ -41,3 +41,12 @@ def test_create_table_inside_python_strings(tmp_path):
         encoding="utf-8")
     [hit] = scan(tmp_path)
     assert (hit.file, hit.line, hit.pii) == ("db.py", 6, ["aadhaar"])
+
+
+def test_password_column_with_slow_hashing_in_code_is_low_confidence(tmp_path):
+    (tmp_path / "schema.sql").write_text("CREATE TABLE user (\n  id INTEGER,\n  password TEXT NOT NULL\n);\n", encoding="utf-8")
+    [plain] = scan(tmp_path)
+    assert plain.confidence == "high"
+    (tmp_path / "auth.py").write_text("from werkzeug.security import generate_password_hash\n", encoding="utf-8")
+    [hashed] = plaintext_sensitive_columns(Project.from_folder(tmp_path, max_files=10))
+    assert hashed.confidence == "low" and "generate_password_hash" in hashed.evidence

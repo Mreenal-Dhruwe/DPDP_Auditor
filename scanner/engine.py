@@ -40,8 +40,10 @@ def coverage_of(project: Project, catalogue: RuleCatalogue) -> Coverage:
 
 
 def scan_folder(folder: Path | str, catalogue: RuleCatalogue | None = None,
-                max_files: int | None = None) -> Report:
-    """Scan a local folder (read only) and return the validated Report."""
+                max_files: int | None = None, target: str | None = None) -> Report:
+    """Scan a local folder (read only) and return the validated Report. `target` is the
+    name shown in the report (default: the folder name; the backend passes the upload's
+    name, since uploads are unpacked into temp folders)."""
     catalogue = catalogue or load_rules()
     project = Project.from_folder(folder, max_files=max_files)
     known_files = set(project.files)
@@ -56,7 +58,7 @@ def scan_folder(folder: Path | str, catalogue: RuleCatalogue | None = None,
 
     findings = [catalogue.to_finding(hit, source_lines(hit.file)) for hit in run_all(project)]
     return Report(
-        target=project.name,
+        target=target or project.name,
         rules_version=catalogue.meta.version,
         disclaimer=catalogue.meta.disclaimer,
         files_scanned=len(project.files),

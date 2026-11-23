@@ -14,12 +14,13 @@ Also implemented: DPDP-SEC-003 (weak password hashing), for Python and JavaScrip
 """
 
 import ast
+import re
 
 from scanner.detectors.javascript import (
     FUNCTION_TYPES, arguments, callee, js_files, line_of, string_value, text, walk,
 )
 from scanner.detectors.schemas import find_tables
-from scanner.detectors.source import dotted_name, is_test_file, python_trees, string_key
+from scanner.detectors.source import dotted_name, is_test_file, python_trees, string_key, suffix_of, text_files
 from scanner.ingest import Project
 from scanner.models import Hit
 from scanner.pii import default_matcher, split_words
@@ -93,9 +94,25 @@ def weak_password_hashing(project: Project) -> list[Hit]:
     return sorted(list(hits.values()) + js_hits, key=lambda h: (h.file, h.line))
 
 
+# Calls that hash passwords properly (slow, salted). If the code uses one, a "password"
+# column most likely stores its output - but the scanner cannot prove which column.
+SLOW_PASSWORD_HASH = re.compile(
+    r"generate_password_hash|bcrypt|argon2|passlib|make_password|scrypt|pbkdf2|hashpw|password_hash\(")
+
+
+def _slow_password_hashing(project: Project) -> str | None:
+    """The first slow password-hashing call found in application code, if any."""
+    for rel in text_files(project):
+        if suffix_of(rel) in {".py", ".js", ".ts", ".jsx", ".tsx", ".mjs", ".cjs", ".java", ".go", ".rb", ".php", ".cs"} \
+                and not is_test_file(rel) and (m := SLOW_PASSWORD_HASH.search(project.read_text(rel))):
+            return m.group(0).rstrip("(")
+    return None
+
+
 def plaintext_sensitive_columns(project: Project) -> list[Hit]:
     matcher = default_matcher()
     hits = []
+    slow_hashing = None
     for table in find_tables(project):
         lines = None
         for column in table.columns:
@@ -106,10 +123,16 @@ def plaintext_sensitive_columns(project: Project) -> list[Hit]:
                 continue
             lines = lines or project.read_text(table.file).splitlines()
             evidence = lines[column.line - 1] if column.line <= len(lines) else f"{column.name} {column.type}"
+            note, confidence = "", match.confidence
+            if match.label == "password":
+                slow_hashing = slow_hashing or _slow_password_hashing(project) or ""
+                if slow_hashing:  # e.g. Flask's tutorial: password TEXT holding generate_password_hash(...)
+                    note = f"; the code hashes passwords with {slow_hashing}, check this column stores that hash"
+                    confidence = "low"
             hits.append(Hit(
                 rule_id=SEC_002, file=table.file, line=column.line, pii=[match.label],
-                evidence=f"{evidence.strip()}  [{table.name}.{column.name} stored as {column.type}]",
-                confidence=match.confidence,
+                evidence=f"{evidence.strip()}  [{table.name}.{column.name} stored as {column.type}{note}]",
+                confidence=confidence,
             ))
     return sorted(hits, key=lambda h: (h.file, h.line))
 

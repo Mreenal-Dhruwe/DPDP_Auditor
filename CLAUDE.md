@@ -154,7 +154,8 @@ scanner/
   models.py         # Pydantic Finding, Report
   severity.py
   masking.py        # mask secrets and PII in evidence
-  report/           # json_out.py, html_out.py (Jinja2), pdf_out.py, sarif_out.py
+  report/           # json_out.py, html_out.py (Jinja2, self-contained), pdf_out.py
+                    # (WeasyPrint), sarif_out.py (validated against SARIF 2.1.0 schema)
 scripts/make_mock_report.py  # writes frontend/src/mock/report.json from the real models
 rules/dpdp_rules.yml
 rules/build_preview.py
@@ -166,8 +167,14 @@ ground_truth_js.yml # its answer key; out_of_scope lists rules it does not judge
                     # (their findings are set aside by the evaluator, not counted as FPs)
 tests/              # pytest: each rule has a vulnerable and a fixed fixture
 backend/
-  main.py           # FastAPI app, /api routes, serves frontend/dist in production
-  jobs.py           # in-memory scan jobs + BackgroundTasks, temp-folder cleanup
+  main.py           # FastAPI app (create_app(settings)), /api routes, serves frontend/dist
+                    # in production. Done: all endpoints; PDF -> 501 when WeasyPrint's Pango
+                    # libraries are missing (Windows); Docker needs apt libpango-1.0-0
+                    # libpangoft2-1.0-0 for PDF
+  jobs.py           # in-memory scan jobs + BackgroundTasks; per-job temp folder always
+                    # deleted (ingest.remove_tree also clears read-only git files); reports in
+                    # REPORT_DIR/<scan_id>/ expire after REPORT_TTL_DAYS. Git ingest: https on
+                    # ALLOWED_GIT_HOSTS only, shallow clone via the git CLI (no GitPython)
 frontend/           # React + Vite + TypeScript + Tailwind
   src/pages/        # Upload.tsx, Dashboard.tsx, FindingDetail.tsx
   src/components/   # SeverityBadge, LawCard, CodeViewer, FindingsTable, StatTiles
