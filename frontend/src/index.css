@@ -21,6 +21,7 @@
   --accent: #1c5cab;
   --accent-hover: #184f95;
   --accent-soft: #e8f1fc;
+  --on-accent: #ffffff;
   --focus: #2a78d6;
   --series-1: #2a78d6;
   --danger-ink: #a12a2a;
@@ -52,6 +53,7 @@
     --accent: #6da7ec;
     --accent-hover: #86b6ef;
     --accent-soft: #17263a;
+    --on-accent: #0d0d0d;
     --focus: #5598e7;
     --series-1: #3987e5;
     --danger-ink: #f19a9a;
@@ -78,6 +80,7 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
   --color-danger-ink: var(--danger-ink);
   --color-danger-soft: var(--danger-soft);
   --color-ok-ink: var(--ok-ink);

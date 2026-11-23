@@ -7,14 +7,15 @@ export function Layout() {
     `rounded-md px-3 py-1.5 text-sm transition-colors ${isActive ? "bg-white/15 text-brand-ink" : "text-brand-ink/80 hover:bg-white/10 hover:text-brand-ink"}`;
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="bg-brand text-brand-ink">
+      <header className="border-b border-white/10 bg-brand text-brand-ink">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6">
           <Link to="/" className="flex items-center gap-2.5 font-semibold tracking-tight">
             <ShieldIcon />
-            <span>DPDP Compliance Auditor</span>
+            <span className="hidden sm:inline">DPDP Compliance Auditor</span>
+            <span className="sm:hidden">DPDP Auditor</span>
           </Link>
           {MOCK_MODE && (
-            <span className="rounded border border-white/30 px-1.5 py-0.5 text-xs text-brand-ink/80">mock API</span>
+            <span className="hidden rounded border border-white/30 px-1.5 py-0.5 text-xs text-brand-ink/80 sm:inline">mock API</span>
           )}
           <nav className="ml-auto flex items-center gap-1">
             <NavLink to="/" end className={nav}>New scan</NavLink>

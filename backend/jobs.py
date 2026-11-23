@@ -59,7 +59,7 @@ class ScanStarted(BaseModel):
 
 class ScanStatus(BaseModel):
     """Response of GET /api/scan/{id}: never paths, never raw evidence. `steps` lists every
-    step of this kind of scan in order; `step` is the current one ("failed" on failure)."""
+    step of this kind of scan in order; `step` is the current one, or the one that failed."""
 
     model_config = ConfigDict(extra="forbid", json_schema_serialization_defaults_required=True)
     scan_id: str
@@ -152,9 +152,9 @@ def run_scan(store: JobStore, job_id: str, work_dir: Path, settings: Settings, c
         write_sarif(report, out, catalogue)
         store.update(job_id, status="done", step="done", report=report, report_dir=out, finished_at=now())
     except (IngestError, RulesError) as exc:
-        store.update(job_id, status="failed", step="failed", error=str(exc), finished_at=now())
+        store.update(job_id, status="failed", error=str(exc), finished_at=now())
     except Exception:  # never show internals (paths, stack traces) to the client
         log.exception("scan %s failed", job_id)
-        store.update(job_id, status="failed", step="failed", error="internal error while scanning", finished_at=now())
+        store.update(job_id, status="failed", error="internal error while scanning", finished_at=now())
     finally:
         remove_tree(work_dir)

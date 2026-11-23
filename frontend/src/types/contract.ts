@@ -95,7 +95,7 @@ export interface ScanStarted {
 
 /**
  * Response of GET /api/scan/{id}: never paths, never raw evidence. `steps` lists every
- * step of this kind of scan in order; `step` is the current one ("failed" on failure).
+ * step of this kind of scan in order; `step` is the current one, or the one that failed.
  */
 export interface ScanStatus {
   scan_id: string;

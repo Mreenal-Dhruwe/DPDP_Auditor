@@ -85,6 +85,7 @@ def test_unsafe_zips_fail_the_job_and_leave_nothing_behind(client, settings):
     scan_id = upload(client, zip_of({"../../evil.py": "x"}), "evil.zip").json()["scan_id"]
     status = client.get(f"/api/scan/{scan_id}").json()
     assert status["status"] == "failed" and "unsafe path" in status["error"]
+    assert status["step"] == "unpacking"  # the step that failed
     assert client.get(f"/api/scan/{scan_id}/findings").status_code == 409
     bomb = zip_of({"zeros.bin": bytes(5 << 20)})  # 5 MB unpacked; MAX_UPLOAD_MB is 2
     scan_id = upload(client, bomb, "bomb.zip").json()["scan_id"]
