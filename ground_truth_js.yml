@@ -99,6 +99,14 @@ planted:
     clue: structure
     note: sendOffers emails promotions to the user without checking the marketing consent the app records (Consent model).
 
+  - id: JS-12
+    rule_id: DPDP-CON-003
+    file: models.js
+    line: 28
+    anchor: "const Consent = sequelize.define('Consent'"
+    clue: structure
+    note: Consent is a bare yes/no flag (timestamps off, no purpose or notice version), so the app cannot prove when or to what a user agreed.
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -118,7 +126,6 @@ compliant:
 out_of_scope:
   - {rule_id: DPDP-NOT-001, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CON-002, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-CON-003, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CON-005, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CON-006, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-003, note: Not judged by the JS fixture app; see target_app.}

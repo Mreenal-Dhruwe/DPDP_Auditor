@@ -1,8 +1,8 @@
 """Notice and consent detectors: DPDP-NOT-001, DPDP-CON-001 to DPDP-CON-006.
 
 Implemented: DPDP-CON-001 (consent can be given but not withdrawn), DPDP-CON-002
-(pre-ticked or default-true consent) and DPDP-CON-004 (personal data used without a consent
-check; see its section).
+(pre-ticked or default-true consent), DPDP-CON-003 (no evidence of consent) and DPDP-CON-004
+(personal data used without a consent check); see their sections.
 """
 
 import ast
@@ -11,7 +11,7 @@ import re
 from scanner.detectors.javascript import FUNCTION_TYPES, JsPiiRefs, arguments, callee, js_files, line_of, text, walk
 from scanner.detectors.pii_refs import PiiRefs
 from scanner.detectors.routes import Route, find_routes
-from scanner.detectors.schemas import find_tables
+from scanner.detectors.schemas import Table, find_tables
 from scanner.detectors.source import dotted_name, is_test_file, python_trees, suffix_of, text_files
 from scanner.detectors.thirdparty import SEND_METHODS, TRACKING_VENDORS, _clients, _sdk_names
 from scanner.ingest import Project
@@ -341,3 +341,61 @@ def unconsented_use(project: Project) -> list[Hit]:
                         evidence=f"{source}  [{what} receives {', '.join(sorted(found))} with no consent check on "
                                  f"this path; the app records consent ({where})]"))
     return sorted({(h.file, h.line): h for h in hits}.values(), key=lambda h: (h.file, h.line))
+
+
+# --- DPDP-CON-003: no evidence of consent stored ---------------------------------------------
+#
+# s.6(10): the fiduciary must be able to prove consent was given. Consent kept as a bare
+# yes/no cannot show when it was given or what the person agreed to. Checked:
+# - a consent table (name contains "consent"): needs a time column (granted_at, created_at,
+#   timestamp ...; Sequelize adds createdAt unless `timestamps: false`) and a purpose or
+#   notice-version column
+# - a consent flag on another table (users.marketing_consent BOOLEAN): needs a matching time
+#   column in the same table (marketing_consent_at, consented_at ...)
+# Medium confidence: the evidence may live in a consent manager or an audit log.
+
+CON_003 = "DPDP-CON-003"
+TIME_COLUMN = re.compile(r"(_at|_on|At|On|time|date|timestamp|Date|Time)$|^(created|updated|timestamp|date|time)",
+                         re.IGNORECASE)
+PURPOSE_COLUMN = re.compile(r"purpose|version|notice|policy|consent_text|scope", re.IGNORECASE)
+CONSENT_FLAG = re.compile(r"consent|opt_?in|optIn|subscribed|agreed|accepted", re.IGNORECASE)
+_SEQUELIZE_NO_TIMESTAMPS = re.compile(r"timestamps\s*:\s*false")
+
+
+def _auto_timestamps(project: Project, table: Table, tables: list[Table]) -> bool:
+    """Sequelize models get createdAt / updatedAt unless the options say timestamps: false."""
+    if suffix_of(table.file) not in {".js", ".ts", ".mjs", ".cjs"}:
+        return False
+    lines = project.read_text(table.file).splitlines()
+    later = [t.line for t in tables if t.file == table.file and t.line > table.line]
+    chunk = "\n".join(lines[table.line - 1:(min(later) - 1) if later else len(lines)])
+    return not _SEQUELIZE_NO_TIMESTAMPS.search(chunk)
+
+
+def consent_evidence(project: Project) -> list[Hit]:
+    tables = find_tables(project)
+    hits = []
+    for table in tables:
+        names = [c.name for c in table.columns]
+        has_time = any(TIME_COLUMN.search(n) for n in names) or _auto_timestamps(project, table, tables)
+        if "consent" in table.name.lower():
+            missing = ([] if has_time else ["when it was given"]) + \
+                      ([] if any(PURPOSE_COLUMN.search(n) for n in names) else ["the purpose or notice version"])
+            if missing:
+                source = project.read_text(table.file).splitlines()[table.line - 1].strip()
+                hits.append(Hit(rule_id=CON_003, file=table.file, line=table.line, confidence="medium",
+                                evidence=f"{source}  [consent table {table.name} ({', '.join(names) or 'no columns'}) "
+                                         f"does not record {' or '.join(missing)}]"))
+            continue
+        for column in table.columns:
+            if not CONSENT_FLAG.search(column.name) or TIME_COLUMN.search(column.name):
+                continue
+            stem = re.sub(r"(_?(flag|given|granted|status))$", "", column.name, flags=re.IGNORECASE).lower()
+            if any(n.lower().startswith(stem) and TIME_COLUMN.search(n) for n in names if n != column.name) \
+                    or any(re.search(r"consent(ed)?_?(at|on|date|time)", n, re.IGNORECASE) for n in names):
+                continue
+            source = project.read_text(table.file).splitlines()[column.line - 1].strip()
+            hits.append(Hit(rule_id=CON_003, file=table.file, line=column.line, confidence="medium",
+                            evidence=f"{source}  [{table.name}.{column.name} keeps consent as a flag only: no time "
+                                     f"it was given and no notice version]"))
+    return sorted(hits, key=lambda h: (h.file, h.line))
