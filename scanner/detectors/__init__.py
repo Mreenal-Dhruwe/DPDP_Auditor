@@ -19,7 +19,7 @@ access.py         DPDP-SEC-005, DPDP-SEC-006                   (both done; Pytho
 retention.py      DPDP-RET-001 to DPDP-RET-003                 (RET-001 done)
 thirdparty.py     DPDP-TP-001, DPDP-TP-002
 children.py       DPDP-CH-001, DPDP-CH-002                     (both done)
-rights.py         DPDP-RT-001 to DPDP-RT-003, DPDP-BR-001
+rights.py         DPDP-RT-001 to DPDP-RT-003, DPDP-BR-001        (RT-001 to RT-003 done)
 hardcoded_secrets.py  DPDP-SEC-004                         (done)
 config_files.py   DPDP-SEC-008 to DPDP-SEC-010
 routes.py         shared helper: finds Flask / FastAPI routes with ast
@@ -34,7 +34,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from scanner.detectors import (
-    access, children, config_files, consent, hardcoded_secrets, logs, retention, storage, thirdparty,
+    access, children, config_files, consent, hardcoded_secrets, logs, retention, rights, storage, thirdparty,
 )
 from scanner.ingest import Project
 from scanner.models import Hit
@@ -64,6 +64,9 @@ DETECTORS: list[Detector] = [
     Detector("excessive data in API responses", ("DPDP-SEC-006",), access.excessive_response_data),
     Detector("personal data used without consent", ("DPDP-CON-004",), consent.unconsented_use),
     Detector("no evidence of consent", ("DPDP-CON-003",), consent.consent_evidence),
+    Detector("no access to own data", ("DPDP-RT-001",), rights.no_access_route),
+    Detector("no correction or erasure", ("DPDP-RT-002",), rights.no_correction_or_erasure),
+    Detector("no grievance channel", ("DPDP-RT-003",), rights.no_grievance_channel),
 ]
 
 

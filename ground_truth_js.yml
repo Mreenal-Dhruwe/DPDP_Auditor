@@ -107,6 +107,30 @@ planted:
     clue: structure
     note: Consent is a bare yes/no flag (timestamps off, no purpose or notice version), so the app cannot prove when or to what a user agreed.
 
+  - id: JS-13
+    rule_id: DPDP-RT-001
+    scope: project
+    file: models.js
+    line: 7
+    anchor: "const User = sequelize.define('User'"
+    clue: absence
+    note: Users can sign up and delete their account, but no route lets them see or export their own data.
+
+  - id: JS-14
+    rule_id: DPDP-RT-002
+    scope: project
+    file: models.js
+    line: 7
+    anchor: "const User = sequelize.define('User'"
+    clue: absence
+    note: DELETE /api/me erases an account, but no route lets users correct their data (no PUT/PATCH on their own record).
+
+  - id: JS-15
+    rule_id: DPDP-RT-003
+    scope: project
+    clue: absence
+    note: No grievance or contact route or page and no grievance officer or DPO contact anywhere.
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -117,11 +141,11 @@ compliant:
   - rule_id: DPDP-SEC-001
     note: logger.info logs only the internal user id.
   - rule_id: DPDP-SEC-005
-    note: GET /api/me uses requireAuth; GET /admin/users and /admin/customers (handler in routes/customers.ts) are guarded by app.use('/admin', requireAuth).
+    note: GET /api/leads/:id uses requireAuth; GET /admin/users and /admin/customers (handler in routes/customers.ts) are guarded by app.use('/admin', requireAuth).
   - rule_id: DPDP-CON-004
     note: "sendNewsletter (routes/marketing.ts) checks Consent.findOne(... marketing: true) before emailing."
   - rule_id: DPDP-SEC-006
-    note: GET /api/me (server.ts:38) and getCustomer (routes/customers.ts:8) pick email and phone from the User record.
+    note: getCustomer (routes/customers.ts:8) picks email and phone from the User record; GET /api/leads/:id (server.ts:38) picks name and source.
 
 out_of_scope:
   - {rule_id: DPDP-NOT-001, note: Not judged by the JS fixture app; see target_app.}
@@ -140,9 +164,6 @@ out_of_scope:
   - {rule_id: DPDP-RET-003, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CH-001, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CH-002, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-RT-001, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-RT-002, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-RT-003, note: Not judged by the JS fixture app; see target_app.}
 
 must_not_appear_in_report:
   - shop-demo-91b7e3c04d2a46f8a1c5e9d7b3f20c68

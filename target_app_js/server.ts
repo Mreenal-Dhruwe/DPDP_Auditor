@@ -33,9 +33,9 @@ app.get('/api/users/:id', async (req: Request, res: Response) => {
   res.json(user)
 })
 
-app.get('/api/me', requireAuth, async (req: Request, res: Response) => {
-  const user = await User.findByPk(String(req.headers['x-user-id']))
-  res.json({ email: user?.email, phone: user?.phone })
+app.get('/api/leads/:id', requireAuth, async (req: Request, res: Response) => {
+  const lead = await Lead.findByPk(req.params.id)
+  res.json({ name: lead?.name, source: lead?.source })
 })
 
 app.get('/admin/users', async (req: Request, res: Response) => {

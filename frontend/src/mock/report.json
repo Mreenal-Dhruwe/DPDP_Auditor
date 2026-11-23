@@ -29,7 +29,10 @@
       "DPDP-RET-001",
       "DPDP-RET-002",
       "DPDP-CH-001",
-      "DPDP-CH-002"
+      "DPDP-CH-002",
+      "DPDP-RT-001",
+      "DPDP-RT-002",
+      "DPDP-RT-003"
     ],
     "rules_not_checked": [
       "DPDP-NOT-001",
@@ -40,10 +43,7 @@
       "DPDP-SEC-010",
       "DPDP-TP-002",
       "DPDP-BR-001",
-      "DPDP-RET-003",
-      "DPDP-RT-001",
-      "DPDP-RT-002",
-      "DPDP-RT-003"
+      "DPDP-RET-003"
     ]
   },
   "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes.",
