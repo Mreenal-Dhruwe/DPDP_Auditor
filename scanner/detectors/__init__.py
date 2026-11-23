@@ -12,7 +12,7 @@ To add a detector:
      with no false positives
 
 Module            Rules it owns
-consent.py        DPDP-NOT-001, DPDP-CON-001 to DPDP-CON-006   (NOT-001, CON-001 to CON-005 done)
+consent.py        DPDP-NOT-001, DPDP-CON-001 to DPDP-CON-006   (all done)
 logs.py           DPDP-SEC-001, DPDP-SEC-007                   (both done; Python + JS)
 storage.py        DPDP-SEC-002, DPDP-SEC-003                   (SEC-002 done)
 access.py         DPDP-SEC-005, DPDP-SEC-006                   (both done; Python + Express)
@@ -72,6 +72,7 @@ DETECTORS: list[Detector] = [
     Detector("no notice before collection", ("DPDP-NOT-001",), consent.missing_notice),
     Detector("no breach notification", ("DPDP-BR-001",), rights.no_breach_process),
     Detector("over-collection", ("DPDP-CON-005",), consent.over_collection),
+    Detector("consent in one language", ("DPDP-CON-006",), consent.single_language_consent),
 ]
 
 

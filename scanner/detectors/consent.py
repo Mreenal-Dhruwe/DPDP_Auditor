@@ -2,8 +2,8 @@
 
 Implemented: DPDP-CON-001 (consent can be given but not withdrawn), DPDP-CON-002
 (pre-ticked or default-true consent), DPDP-CON-003 (no evidence of consent) and DPDP-CON-004
-(personal data used without a consent check), DPDP-CON-005 (over-collection) and DPDP-NOT-001
-(no notice); see their sections.
+(personal data used without a consent check), DPDP-CON-005 (over-collection), DPDP-CON-006 (one language)
+and DPDP-NOT-001 (no notice); see their sections.
 """
 
 import ast
@@ -526,3 +526,60 @@ def over_collection(project: Project) -> list[Hit]:
                             evidence=f"{text.splitlines()[line - 1].strip()}  [the app asks for {what} access but no "
                                      f"code uses it; verify manually: a library may need it]"))
     return sorted(hits, key=lambda h: (h.file, h.line))
+
+
+# --- DPDP-CON-006: consent request offered in one language only ------------------------------
+#
+# s.6(3): the request for consent must be available in English or any language of the Eighth
+# Schedule, at the person's choice. Reported per page with consent or notice text when the
+# project shows no sign of other languages: no i18n library (i18next, react-intl, vue-i18n,
+# ngx-translate, Flask-Babel ...), no translation markup ({% trans %}, gettext, _("..."),
+# $t(...), useTranslation), no locale files (locales/, i18n/, translations/, *.po), and no
+# page in another language (lang="hi", Devanagari, Tamil ... text). Low confidence: the
+# translations may be served by a CMS or a separate site.
+
+CON_006 = "DPDP-CON-006"
+I18N_PACKAGES = re.compile(r"i18next|react-intl|vue-i18n|@angular/localize|ngx-translate|next-intl|lingui|@formatjs"
+                           r"|node-polyglot|flask[-_]babel|django-modeltranslation|python-i18n"
+                           r"|(?m:^\s*babel\b)", re.IGNORECASE)  # Python's Babel in requirements, not @babel/core
+I18N_MARKUP = re.compile(r"\{%-?\s*(?:trans|blocktrans|translate)\b|\bn?gettext\(|\b_\(\s*['\"]|\$t\(|\bi18n\.t\("
+                         r"|useTranslation\(|<FormattedMessage|\|\s*translate\b|\$localize`")
+LOCALE_PARTS = {"locales", "locale", "i18n", "translations", "lang", "langs", "l10n"}
+LOCALE_SUFFIXES = {".po", ".mo", ".xlf", ".xliff", ".arb", ".resx"}
+_OTHER_LANGUAGE = re.compile(r"""lang\s*=\s*["'](?!en)[a-z]{2}|[ऀ-෿]""", re.IGNORECASE)
+_CONSENT_WORDS = re.compile(r"\b(?:consent|i agree|agree to|opt[ -]?in|we collect|privacy notice|terms)\b", re.IGNORECASE)
+
+
+def _supports_other_languages(project: Project) -> bool:
+    for rel in project.files:
+        parts = {p.lower() for p in rel.split("/")[:-1]}
+        if parts & LOCALE_PARTS or suffix_of(rel) in LOCALE_SUFFIXES:
+            return True
+    for rel in text_files(project):
+        if is_test_file(rel):
+            continue
+        text = project.read_text(rel)
+        name = rel.rsplit("/", 1)[-1]
+        if name in {"package.json", "pyproject.toml", "Pipfile"} or name.startswith("requirements"):
+            if I18N_PACKAGES.search(text):
+                return True
+        elif I18N_MARKUP.search(text) or (suffix_of(rel) in TEMPLATE_SUFFIXES and _OTHER_LANGUAGE.search(text)):
+            return True
+    return False
+
+
+def single_language_consent(project: Project) -> list[Hit]:
+    pages = [rel for rel in project.files if suffix_of(rel) in TEMPLATE_SUFFIXES and not is_test_file(rel)]
+    found = []
+    for rel in pages:
+        for number, line in enumerate(project.read_text(rel).splitlines(), start=1):
+            visible = re.sub(r"<[^>]*>", " ", line)
+            if _CONSENT_WORDS.search(visible):
+                found.append((rel, number, line.strip()))
+                break
+    if not found or _supports_other_languages(project):
+        return []
+    return [Hit(rule_id=CON_006, file=rel, line=number, confidence="low",
+                evidence=f"{text}  [consent text only in English: no translations, i18n library or locale "
+                         f"files; verify manually: translations may come from a CMS]")
+            for rel, number, text in found]

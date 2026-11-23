@@ -196,6 +196,14 @@ planted:
     clue: absence
     note: The quote form asks for an Aadhaar number that no handler reads and the Lead model does not store.
 
+  - id: JS-24
+    rule_id: DPDP-CON-006
+    file: public/lead.html
+    line: 17
+    anchor: "I agree to be contacted about this quote."
+    clue: absence
+    note: The consent text is English only and the app has no translations, i18n library or locale files.
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -218,7 +226,6 @@ compliant:
 
 out_of_scope:
   - {rule_id: DPDP-CON-002, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-CON-006, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-003, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-008, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-009, note: Not judged by the JS fixture app; see target_app.}
