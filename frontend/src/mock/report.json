@@ -4,11 +4,11 @@
   "rules_version": "0.1.0",
   "target": "target_app",
   "generated_at": "2026-11-23T09:00:00Z",
-  "files_scanned": 8,
+  "files_scanned": 9,
   "coverage": {
     "files_by_kind": {
       "python": 4,
-      "config": 1,
+      "config": 2,
       "other": 1,
       "sql": 1,
       "templates": 1
@@ -29,6 +29,7 @@
       "DPDP-SEC-006",
       "DPDP-SEC-007",
       "DPDP-SEC-008",
+      "DPDP-SEC-009",
       "DPDP-SEC-010",
       "DPDP-TP-001",
       "DPDP-BR-001",
@@ -41,7 +42,6 @@
       "DPDP-RT-003"
     ],
     "rules_not_checked": [
-      "DPDP-SEC-009",
       "DPDP-TP-002",
       "DPDP-RET-003"
     ]
@@ -57,16 +57,16 @@
       "info": 1
     },
     "by_category": {
-      "Security": 8,
+      "Security": 7,
       "Children": 2,
       "Consent": 2,
+      "Retention": 2,
       "Breach": 1,
       "Third parties": 1,
-      "Retention": 1,
       "Transfers": 1
     },
     "by_provision": {
-      "s.8(5)": 8,
+      "s.8(5)": 7,
       "Rule 6(1)(a)": 4,
       "Rule 6(1)(b)": 3,
       "s.9(3)": 1,
@@ -84,7 +84,8 @@
       "s.8(2)": 1,
       "Rule 6(1)(f)": 1,
       "Rule 8(3)": 1,
-      "Rule 6(1)(d)": 1,
+      "s.8(8)": 1,
+      "Rule 8(2)": 1,
       "s.16(1)": 1,
       "Rule 15": 1
     }
@@ -656,34 +657,34 @@
       "fix": "Soft-delete and restrict access, keep processing logs for one year, then purge."
     },
     {
-      "id": "7cf549d96f11",
-      "rule_id": "DPDP-SEC-009",
-      "title": "No backup configured for personal-data stores",
-      "category": "Security",
+      "id": "211fc61bbf90",
+      "rule_id": "DPDP-RET-003",
+      "title": "No pre-erasure notice to the user",
+      "category": "Retention",
       "scope": "file",
-      "file": "docker-compose.yml",
+      "file": "jobs/purge_inactive.py",
       "line": null,
-      "evidence": "Service 'db' (postgres) has no backup or snapshot setting",
+      "evidence": "purge_inactive_users() erases dormant accounts with no notice to the user 48 hours before",
       "context": null,
       "pii": [],
       "confidence": "low",
       "law": {
         "act": [
-          "s.8(5)"
+          "s.8(8)"
         ],
         "rules": [
-          "Rule 6(1)(d)"
+          "Rule 8(2)"
         ],
-        "requirement": "Reasonable measures for continued processing, such as data backups."
+        "requirement": "Inform the user at least 48 hours before erasure (applies to Third Schedule classes)."
       },
       "penalty": {
-        "schedule_item": 1,
-        "provision": "s.8(5) security safeguards",
-        "cap": "Rs 250 crore"
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
       },
       "severity": "low",
-      "severity_reason": "Backups are often configured outside the repo; needs manual check.",
-      "fix": "Configure automated, encrypted backups with tested restore."
+      "severity_reason": "Applies only to large e-commerce, gaming and social media fiduciaries.",
+      "fix": "Send a notice 48 hours before scheduled erasure."
     },
     {
       "id": "bedf86f61491",

@@ -9,7 +9,8 @@ Implemented: DPDP-SEC-008, insecure infrastructure configuration:
 - config files: DEBUG=true / FLASK_DEBUG=1, NODE_TLS_REJECT_UNAUTHORIZED=0,
   sslmode=disable, privileged: true (compose), public S3 ACLs and public databases (Terraform)
 
-Also implemented: DPDP-SEC-010 (log retention shorter than one year); see its section.
+Also implemented: DPDP-SEC-010 (log retention shorter than one year) and DPDP-SEC-009 (no
+backups, info); see their sections.
 """
 
 import ast
@@ -229,3 +230,70 @@ def short_log_retention(project: Project) -> list[Hit]:
                                 evidence=f"{lines[line - 1].strip()}  [{how}: logs are deleted after {shown} days; "
                                          f"Rule 8(3) asks for at least one year]"))
     return sorted({(h.file, h.line): h for h in hits}.values(), key=lambda h: (h.file, h.line))
+
+
+# --- DPDP-SEC-009: no backup configured for personal-data stores -----------------------------
+#
+# Rule 6(1)(d): reasonable measures for continued processing, such as backups. Checked in
+# infrastructure files:
+#   Terraform  aws_db_instance / aws_rds_cluster with backup_retention_period = 0 or not set,
+#              google_sql_database_instance with no backup_configuration enabled = true,
+#              aws_dynamodb_table with no point_in_time_recovery enabled = true
+#   compose    a database service (postgres, mysql, mariadb, mongo) when nothing in the repo
+#              backs it up (a backup service or image, pg_dump / mysqldump / mongodump)
+# Reported as info with low confidence: backups are usually set up outside the repository.
+
+SEC_009 = "DPDP-SEC-009"
+_TF_RESOURCE = re.compile(r'^[ \t]*resource\s+"(\w+)"\s+"([\w-]+)"\s*\{', re.MULTILINE)  # [ \t]: stay on the line
+DB_IMAGES = re.compile(r"^[ \t]*image:\s*['\"]?(postgres|mysql|mariadb|mongo)\b[^\s'\"]*", re.MULTILINE | re.IGNORECASE)
+BACKUP_SIGNS = re.compile(r"pg_dump|pg_basebackup|mysqldump|mongodump|xtrabackup|wal-g|pgbackrest|restic|borg"
+                          r"|postgres-backup|mysql-backup|backup:\s|-backup\b", re.IGNORECASE)
+
+
+def _tf_blocks(text: str) -> list[tuple[str, str, int, str]]:
+    """(type, name, line, body) of each Terraform resource, by brace matching."""
+    blocks = []
+    for m in _TF_RESOURCE.finditer(text):
+        depth, i = 0, m.end() - 1
+        while i < len(text):
+            depth += {"{": 1, "}": -1}.get(text[i], 0)
+            if depth == 0:
+                break
+            i += 1
+        blocks.append((m.group(1), m.group(2), _line_of(text, m.start()), text[m.end():i]))
+    return blocks
+
+
+def _tf_backup_gap(kind: str, body: str) -> str | None:
+    if kind in {"aws_db_instance", "aws_rds_cluster"}:
+        m = re.search(r"backup_retention_period\s*=\s*(\d+)", body)
+        if m is None:
+            return "no backup_retention_period set"
+        return "backup_retention_period = 0 (backups off)" if m.group(1) == "0" else None
+    if kind == "google_sql_database_instance":
+        return None if re.search(r"backup_configuration\s*\{[^}]*enabled\s*=\s*true", body) else "no backup_configuration enabled"
+    if kind == "aws_dynamodb_table":
+        return None if re.search(r"point_in_time_recovery\s*\{[^}]*enabled\s*=\s*true", body) else "no point_in_time_recovery"
+    return None
+
+
+def missing_backups(project: Project) -> list[Hit]:
+    files = [rel for rel in text_files(project) if not is_test_file(rel) and not is_example_file(rel)]
+    backed_up = any(BACKUP_SIGNS.search(project.read_text(rel)) for rel in files)
+    hits = []
+    for rel in files:
+        text = project.read_text(rel)
+        found = []
+        if rel.endswith(".tf"):
+            for kind, name, line, body in _tf_blocks(text):
+                if gap := _tf_backup_gap(kind, body):
+                    found.append((line, f"{kind}.{name}: {gap}"))
+        elif "compose" in rel.rsplit("/", 1)[-1].lower() and not backed_up:
+            for m in DB_IMAGES.finditer(text):
+                found.append((_line_of(text, m.start()), f"{m.group(1)} service with nothing in the repo backing it up"))
+        lines = text.splitlines()
+        for line, why in found:
+            hits.append(Hit(rule_id=SEC_009, file=rel, line=line, confidence="low",
+                            evidence=f"{lines[line - 1].strip()}  [{why}; verify manually: backups may be "
+                                     f"configured outside the repository]"))
+    return sorted(hits, key=lambda h: (h.file, h.line))

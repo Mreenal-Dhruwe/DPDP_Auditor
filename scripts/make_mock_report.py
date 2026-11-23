@@ -35,12 +35,13 @@ PII = {
 }
 CONFIDENCE = {"line": "high", "file": "high", "project": "medium"}
 
-# Illustrative only - target_app has no docker-compose.yml and does have a breach module.
+# Illustrative only - target_app has no docker-compose.yml or purge job, and does have a
+# breach module.
 EXTRAS = [
     Hit(rule_id="DPDP-TP-002", file="docker-compose.yml", line=14,
         evidence="AWS_REGION: us-east-1", confidence="high"),  # info
-    Hit(rule_id="DPDP-SEC-009", scope="file", file="docker-compose.yml",
-        evidence="Service 'db' (postgres) has no backup or snapshot setting", confidence="low"),  # low
+    Hit(rule_id="DPDP-RET-003", scope="file", file="jobs/purge_inactive.py", confidence="low",
+        evidence="purge_inactive_users() erases dormant accounts with no notice to the user 48 hours before"),  # low
     Hit(rule_id="DPDP-BR-001", scope="project", confidence="low",
         evidence="No code path notifies affected users or prepares a report for the Data Protection Board"),
 ]

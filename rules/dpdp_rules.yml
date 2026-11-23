@@ -294,8 +294,8 @@ rules:
       rules: ["Rule 6(1)(d)"]
       requirement: "Reasonable measures for continued processing, such as data backups."
     penalty: P1
-    severity: low
-    severity_reason: "Backups are often configured outside the repo; needs manual check."
+    severity: info
+    severity_reason: "Backups are usually configured outside the repo (cloud console, DBA tooling), so the code alone cannot show they are missing; reported for manual verification."
     fix: "Configure automated, encrypted backups with tested restore."
 
   - id: DPDP-SEC-010

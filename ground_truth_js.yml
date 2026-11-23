@@ -204,6 +204,14 @@ planted:
     clue: absence
     note: The consent text is English only and the app has no translations, i18n library or locale files.
 
+  - id: JS-25
+    rule_id: DPDP-SEC-009
+    file: infra/main.tf
+    line: 6
+    anchor: 'resource "aws_db_instance" "shop"'
+    clue: config
+    note: The shop database has automated backups turned off (backup_retention_period = 0).
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -228,7 +236,6 @@ out_of_scope:
   - {rule_id: DPDP-CON-002, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-003, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-008, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-SEC-009, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-TP-001, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-TP-002, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-RET-002, note: Not judged by the JS fixture app; see target_app.}

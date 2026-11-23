@@ -21,7 +21,7 @@ thirdparty.py     DPDP-TP-001, DPDP-TP-002
 children.py       DPDP-CH-001, DPDP-CH-002                     (both done)
 rights.py         DPDP-RT-001 to DPDP-RT-003, DPDP-BR-001        (all done)
 hardcoded_secrets.py  DPDP-SEC-004                         (done)
-config_files.py   DPDP-SEC-008 to DPDP-SEC-010                 (SEC-008, SEC-010 done)
+config_files.py   DPDP-SEC-008 to DPDP-SEC-010                 (all done)
 routes.py         shared helper: finds Flask / FastAPI routes with ast
 source.py         shared helper: which files to read, Python syntax trees
 schemas.py        shared helper: tables and columns from SQL and ORM models
@@ -73,6 +73,7 @@ DETECTORS: list[Detector] = [
     Detector("no breach notification", ("DPDP-BR-001",), rights.no_breach_process),
     Detector("over-collection", ("DPDP-CON-005",), consent.over_collection),
     Detector("consent in one language", ("DPDP-CON-006",), consent.single_language_consent),
+    Detector("no backups", ("DPDP-SEC-009",), config_files.missing_backups),
 ]
 
 

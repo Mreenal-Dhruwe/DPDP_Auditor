@@ -154,6 +154,8 @@ compliant:
     note: /api/me and /api/users/<id> select named columns without password_hash or aadhaar; login() reads password_hash but never returns it. The exception is GT-13.
   - rule_id: DPDP-SEC-007
     note: Every route that reads or changes personal data calls audit().
+  - rule_id: DPDP-SEC-009
+    note: infra/db.tf keeps automated RDS backups for 14 days.
   - rule_id: DPDP-SEC-010
     note: logging_setup.py rotates daily and keeps 400 files (over a year).
   - rule_id: DPDP-CH-002
@@ -170,8 +172,6 @@ compliant:
     note: POST /grievance, plus a published Grievance Officer contact in the page footer.
 
 not_applicable:
-  - rule_id: DPDP-SEC-009
-    note: No database service in IaC (the app uses a SQLite file).
   - rule_id: DPDP-TP-002
     note: No cloud region or foreign endpoint is configured.
   - rule_id: DPDP-RET-003

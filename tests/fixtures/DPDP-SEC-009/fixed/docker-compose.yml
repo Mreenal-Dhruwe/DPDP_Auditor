@@ -1,0 +1,13 @@
+services:
+  api:
+    build: .
+  db:
+    image: postgres:16
+    volumes:
+      - data:/var/lib/postgresql/data
+  db-backup:
+    image: prodrigestivill/postgres-backup-local:16
+    environment:
+      SCHEDULE: "@daily"
+volumes:
+  data:
