@@ -11,7 +11,7 @@ import { ScanLayout } from "./pages/ScanLayout";
 import "./index.css";
 
 // Report screens (and Recharts) load on demand, so the landing and scan pages stay small.
-const Dashboard = lazy(() => import("./pages/Dashboard").then((m) => ({ default: m.Dashboard })));
+const Overview = lazy(() => import("./pages/Overview").then((m) => ({ default: m.Overview })));
 const FindingDetail = lazy(() => import("./pages/FindingDetail").then((m) => ({ default: m.FindingDetail })));
 const page = (element: ReactNode) => <Suspense fallback={<PageSkeleton />}>{element}</Suspense>;
 
@@ -26,7 +26,7 @@ const router = createBrowserRouter([
         path: "/scans/:scanId",
         element: <ScanLayout />,
         children: [
-          { index: true, element: page(<Dashboard />) },
+          { index: true, element: page(<Overview />) },
           { path: "findings/:findingId", element: page(<FindingDetail />) },
         ],
       },

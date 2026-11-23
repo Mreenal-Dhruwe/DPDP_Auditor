@@ -73,8 +73,9 @@ async function scanAndCheck(page, start, label, timeoutMs) {
   const shown = await page.textContent("[aria-live=polite]:has-text('Showing')");
   check(shown.includes(`of ${report.summary.total} finding`), `table counts all ${report.summary.total} findings`);
   for (const [severity, count] of Object.entries(report.summary.by_severity)) {
-    const tile = await page.textContent(`button[aria-pressed]:has-text('${severity[0].toUpperCase() + severity.slice(1)}') >> nth=0`);
-    check(tile.includes(String(count)), `tile ${severity} shows ${count}`);
+    const label = severity[0].toUpperCase() + severity.slice(1);
+    const row = await page.getAttribute(`[aria-label='Filter by severity'] button:has-text('${label}')`, "aria-label");
+    check(row.startsWith(`${label}: ${count} findings`), `breakdown ${severity} shows ${count}`);
   }
   check((await page.locator(".recharts-bar-rectangle").count()) > 0 || report.summary.total === 0, "provision chart drawn");
   check(await page.isVisible("text=rules checked automatically"), "coverage box shown");

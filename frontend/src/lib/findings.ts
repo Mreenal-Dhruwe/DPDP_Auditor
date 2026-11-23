@@ -29,6 +29,7 @@ export interface Filters {
   rule: string;
   provision: string;
   confidence: Confidence | "";
+  category: string; // "Security", "Consent" ... (the rule's category)
   query: string; // matches file, title, rule id or evidence
 }
 
@@ -40,6 +41,7 @@ export function readFilters(params: URLSearchParams): Filters {
     rule: params.get("rule") ?? "",
     provision: params.get("prov") ?? "",
     confidence: (CONFIDENCES as readonly string[]).includes(conf) ? (conf as Confidence) : "",
+    category: params.get("cat") ?? "",
     query: params.get("q") ?? "",
   };
 }
@@ -50,6 +52,7 @@ export function writeFilters(filters: Filters): URLSearchParams {
   if (filters.rule) params.set("rule", filters.rule);
   if (filters.provision) params.set("prov", filters.provision);
   if (filters.confidence) params.set("conf", filters.confidence);
+  if (filters.category) params.set("cat", filters.category);
   if (filters.query.trim()) params.set("q", filters.query); // untrimmed: the user may still be typing
   return params;
 }
@@ -66,6 +69,7 @@ export function applyFilters(findings: Finding[], f: Filters): Finding[] {
       (!f.rule || x.rule_id === f.rule) &&
       (!f.provision || provisionsOf(x).includes(f.provision)) &&
       (!f.confidence || x.confidence === f.confidence) &&
+      (!f.category || x.category === f.category) &&
       (!q || [x.file ?? "", x.title, x.rule_id, x.evidence, x.category].some((s) => s.toLowerCase().includes(q))),
   );
 }
@@ -83,3 +87,18 @@ export function formatDate(iso: string): string {
     ? iso
     : date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
 }
+
+export const EMPTY_FILTERS: Filters = { severities: [], rule: "", provision: "", confidence: "", category: "", query: "" };
+
+/** Counts per key, most common first: countBy(findings, (f) => f.category). */
+export function countBy<T>(items: T[], key: (item: T) => string | string[]): [string, number][] {
+  const counts = new Map<string, number>();
+  for (const item of items) {
+    const keys = key(item);
+    for (const k of Array.isArray(keys) ? keys : [keys]) counts.set(k, (counts.get(k) ?? 0) + 1);
+  }
+  return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+}
+
+/** "full_name" -> "full name" for display. */
+export const piiLabel = (label: string) => label.replaceAll("_", " ");
