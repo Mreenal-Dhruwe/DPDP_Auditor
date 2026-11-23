@@ -1,7 +1,7 @@
 """Rights detectors: DPDP-RT-001 to DPDP-RT-003 (access, correction and erasure, grievance)
 and DPDP-BR-001 (breach notification).
 
-Implemented: RT-001, RT-002, RT-003. All three are absence checks over the whole project,
+Implemented: RT-001, RT-002, RT-003 and BR-001 (see its section). All are absence checks over the whole project,
 and only run when the project holds personal data (a table with personal-data columns) and
 is an application (it has web routes, or pages for RT-003). Routes come from routes.py
 (Flask, FastAPI, Express), so they are found by path and method:
@@ -138,3 +138,33 @@ def no_grievance_channel(project: Project) -> list[Hit]:
                 return []
     return [_project_hit(RT_003, table, "No grievance, complaint or contact route or page, and no grievance "
                                         "officer, DPO or privacy@ contact in the pages")]
+
+
+# --- DPDP-BR-001: no breach notification mechanism -------------------------------------------
+#
+# s.8(6) / Rule 7: tell affected users without delay and the Data Protection Board within 72
+# hours. Absence check: the project holds personal data and is an application, and no file
+# (code, config or docs, not tests) mentions breach or incident handling - a breach or
+# incident module, notify_affected_users / notify_board, a security-incident runbook, CERT-In,
+# or an alerting hook (PagerDuty, Opsgenie, Alertmanager). Low confidence: the process is
+# often run outside the code (a security team, a runbook in a wiki).
+
+BR_001 = "DPDP-BR-001"
+BREACH_HANDLING = re.compile(
+    r"breach|security[_ -]?incident|incident[_ -]?(?:response|report|notif|handl|manag)|notify_?(?:affected|board)"
+    r"|notifyAffected|data[_ -]?leak|cert-?in\b|pagerduty|opsgenie|alertmanager", re.IGNORECASE)
+BREACH_SUFFIXES = {".py", ".js", ".ts", ".mjs", ".cjs", ".java", ".go", ".rb", ".php", ".cs", ".kt",
+                   ".md", ".yml", ".yaml", ".json", ".toml", ".txt"}
+
+
+def no_breach_process(project: Project) -> list[Hit]:
+    table = personal_data_table(project)
+    if table is None or not (_app_routes(project) or _pages(project)):
+        return []
+    for rel in text_files(project):
+        if suffix_of(rel) in BREACH_SUFFIXES and not is_test_file(rel) and BREACH_HANDLING.search(project.read_text(rel)):
+            return []
+    return [Hit(rule_id=BR_001, scope="project", file=table.file, line=table.line, confidence="low",
+                evidence=f"Personal data is held (e.g. table {table.name}) but nothing in the project handles a "
+                         f"breach: no incident module, no user or Board notification, no alert hook; verify "
+                         f"manually: the breach process may be run outside the code")]

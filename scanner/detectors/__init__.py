@@ -19,7 +19,7 @@ access.py         DPDP-SEC-005, DPDP-SEC-006                   (both done; Pytho
 retention.py      DPDP-RET-001 to DPDP-RET-003                 (RET-001 done)
 thirdparty.py     DPDP-TP-001, DPDP-TP-002
 children.py       DPDP-CH-001, DPDP-CH-002                     (both done)
-rights.py         DPDP-RT-001 to DPDP-RT-003, DPDP-BR-001        (RT-001 to RT-003 done)
+rights.py         DPDP-RT-001 to DPDP-RT-003, DPDP-BR-001        (all done)
 hardcoded_secrets.py  DPDP-SEC-004                         (done)
 config_files.py   DPDP-SEC-008 to DPDP-SEC-010                 (SEC-008, SEC-010 done)
 routes.py         shared helper: finds Flask / FastAPI routes with ast
@@ -70,6 +70,7 @@ DETECTORS: list[Detector] = [
     Detector("personal-data reads with no audit log", ("DPDP-SEC-007",), logs.unaudited_reads),
     Detector("log retention under a year", ("DPDP-SEC-010",), config_files.short_log_retention),
     Detector("no notice before collection", ("DPDP-NOT-001",), consent.missing_notice),
+    Detector("no breach notification", ("DPDP-BR-001",), rights.no_breach_process),
 ]
 
 

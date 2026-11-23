@@ -179,6 +179,15 @@ planted:
     clue: absence
     note: The quote form asks for email, mobile and Aadhaar with no notice of what is collected or why.
 
+  - id: JS-22
+    rule_id: DPDP-BR-001
+    scope: project
+    file: models.js
+    line: 7
+    anchor: "const User = sequelize.define('User'"
+    clue: absence
+    note: The app holds user data but has no breach or incident handling, no user or Board notification and no alert hook.
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -206,7 +215,6 @@ out_of_scope:
   - {rule_id: DPDP-SEC-009, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-TP-001, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-TP-002, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-BR-001, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-RET-002, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-RET-003, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CH-001, note: Not judged by the JS fixture app; see target_app.}
