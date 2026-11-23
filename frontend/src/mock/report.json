@@ -32,6 +32,7 @@
       "DPDP-SEC-009",
       "DPDP-SEC-010",
       "DPDP-TP-001",
+      "DPDP-TP-002",
       "DPDP-BR-001",
       "DPDP-RET-001",
       "DPDP-RET-002",
@@ -42,7 +43,6 @@
       "DPDP-RT-003"
     ],
     "rules_not_checked": [
-      "DPDP-TP-002",
       "DPDP-RET-003"
     ]
   },

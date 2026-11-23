@@ -212,6 +212,14 @@ planted:
     clue: config
     note: The shop database has automated backups turned off (backup_retention_period = 0).
 
+  - id: JS-26
+    rule_id: DPDP-TP-002
+    file: infra/main.tf
+    line: 3
+    anchor: 'region = "us-east-1"'
+    clue: config
+    note: The database holding user data is in us-east-1, outside India (info - allowed unless restricted).
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -237,7 +245,6 @@ out_of_scope:
   - {rule_id: DPDP-SEC-003, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-008, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-TP-001, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-TP-002, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-RET-002, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-RET-003, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CH-001, note: Not judged by the JS fixture app; see target_app.}

@@ -156,6 +156,8 @@ compliant:
     note: Every route that reads or changes personal data calls audit().
   - rule_id: DPDP-SEC-009
     note: infra/db.tf keeps automated RDS backups for 14 days.
+  - rule_id: DPDP-TP-002
+    note: infra/db.tf places the database in ap-south-1 (Mumbai).
   - rule_id: DPDP-SEC-010
     note: logging_setup.py rotates daily and keeps 400 files (over a year).
   - rule_id: DPDP-CH-002
@@ -172,8 +174,6 @@ compliant:
     note: POST /grievance, plus a published Grievance Officer contact in the page footer.
 
 not_applicable:
-  - rule_id: DPDP-TP-002
-    note: No cloud region or foreign endpoint is configured.
   - rule_id: DPDP-RET-003
     note: No inactivity-based erasure job.
 

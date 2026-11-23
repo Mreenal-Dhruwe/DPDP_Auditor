@@ -9,8 +9,8 @@ Implemented: DPDP-SEC-008, insecure infrastructure configuration:
 - config files: DEBUG=true / FLASK_DEBUG=1, NODE_TLS_REJECT_UNAUTHORIZED=0,
   sslmode=disable, privileged: true (compose), public S3 ACLs and public databases (Terraform)
 
-Also implemented: DPDP-SEC-010 (log retention shorter than one year) and DPDP-SEC-009 (no
-backups, info); see their sections.
+Also implemented: DPDP-SEC-010 (log retention shorter than one year), DPDP-SEC-009 (no
+backups, info) and DPDP-TP-002 (cloud regions outside India, info); see their sections.
 """
 
 import ast
@@ -20,6 +20,7 @@ from scanner.detectors.source import (
     dotted_name, is_config_file, is_example_file, is_test_file, name_of, python_trees, string_key, suffix_of,
     text_files,
 )
+from scanner.detectors.rights import personal_data_table
 from scanner.ingest import Project
 from scanner.models import Hit
 
@@ -297,3 +298,51 @@ def missing_backups(project: Project) -> list[Hit]:
                             evidence=f"{lines[line - 1].strip()}  [{why}; verify manually: backups may be "
                                      f"configured outside the repository]"))
     return sorted(hits, key=lambda h: (h.file, h.line))
+
+
+# --- DPDP-TP-002: personal data stored or sent outside India --------------------------------
+#
+# s.16 / Rule 15: transfer outside India is allowed unless the Government restricts the
+# country, so this is info: a pointer for the data map, not a violation. When the project
+# holds personal data, cloud region settings (region / location / AWS_REGION ... in Terraform,
+# YAML, JSON, env, config and code) naming an AWS, GCP or Azure region outside India are
+# reported. India: ap-south-1/2, asia-south1/2, centralindia, southindia, westindia, jioindia*.
+# Low confidence: the setting may not be where the personal data lives.
+
+TP_002 = "DPDP-TP-002"
+INDIA_REGIONS = {"ap-south-1", "ap-south-2", "asia-south1", "asia-south2", "centralindia", "southindia", "westindia",
+                 "jioindiawest", "jioindiacentral"}
+AZURE_REGIONS = {"eastus", "eastus2", "westus", "westus2", "westus3", "centralus", "northcentralus", "southcentralus",
+                 "northeurope", "westeurope", "uksouth", "ukwest", "southeastasia", "eastasia", "japaneast", "japanwest",
+                 "australiaeast", "australiasoutheast", "canadacentral", "francecentral", "germanywestcentral",
+                 "uaenorth", "brazilsouth", "koreacentral", "swedencentral", "switzerlandnorth", "qatarcentral",
+                 *INDIA_REGIONS}
+_DIRECTION = r"(?:east|west|north|south|central|northeast|southeast|northwest|southwest)"
+_REGION_VALUE = re.compile(
+    rf"\b(?:REGION|region|location|aws_region|AWS_REGION|AWS_DEFAULT_REGION|CLOUDSDK_COMPUTE_REGION|AZURE_LOCATION)"
+    rf"[\"']?\s*[:=]\s*[\"']?((?:us|eu|ap|ca|sa|me|af|il|mx)(?:-gov)?-{_DIRECTION}-\d"
+    rf"|(?:us|europe|asia|australia|northamerica|southamerica|me|africa)-{_DIRECTION}\d"
+    rf"|[a-z]+\d?)\b")
+
+
+def regions_outside_india(project: Project) -> list[Hit]:
+    table = personal_data_table(project)
+    if table is None:
+        return []
+    hits = []
+    for rel in text_files(project):
+        if is_test_file(rel) or is_example_file(rel):
+            continue
+        text = project.read_text(rel)
+        lines = text.splitlines()
+        for m in _REGION_VALUE.finditer(text):
+            region = m.group(1).lower()
+            plain = re.fullmatch(r"[a-z]+\d?", region) is not None
+            if region in INDIA_REGIONS or (plain and region not in AZURE_REGIONS):
+                continue  # India, or not a cloud region name ("location = request.path")
+            line = _line_of(text, m.start())
+            hits.append(Hit(rule_id=TP_002, file=rel, line=line, confidence="low",
+                            evidence=f"{lines[line - 1].strip()}  [cloud region {region} is outside India; transfer is "
+                                     f"allowed unless the Government restricts that country (s.16); verify manually "
+                                     f"which personal data is stored there]"))
+    return sorted({(h.file, h.line): h for h in hits}.values(), key=lambda h: (h.file, h.line))
