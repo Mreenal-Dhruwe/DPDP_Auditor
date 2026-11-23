@@ -1,10 +1,11 @@
 import { MotionConfig } from "motion/react";
 import { lazy, StrictMode, Suspense, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, Link, Navigate } from "react-router";
+import { createBrowserRouter, Link } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { Shell } from "./components/Shell";
 import { Heading, PageSkeleton } from "./components/ui";
+import { Landing } from "./landing/Landing";
 import { NewScan, ScanProgress } from "./pages/Scan";
 import { ScanLayout } from "./pages/ScanLayout";
 import "./index.css";
@@ -15,7 +16,7 @@ const FindingDetail = lazy(() => import("./pages/FindingDetail").then((m) => ({ 
 const page = (element: ReactNode) => <Suspense fallback={<PageSkeleton />}>{element}</Suspense>;
 
 const router = createBrowserRouter([
-  { path: "/", element: <Navigate to="/scan" replace /> },
+  { path: "/", element: <Landing /> },
   {
     element: <Shell />,
     children: [

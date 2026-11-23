@@ -1,0 +1,226 @@
+@property --intro-radius {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: -14px;
+}
+
+.brand-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  touch-action: none;
+}
+
+.intro-shade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, #101613 0%, #060709 44%);
+  animation: intro-aperture var(--intro-duration) both;
+}
+
+@supports (mask-image: radial-gradient(black, transparent)) {
+  .intro-shade {
+    mask-image: radial-gradient(
+      circle at center,
+      transparent var(--intro-radius),
+      black calc(var(--intro-radius) + 7px)
+    );
+  }
+
+  .intro-shade::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at center,
+      transparent var(--intro-radius),
+      #bff6d5c7 calc(var(--intro-radius) + 7px),
+      #c4aeff45 calc(var(--intro-radius) + 15px),
+      transparent calc(var(--intro-radius) + 34px)
+    );
+    animation: intro-edge var(--intro-duration) both;
+  }
+}
+
+.intro-lockup {
+  position: relative;
+  display: grid;
+  width: min(250px, 88vw);
+  height: 96px;
+  place-items: center;
+  pointer-events: none;
+}
+
+.intro-tile {
+  position: absolute;
+  width: 96px;
+  height: 100%;
+  border-radius: 24px;
+  border: 1px solid #c9ffeb38;
+  background: linear-gradient(145deg, #d8f4ed18, #6d7d880a 52%, #a89bd21c);
+  box-shadow:
+    inset 0 1px 0 #f1fff52f,
+    0 0 34px #a7efcd12;
+  backdrop-filter: blur(12px);
+  animation: intro-tile var(--intro-duration) both;
+}
+
+.intro-mark {
+  position: relative;
+  border-radius: 12px;
+  box-shadow: 0 0 30px #b9fca12b;
+  animation: intro-mark var(--intro-duration) both;
+}
+
+.intro-wordmark {
+  position: absolute;
+  left: calc(50% - 40px);
+  color: #f1f6f3;
+  font-size: 1.65rem;
+  font-weight: 400;
+  letter-spacing: -0.055em;
+  white-space: nowrap;
+  animation: intro-wordmark var(--intro-duration) both;
+}
+
+.intro-wordmark strong {
+  font-weight: 700;
+}
+
+.intro-skip {
+  position: absolute;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  min-height: 44px;
+  padding-inline: 16px;
+  border: 1px solid #d7deec38;
+  border-radius: 8px;
+  background: #111319;
+  color: #e1e2ea;
+  font-size: 0.85rem;
+  animation: intro-skip var(--intro-duration) both;
+}
+
+@keyframes intro-mark {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  16%,
+  34% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  43%,
+  55% {
+    opacity: 1;
+    transform: translateX(-69px) scale(0.86);
+  }
+  69%,
+  73% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  83%,
+  100% {
+    opacity: 0;
+    transform: scale(1.14);
+  }
+}
+
+@keyframes intro-tile {
+  0%,
+  13% {
+    opacity: 0;
+    width: 82px;
+    transform: scaleY(0.86);
+  }
+  31%,
+  34% {
+    opacity: 1;
+    width: 96px;
+    transform: scaleY(1);
+  }
+  43%,
+  55% {
+    opacity: 1;
+    width: 100%;
+    transform: scaleY(0.76);
+  }
+  69% {
+    opacity: 0.36;
+    width: 96px;
+    transform: scaleY(1);
+  }
+  75%,
+  100% {
+    opacity: 0;
+    width: 90px;
+    transform: scaleY(0.94);
+  }
+}
+
+@keyframes intro-wordmark {
+  0%,
+  34% {
+    opacity: 0;
+    transform: translateX(-9px);
+    clip-path: inset(0 100% 0 0);
+  }
+  45%,
+  55% {
+    opacity: 1;
+    transform: translateX(0);
+    clip-path: inset(0);
+  }
+  66%,
+  100% {
+    opacity: 0;
+    transform: translateX(-9px);
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+@keyframes intro-aperture {
+  0%,
+  72% {
+    --intro-radius: -14px;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.56, 0.03, 0.29, 1);
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    --intro-radius: 76vmax;
+    opacity: 0;
+  }
+}
+
+@keyframes intro-edge {
+  0%,
+  72% {
+    opacity: 0;
+  }
+  79%,
+  89% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes intro-skip {
+  0%, 88% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-intro {
+    display: none;
+  }
+}
