@@ -76,8 +76,25 @@ def _project_hit(rule_id: str, table: Table, evidence: str) -> Hit:
                evidence=f"{evidence} (personal data is held, e.g. table {table.name})")
 
 
+_ROUTER_MOUNT = re.compile(r"""\.use\(\s*['"](/[^'"]*)['"]\s*,\s*([A-Za-z_$][\w$.]*)\s*\)""")
+
+
+def _router_mounts(project: Project) -> list[Route]:
+    """Express routers mounted on a path - app.use('/dataerasure', dataErasure) - whose own
+    routes are relative ('/'). Their methods are unknown, so they are judged by path words."""
+    mounts = []
+    for rel in text_files(project):
+        if suffix_of(rel) in {".js", ".ts", ".mjs", ".cjs"} and not is_test_file(rel):
+            text = project.read_text(rel)
+            for m in _ROUTER_MOUNT.finditer(text):
+                mounts.append(Route(file=rel, line=text.count("\n", 0, m.start()) + 1, function=m.group(2),
+                                    path=m.group(1), methods=frozenset({"GET", "POST", "PUT", "PATCH", "DELETE"}),
+                                    language="js"))
+    return mounts
+
+
 def _app_routes(project: Project) -> list[Route]:
-    return [r for r in find_routes(project) if not is_test_file(r.file)]
+    return [r for r in find_routes(project) if not is_test_file(r.file)] + _router_mounts(project)
 
 
 def no_access_route(project: Project) -> list[Hit]:

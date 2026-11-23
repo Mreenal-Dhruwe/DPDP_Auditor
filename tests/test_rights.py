@@ -39,6 +39,15 @@ def test_no_personal_data_or_no_routes_means_nothing_to_check(tmp_path):
     assert all(scan(rule, tmp_path) == [] for rule in CHECKS)  # a schema alone is not an application
 
 
+def test_mounted_express_router_counts(tmp_path):
+    """Juice Shop: app.use('/dataerasure', dataErasure) - the router's own routes are '/'."""
+    (tmp_path / "schema.sql").write_text("CREATE TABLE users (id INT, email TEXT);\n", encoding="utf-8")
+    (tmp_path / "server.ts").write_text(
+        "import dataErasure from './routes/dataErasure'\nconst app = express()\n"
+        "app.post('/profile', updateProfile())\napp.use('/dataerasure', dataErasure)\n", encoding="utf-8")
+    assert scan("DPDP-RT-002", tmp_path) == []
+
+
 def test_a_support_route_is_a_grievance_channel(tmp_path):
     (tmp_path / "schema.sql").write_text("CREATE TABLE users (id INT, email TEXT);\n", encoding="utf-8")
     (tmp_path / "server.js").write_text("app.post('/api/support/tickets', (req, res) => res.end())\n", encoding="utf-8")
