@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Get a quote</title>
+</head>
+<body>
+  <h1>Get a free quote</h1>
+
+  <form method="post" action="/leads">
+    <label>Name <input name="name" required></label>
+    <label>Email <input type="email" name="email" required></label>
+    <label>Mobile <input type="tel" name="mobile" required></label>
+    <label>Aadhaar number <input name="aadhaar" inputmode="numeric" maxlength="12"></label>
+    <label>
+      <input type="checkbox" name="contact_consent" value="yes" required>
+      I agree to be contacted about this quote.
+    </label>
+    <button type="submit">Get my quote</button>
+  </form>
+</body>
+</html>

@@ -14,6 +14,7 @@
       "templates": 1
     },
     "rules_checked": [
+      "DPDP-NOT-001",
       "DPDP-CON-001",
       "DPDP-CON-002",
       "DPDP-CON-003",
@@ -37,7 +38,6 @@
       "DPDP-RT-003"
     ],
     "rules_not_checked": [
-      "DPDP-NOT-001",
       "DPDP-CON-005",
       "DPDP-CON-006",
       "DPDP-SEC-009",

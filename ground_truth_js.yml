@@ -171,6 +171,14 @@ planted:
     clue: config
     note: Daily log files are deleted after 14 days; Rule 8(3) requires keeping logs for at least a year.
 
+  - id: JS-21
+    rule_id: DPDP-NOT-001
+    file: public/lead.html
+    line: 10
+    anchor: '<form method="post" action="/leads">'
+    clue: absence
+    note: The quote form asks for email, mobile and Aadhaar with no notice of what is collected or why.
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -190,7 +198,6 @@ compliant:
     note: getCustomer (routes/customers.ts:8) picks email and phone from the User record; GET /api/leads/:id (server.ts:39) picks name and source.
 
 out_of_scope:
-  - {rule_id: DPDP-NOT-001, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CON-002, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CON-005, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CON-006, note: Not judged by the JS fixture app; see target_app.}

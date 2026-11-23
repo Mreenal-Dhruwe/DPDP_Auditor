@@ -2,7 +2,7 @@
 
 Implemented: DPDP-CON-001 (consent can be given but not withdrawn), DPDP-CON-002
 (pre-ticked or default-true consent), DPDP-CON-003 (no evidence of consent) and DPDP-CON-004
-(personal data used without a consent check); see their sections.
+(personal data used without a consent check), and DPDP-NOT-001 (no notice); see their sections.
 """
 
 import ast
@@ -399,3 +399,51 @@ def consent_evidence(project: Project) -> list[Hit]:
                             evidence=f"{source}  [{table.name}.{column.name} keeps consent as a flag only: no time "
                                      f"it was given and no notice version]"))
     return sorted(hits, key=lambda h: (h.file, h.line))
+
+
+# --- DPDP-NOT-001: personal data collected without a notice ---------------------------------
+#
+# s.5(1) / Rule 3(b): before or with the consent request, an itemised notice of the data and
+# its purpose. Checked on pages (HTML, templates, JSX/TSX, Vue ...): a <form> with
+# personal-data inputs (by name, or type email / tel) and nothing on the page that looks like
+# a notice: a privacy link, "privacy", "notice", "we collect", "purpose", "personal data",
+# "data protection". Login-style forms (only email and password) are left out. Low
+# confidence: the notice may be shown in a modal, an earlier step or a linked page.
+
+NOT_001 = "DPDP-NOT-001"
+NOTICE_TEXT = re.compile(r"privacy|notice|we collect|we use your|purpose|personal data|data protection", re.IGNORECASE)
+_FORM_TAG = re.compile(r"<form\b", re.IGNORECASE)
+
+
+def _pii_inputs(text: str, matcher) -> list[tuple[int, str]]:
+    """(offset, label) of personal-data inputs on a page."""
+    found = []
+    for offset, tag in input_tags(text):
+        kind = (attribute(tag, "type") or "").lower()
+        if kind in {"hidden", "submit", "button", "checkbox", "radio"}:
+            continue
+        match = matcher.match(attribute(tag, "name") or attribute(tag, "id") or "")
+        label = match.label if match else {"email": "email", "tel": "phone"}.get(kind)
+        if label:
+            found.append((offset, label))
+    return found
+
+
+def missing_notice(project: Project) -> list[Hit]:
+    matcher = default_matcher()
+    hits = []
+    for rel in project.files:
+        if suffix_of(rel) not in TEMPLATE_SUFFIXES or is_test_file(rel):
+            continue
+        text = project.read_text(rel)
+        form = _FORM_TAG.search(text)
+        inputs = _pii_inputs(text, matcher)
+        labels = sorted({label for _, label in inputs})
+        if form is None or not labels or set(labels) <= {"email", "password"} or NOTICE_TEXT.search(text):
+            continue
+        line = text.count("\n", 0, form.start()) + 1
+        hits.append(Hit(rule_id=NOT_001, file=rel, line=line, pii=labels, confidence="low",
+                        evidence=f"{text.splitlines()[line - 1].strip()}  [the form asks for {', '.join(labels)} but "
+                                 f"the page shows no notice of what is collected and why; verify manually: the "
+                                 f"notice may be in a modal or an earlier step]"))
+    return hits

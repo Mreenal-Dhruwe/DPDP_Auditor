@@ -12,7 +12,7 @@ To add a detector:
      with no false positives
 
 Module            Rules it owns
-consent.py        DPDP-NOT-001, DPDP-CON-001 to DPDP-CON-006   (CON-001 to CON-004 done)
+consent.py        DPDP-NOT-001, DPDP-CON-001 to DPDP-CON-006   (NOT-001, CON-001 to CON-004 done)
 logs.py           DPDP-SEC-001, DPDP-SEC-007                   (both done; Python + JS)
 storage.py        DPDP-SEC-002, DPDP-SEC-003                   (SEC-002 done)
 access.py         DPDP-SEC-005, DPDP-SEC-006                   (both done; Python + Express)
@@ -69,6 +69,7 @@ DETECTORS: list[Detector] = [
     Detector("no grievance channel", ("DPDP-RT-003",), rights.no_grievance_channel),
     Detector("personal-data reads with no audit log", ("DPDP-SEC-007",), logs.unaudited_reads),
     Detector("log retention under a year", ("DPDP-SEC-010",), config_files.short_log_retention),
+    Detector("no notice before collection", ("DPDP-NOT-001",), consent.missing_notice),
 ]
 
 
