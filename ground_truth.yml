@@ -115,6 +115,14 @@ planted:
     clue: config
     note: The Dockerfile has no USER instruction, so the app runs as root.
 
+  - id: GT-12
+    rule_id: DPDP-CH-002
+    file: templates/signup.html
+    line: 43
+    anchor: "googletagmanager.com/gtag/js"
+    clue: pattern
+    note: Google Analytics loads for every visitor of the sign-up page, which asks for the date of birth; nothing limits tracking to adults (s.9(3)).
+
 compliant:
   - rule_id: DPDP-NOT-001
     note: signup.html shows an itemised notice (each data field and the purpose) above the form.
@@ -139,7 +147,7 @@ compliant:
   - rule_id: DPDP-SEC-007
     note: Every route that reads or changes personal data calls audit().
   - rule_id: DPDP-CH-002
-    note: Analytics runs only for adults (is_adult(dob) is checked before mp.track).
+    note: Backend analytics runs only for adults (is_adult(dob) is checked before mp.track); the page tracker is GT-12.
   - rule_id: DPDP-BR-001
     note: incident.py notifies affected users and builds the Board report with a 72-hour deadline.
   - rule_id: DPDP-RET-001

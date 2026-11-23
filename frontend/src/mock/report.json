@@ -25,7 +25,8 @@
       "DPDP-TP-001",
       "DPDP-RET-001",
       "DPDP-RET-002",
-      "DPDP-CH-001"
+      "DPDP-CH-001",
+      "DPDP-CH-002"
     ],
     "rules_not_checked": [
       "DPDP-NOT-001",
@@ -40,7 +41,6 @@
       "DPDP-TP-002",
       "DPDP-BR-001",
       "DPDP-RET-003",
-      "DPDP-CH-002",
       "DPDP-RT-001",
       "DPDP-RT-002",
       "DPDP-RT-003"
@@ -48,9 +48,9 @@
   },
   "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes.",
   "summary": {
-    "total": 14,
+    "total": 15,
     "by_severity": {
-      "critical": 2,
+      "critical": 3,
       "high": 7,
       "medium": 3,
       "low": 1,
@@ -58,8 +58,8 @@
     },
     "by_category": {
       "Security": 7,
+      "Children": 2,
       "Consent": 2,
-      "Children": 1,
       "Breach": 1,
       "Third parties": 1,
       "Retention": 1,
@@ -69,6 +69,7 @@
       "s.8(5)": 7,
       "Rule 6(1)(b)": 3,
       "Rule 6(1)(a)": 3,
+      "s.9(3)": 1,
       "Rule 6(1)(g)": 1,
       "s.9(1)": 1,
       "Rule 10": 1,
@@ -172,6 +173,45 @@
       "severity": "critical",
       "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
       "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "bcd7b9fa103e",
+      "rule_id": "DPDP-CH-002",
+      "title": "Tracking or targeted ads possible for children",
+      "category": "Children",
+      "scope": "line",
+      "file": "templates/signup.html",
+      "line": 43,
+      "evidence": "<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-LENDDEMO01\"></script>",
+      "context": {
+        "start_line": 40,
+        "lines": [
+          "  <footer>Grievance Officer: gr***@*** (we reply within 90 days)</footer>",
+          "",
+          "  <!-- Analytics on the sign-up page, which asks for the date of birth -->",
+          "  <script async src=\"https://www.googletagmanager.com/gtag/js?id=G-LENDDEMO01\"></script>",
+          "  <script>",
+          "    window.dataLayer = window.dataLayer || [];",
+          "    function gtag(){dataLayer.push(arguments);}"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.9(3)"
+        ],
+        "rules": [],
+        "requirement": "No tracking, behavioural monitoring or targeted advertising directed at children."
+      },
+      "penalty": {
+        "schedule_item": 3,
+        "provision": "s.9 children",
+        "cap": "Rs 200 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Rs 200 crore cap and an outright prohibition.",
+      "fix": "Disable tracking and ad SDKs for users under 18."
     },
     {
       "id": "ee0ffecd6c5a",

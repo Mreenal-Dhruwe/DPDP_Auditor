@@ -9,19 +9,33 @@ Implemented: DPDP-CH-001, an absence check over the whole project:
 Collected and no flow -> one project-wide finding, pointing at the first place the data is
 collected (backend code first, then forms, then schema). An age check alone (is_adult) is
 not a parental-consent flow: under-18s still get processed without a parent's consent.
+
+Implemented: DPDP-CH-002 (s.9(3): no tracking, behavioural monitoring or targeted ads aimed
+at children). Only when the app collects a date of birth or age (same search as CH-001):
+- trackers in pages and frontend code: Google Analytics / Tag Manager, Meta Pixel, AdSense,
+  Google Ads, LinkedIn Insight, Hotjar, Clarity, Segment, Mixpanel, PostHog, Amplitude,
+  Firebase Analytics, CleverTap, MoEngage (script URLs and init calls; *.min.js skipped)
+- backend tracking calls to analytics SDKs (thirdparty.py: mp.track, analytics.identify ...)
+A tracker is fine when an age check gates it: an if / {% if %} / && / ?: mentioning adult,
+minor, child, age, dob or 18 in the lines just before it (pages, JS), or an enclosing `if`
+or an earlier `if not adult: return` (Python). One finding per file and tracker. High
+confidence for ad trackers or a page that itself asks for the age, medium otherwise.
 """
 
 import ast
 import re
+from collections.abc import Iterator
 
 from scanner.detectors.consent import TEMPLATE_SUFFIXES, attribute, input_tags
 from scanner.detectors.schemas import find_tables
-from scanner.detectors.source import is_test_file, python_trees, string_key, suffix_of, text_files
+from scanner.detectors.source import dotted_name, is_test_file, python_trees, string_key, suffix_of, text_files
+from scanner.detectors.thirdparty import SEND_METHODS, _clients, _sdk_names
 from scanner.ingest import Project
 from scanner.models import Hit
 from scanner.pii import split_words
 
 CH_001 = "DPDP-CH-001"
+CH_002 = "DPDP-CH-002"
 NOT_AN_AGE = {"max", "min", "cache", "cookie", "ttl", "token", "session", "password", "header", "file"}
 PARENTAL_FLOW = re.compile(
     r"guardian|parental|parent[\s_-]?(?:email|phone|mobile|consent|verification|verify|approval|otp)|"
@@ -35,8 +49,9 @@ def is_age_field(name: str | None) -> bool:
     return "dob" in words or "birth" in words or "birthday" in words or "birthdate" in words or "age" in words
 
 
-def _first_collection(project: Project) -> tuple[str, int, str] | None:
-    """(file, line, how) for the first place a DOB / age is collected, backend first."""
+def _collections(project: Project) -> Iterator[tuple[str, int, str]]:
+    """(file, line, how) for each file where a DOB / age is collected: backend code first,
+    then forms, then table columns. One entry per file (its first place)."""
     for rel, tree in python_trees(project):
         if is_test_file(rel):
             continue
@@ -49,19 +64,24 @@ def _first_collection(project: Project) -> tuple[str, int, str] | None:
                 keys.append((node.lineno, string_key(node.args[0])))
         if keys:
             line, key = min(keys)
-            return rel, line, f"the backend reads '{key}'"
+            yield rel, line, f"the backend reads '{key}'"
     for rel in project.files:
         if suffix_of(rel) in TEMPLATE_SUFFIXES and not is_test_file(rel):
             text = project.read_text(rel)
             for offset, tag in input_tags(text):
                 if is_age_field(attribute(tag, "name")) or (attribute(tag, "type") or "").lower() == "date" \
                         and is_age_field(attribute(tag, "id")):
-                    return rel, text.count("\n", 0, offset) + 1, f"a form asks for '{attribute(tag, 'name')}'"
+                    yield rel, text.count("\n", 0, offset) + 1, f"a form asks for '{attribute(tag, 'name')}'"
+                    break
     for table in find_tables(project):
         for column in table.columns:
             if is_age_field(column.name):
-                return table.file, column.line, f"table {table.name} stores '{column.name}'"
-    return None
+                yield table.file, column.line, f"table {table.name} stores '{column.name}'"
+                break
+
+
+def _first_collection(project: Project) -> tuple[str, int, str] | None:
+    return next(_collections(project), None)
 
 
 def no_parental_consent(project: Project) -> list[Hit]:
@@ -75,3 +95,120 @@ def no_parental_consent(project: Project) -> list[Hit]:
     return [Hit(rule_id=CH_001, scope="project", file=rel, line=line, pii=["dob"], confidence="medium",
                 evidence=f"Date of birth / age is collected ({how}), but no parent or guardian consent "
                          f"flow exists anywhere, so under-18s are processed without a parent's consent")]
+
+
+# --- DPDP-CH-002: tracking or targeted ads possible for children ----------------------------
+
+# (pattern, tracker name, is it an advertising tracker?)
+TRACKERS = [
+    (r"googletagmanager\.com/gtag/js|gtag\(\s*['\"]config['\"]", "Google Analytics (gtag.js)", False),
+    (r"googletagmanager\.com/gtm\.js", "Google Tag Manager", False),
+    (r"google-analytics\.com/(?:analytics|ga)\.js|\bReactGA4?\.initialize\(|\bga\(\s*['\"]create['\"]",
+     "Google Analytics", False),
+    (r"connect\.facebook\.net/[\w_]+/fbevents\.js|\bfbq\(\s*['\"]init['\"]|ReactPixel\.init\(", "Meta Pixel", True),
+    (r"pagead2\.googlesyndication\.com|\badsbygoogle\b", "Google AdSense", True),
+    (r"googleadservices\.com|doubleclick\.net", "Google Ads", True),
+    (r"snap\.licdn\.com|_linkedin_partner_id", "LinkedIn Insight Tag", True),
+    (r"static\.hotjar\.com|\bhj\(\s*['\"]identify|Hotjar\.init\(", "Hotjar session recording", False),
+    (r"clarity\.ms/tag", "Microsoft Clarity session recording", False),
+    (r"cdn\.segment\.com|\banalytics\.load\(", "Segment", False),
+    (r"\bmixpanel\.init\(", "Mixpanel", False),
+    (r"\bposthog\.init\(", "PostHog", False),
+    (r"\bamplitude\.(?:init|getInstance)\(", "Amplitude", False),
+    (r"\bgetAnalytics\(", "Firebase Analytics", False),
+    (r"\bclevertap\.(?:init|account\.push)\b", "CleverTap", False),
+    (r"\bmoengage\.(?:initialize|init)\(|Moengage\s*=", "MoEngage", False),
+]
+_TRACKERS = [(re.compile(p), name, ads) for p, name, ads in TRACKERS]
+TRACKER_SUFFIXES = TEMPLATE_SUFFIXES | {".js", ".ts", ".mjs", ".cjs"}
+# Backend SDKs that track behaviour (error monitoring such as Sentry is not tracking).
+TRACKING_VENDORS = {"Mixpanel", "Segment", "PostHog", "Amplitude", "CleverTap", "MoEngage", "Intercom", "Braze",
+                    "RudderStack", "HubSpot", "Customer.io"}
+AGE_WORDS = {"adult", "adults", "minor", "minors", "child", "children", "kid", "kids", "age", "dob", "birth",
+             "birthdate", "birthday", "18", "over18", "under18"}
+_CONDITION = re.compile(r"\bif\b|\{%-?\s*if\b|&&|\?|\bunless\b|v-if|\*ngIf", re.IGNORECASE)
+GATE_WINDOW = 12  # lines before a tracker searched for an age check
+
+
+def _mentions_age(text: str) -> bool:
+    return bool(set(split_words(text)) & AGE_WORDS)
+
+
+def _age_gated_text(lines: list[str], line: int) -> bool:
+    """An age condition in the lines just before (or on) a tracker in a page or JS file."""
+    window = lines[max(0, line - 1 - GATE_WINDOW):line]
+    return any(_CONDITION.search(text) and _mentions_age(text) for text in window)
+
+
+def _frontend_trackers(project: Project, age_files: set[str]) -> list[tuple[str, int, str, bool]]:
+    found = []
+    for rel in text_files(project):
+        if suffix_of(rel) not in TRACKER_SUFFIXES or is_test_file(rel) or rel.endswith(".min.js"):
+            continue
+        text = project.read_text(rel)
+        lines = text.splitlines()
+        for pattern, name, ads in _TRACKERS:
+            for m in pattern.finditer(text):
+                line = text.count("\n", 0, m.start()) + 1
+                if not _age_gated_text(lines, line):
+                    found.append((rel, line, name, ads or rel in age_files))
+                    break  # one finding per file and tracker
+    return found
+
+
+def _names_in(node: ast.AST) -> str:
+    return " ".join(dotted_name(n) for n in ast.walk(node) if isinstance(n, (ast.Name, ast.Attribute)))
+
+
+def _python_gated(call: ast.Call, parents: dict[ast.AST, ast.AST]) -> bool:
+    """An enclosing `if` on age, or an earlier `if not adult: return` in the same function."""
+    node = call
+    while node in parents:
+        parent = parents[node]
+        if isinstance(parent, (ast.If, ast.IfExp, ast.While)) and _mentions_age(_names_in(parent.test)):
+            return True
+        if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            for stmt in ast.walk(parent):
+                if isinstance(stmt, ast.If) and stmt.lineno < call.lineno and _mentions_age(_names_in(stmt.test)) \
+                        and any(isinstance(s, (ast.Return, ast.Raise)) for s in stmt.body):
+                    return True
+            return False
+        node = parent
+    return False
+
+
+def _backend_tracking(project: Project) -> list[tuple[str, int, str, bool]]:
+    found = []
+    for rel, tree in python_trees(project):
+        sdk = {name: vendor for name, vendor in _sdk_names(tree).items() if vendor in TRACKING_VENDORS}
+        if not sdk or is_test_file(rel):
+            continue
+        clients = _clients(tree, sdk)
+        parents = {child: parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)}
+        seen = set()
+        for node in sorted((n for n in ast.walk(tree) if isinstance(n, ast.Call)), key=lambda n: n.lineno):
+            if not isinstance(node.func, ast.Attribute) or node.func.attr not in SEND_METHODS:
+                continue
+            receiver = dotted_name(node.func.value)
+            vendor = clients.get(receiver) or clients.get(receiver.split(".")[0])
+            if vendor and vendor not in seen and not _python_gated(node, parents):
+                seen.add(vendor)
+                found.append((rel, node.lineno, vendor, False))
+    return found
+
+
+def tracking_children(project: Project) -> list[Hit]:
+    collected = _first_collection(project)
+    if collected is None:
+        return []
+    age_file, age_line, how = collected
+    age_files = {rel for rel, _, _ in _collections(project)}  # a tracker on such a page: high confidence
+    hits = []
+    for rel, line, name, high in _frontend_trackers(project, age_files) + _backend_tracking(project):
+        source = project.read_text(rel).splitlines()[line - 1].strip()
+        hits.append(Hit(
+            rule_id=CH_002, file=rel, line=line, pii=["dob"], confidence="high" if high else "medium",
+            evidence=f"{source}  [{name} runs for every user, children included: the app collects date of "
+                     f"birth / age ({how}, {age_file}:{age_line}) but no age check stops the tracking]",
+        ))
+    return sorted(hits, key=lambda h: (h.file, h.line))

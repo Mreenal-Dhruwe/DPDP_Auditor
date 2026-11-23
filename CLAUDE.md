@@ -140,8 +140,8 @@ scanner/
   detectors/        # consent, logs, storage, access, retention, thirdparty, children,
                     # rights, config_files, hardcoded_secrets; shared helpers routes.py,
                     # source.py, schemas.py, pii_refs.py, javascript.py (tree-sitter).
-                    # Rule ownership + status in __init__.py. Done (12): CON-001, CON-002,
-                    # SEC-001..005, SEC-008, TP-001, RET-001, RET-002, CH-001.
+                    # Rule ownership + status in __init__.py. Done (13): CON-001, CON-002,
+                    # SEC-001..005, SEC-008, TP-001, RET-001, RET-002, CH-001, CH-002.
                     # JS/TS (Express + Sequelize): SEC-001, SEC-005, CON-001 (routes),
                     # SEC-002 + RET-001 (Sequelize models), SEC-003 (createHash/md5 incl.
                     # hash helpers called with passwords), SEC-004 (text). Express handlers

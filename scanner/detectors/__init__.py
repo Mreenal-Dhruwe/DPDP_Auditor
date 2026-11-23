@@ -18,7 +18,7 @@ storage.py        DPDP-SEC-002, DPDP-SEC-003                   (SEC-002 done)
 access.py         DPDP-SEC-005, DPDP-SEC-006                   (SEC-005 done, Flask/FastAPI)
 retention.py      DPDP-RET-001 to DPDP-RET-003                 (RET-001 done)
 thirdparty.py     DPDP-TP-001, DPDP-TP-002
-children.py       DPDP-CH-001, DPDP-CH-002
+children.py       DPDP-CH-001, DPDP-CH-002                     (both done)
 rights.py         DPDP-RT-001 to DPDP-RT-003, DPDP-BR-001
 hardcoded_secrets.py  DPDP-SEC-004                         (done)
 config_files.py   DPDP-SEC-008 to DPDP-SEC-010
@@ -60,6 +60,7 @@ DETECTORS: list[Detector] = [
     Detector("insecure infrastructure config", ("DPDP-SEC-008",), config_files.insecure_infrastructure),
     Detector("immediate hard delete", ("DPDP-RET-002",), retention.immediate_hard_delete),
     Detector("child data without parental consent", ("DPDP-CH-001",), children.no_parental_consent),
+    Detector("tracking of children", ("DPDP-CH-002",), children.tracking_children),
 ]
 
 

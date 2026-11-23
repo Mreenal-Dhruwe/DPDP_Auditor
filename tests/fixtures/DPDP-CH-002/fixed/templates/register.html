@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Join the game</title>
+  {% if user and user.is_adult %}
+  <script>
+    !function(f,b,e,v,n,t,s){n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};}(window,document,'script');
+    fbq('init', '1234567890');
+    fbq('track', 'PageView');
+  </script>
+  {% endif %}
+</head>
+<body>
+  <form method="post" action="/register">
+    <label>Name <input name="name"></label>
+    <label>Birth date <input type="date" name="birth_date"></label>
+    <button>Join</button>
+  </form>
+  {% if user and user.age >= 18 %}
+  <script src="https://static.hotjar.com/c/hotjar-123.js?sv=6"></script>
+  {% endif %}
+</body>
+</html>

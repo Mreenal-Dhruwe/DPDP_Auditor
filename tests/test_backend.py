@@ -66,9 +66,9 @@ def test_zip_upload_scan_and_downloads(client, settings):
     status = client.get(f"/api/scan/{scan_id}").json()  # TestClient runs background tasks before returning
     assert (status["status"], status["step"], status["target"]) == ("done", "done", "target_app")
     assert status["steps"] == ["queued", "unpacking", "scanning", "writing reports", "done"]
-    assert status["summary"]["total"] == 11
+    assert status["summary"]["total"] == 12
     report = client.get(f"/api/scan/{scan_id}/findings").json()
-    assert report["target"] == "target_app" and len(report["findings"]) == 11
+    assert report["target"] == "target_app" and len(report["findings"]) == 12
     assert all(f["file"] is None or f["file"].startswith("target_app/") for f in report["findings"])
     for fmt in ("json", "html", "sarif"):
         download = client.get(f"/api/scan/{scan_id}/report.{fmt}")
