@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DPDP compliance report · {{ report.target }}</title>
+<style>
+  :root {
+    --ink: #101828; --muted: #475467; --line: #e4e7ec; --panel: #f9fafb; --accent: #0e7490;
+    --critical: #b42318; --critical-bg: #fef3f2; --high: #c4320a; --high-bg: #fff6ed;
+    --medium: #a15c07; --medium-bg: #fefbe8; --low: #175cd3; --low-bg: #eff8ff;
+    --info: #475467; --info-bg: #f2f4f7;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff; color: var(--ink); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .page { max-width: 980px; margin: 0 auto; padding: 32px 20px 56px; }
+  h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  h2 { font-size: 19px; margin: 40px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  h3 { font-size: 16px; margin: 0; }
+  .sub { color: var(--muted); margin: 0; }
+  .meta { color: var(--muted); font-size: 13px; margin-top: 10px; }
+  nav { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 20px 0 0; font-size: 14px; }
+  nav a { color: var(--accent); text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+  .tile { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: var(--panel); }
+  .tile .n { display: block; font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .tile .k { color: var(--muted); font-size: 13px; text-transform: capitalize; }
+  {% for s in severities %}.tile.{{ s }} .n, .count.{{ s }} { color: var(--{{ s }}); }
+  .badge.{{ s }} { color: var(--{{ s }}); background: var(--{{ s }}-bg); border-color: var(--{{ s }}); }
+  .finding.{{ s }} { border-left-color: var(--{{ s }}); }
+  {% endfor %}
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 18px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 13px; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .table-wrap { overflow-x: auto; }
+  code { font: 13px/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  .finding { border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 8px; padding: 14px 16px; margin: 14px 0; break-inside: avoid; }
+  .finding header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+  .badge { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; border: 1px solid; border-radius: 999px; padding: 1px 8px; }
+  .rule { color: var(--muted); }
+  .where { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+  .where code { color: var(--ink); }
+  .evidence { margin: 10px 0 0; padding: 8px 10px; background: var(--panel); border-radius: 6px; overflow-x: auto; }
+  pre.code { margin: 10px 0 0; padding: 8px 0; background: #0f172a; color: #e2e8f0; border-radius: 6px; overflow-x: auto; font: 12.5px/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  pre.code span.ln { display: block; padding: 0 12px 0 0; white-space: pre; }
+  pre.code span.ln.hit { background: rgba(250, 204, 21, .18); box-shadow: inset 3px 0 0 #facc15; }
+  pre.code span.no { display: inline-block; width: 3.5em; padding-right: 1em; text-align: right; color: #64748b; user-select: none; }
+  dl { display: grid; grid-template-columns: 11em 1fr; gap: 6px 14px; margin: 12px 0 0; font-size: 14px; }
+  dt { color: var(--muted); }
+  dd { margin: 0; }
+  .ref { display: inline-block; font-size: 12.5px; border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; margin: 0 4px 2px 0; background: #fff; }
+  .muted { color: var(--muted); }
+  .empty { padding: 16px; border: 1px dashed var(--line); border-radius: 8px; color: var(--muted); }
+  footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+  footer strong { color: var(--ink); }
+  details summary { cursor: pointer; color: var(--accent); }
+  @media (max-width: 560px) { dl { grid-template-columns: 1fr; } dt { margin-top: 6px; } }
+  @media print { nav { display: none; } .page { padding: 0; } h2 { break-after: avoid; } a { color: inherit; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <h1>DPDP compliance report</h1>
+  <p class="sub">{{ report.target }} · Digital Personal Data Protection Act, 2023 and DPDP Rules, 2025</p>
+  <p class="meta">Generated {{ report.generated_at.strftime("%d %b %Y, %H:%M UTC") }} · {{ report.tool }} {{ report.tool_version }} · rules v{{ report.rules_version }}</p>
+  <nav aria-label="Sections">
+    <a href="#summary">Summary</a>
+    <a href="#coverage">Scan coverage</a>
+    {% for sev, items in groups if items %}<a href="#sev-{{ sev }}">{{ sev|capitalize }} ({{ items|length }})</a>{% endfor %}
+    <a href="#disclaimer">Disclaimer</a>
+  </nav>
+</header>
+
+<section id="summary">
+  <h2>Summary</h2>
+  <div class="tiles">
+    <div class="tile"><span class="n">{{ report.summary.total }}</span><span class="k">findings</span></div>
+    {% for s in severities %}
+    <div class="tile {{ s }}"><span class="n">{{ report.summary.by_severity[s] }}</span><span class="k">{{ s }}</span></div>
+    {% endfor %}
+  </div>
+  {% if report.findings %}
+  <div class="cols">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>DPDP provision</th><th class="num">Findings</th></tr></thead>
+        <tbody>
+        {% for ref, n in report.summary.by_provision.items() %}<tr><td>{{ ref }}</td><td class="num">{{ n }}</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Category</th><th class="num">Findings</th></tr></thead>
+        <tbody>
+        {% for cat, n in report.summary.by_category.items() %}<tr><td>{{ cat }}</td><td class="num">{{ n }}</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</section>
+
+<section id="coverage">
+  <h2>Scan coverage</h2>
+  <p>{{ report.files_scanned }} files read (never executed){% if report.coverage and report.coverage.files_by_kind %}:
+    {% for kind, n in report.coverage.files_by_kind.items() %}{{ n }} {{ kind }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}.</p>
+  {% if report.coverage %}
+  <p>Automated checks ran for <strong>{{ report.coverage.rules_checked|length }} of {{ report.coverage.rules_checked|length + report.coverage.rules_not_checked|length }}</strong> rules.
+     No finding for a checked rule means the scanner saw no sign of the problem, not that the code is compliant.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Rule</th><th>Checked automatically</th><th class="num">Findings</th></tr></thead>
+      <tbody>
+      {% for rule_id in report.coverage.rules_checked %}
+        <tr><td><code>{{ rule_id }}</code></td><td>{{ rules[rule_id].title if rule_id in rules else "" }}</td><td class="num">{{ per_rule.get(rule_id, 0) }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if report.coverage.rules_not_checked %}
+  <details>
+    <summary>{{ report.coverage.rules_not_checked|length }} rules need a manual review (no automated check yet)</summary>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+        {% for rule_id in report.coverage.rules_not_checked %}
+          <tr><td><code>{{ rule_id }}</code></td><td>{{ rules[rule_id].title if rule_id in rules else "" }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </details>
+  {% endif %}
+  {% endif %}
+</section>
+
+<section id="findings">
+  {% if not report.findings %}
+  <h2>Findings</h2>
+  <p class="empty">No findings for the rules that were checked.</p>
+  {% endif %}
+  {% for sev, items in groups if items %}
+  <h2 id="sev-{{ sev }}">{{ sev|capitalize }} <span class="count {{ sev }}">· {{ items|length }}</span></h2>
+  {% for f in items %}
+  <article class="finding {{ f.severity }}" id="f-{{ f.id }}">
+    <header>
+      <span class="badge {{ f.severity }}">{{ f.severity }}</span>
+      <h3>{{ f.title }}</h3>
+      <code class="rule">{{ f.rule_id }}</code>
+    </header>
+    <p class="where"><code>{{ f.location }}</code> · confidence {{ f.confidence }}{% if f.pii %} · personal data: {{ f.pii|join(", ") }}{% endif %}</p>
+    <div class="evidence"><code>{{ f.evidence }}</code></div>
+    {% if f.context %}
+    <pre class="code" aria-label="Source around {{ f.location }} (masked)">{% for line in f.context.lines %}{% set n = f.context.start_line + loop.index0 %}<span class="ln{% if n == f.line %} hit{% endif %}"><span class="no">{{ n }}</span>{{ line }}</span>{% endfor %}</pre>
+    {% endif %}
+    <dl>
+      <dt>Law</dt>
+      <dd>{% for ref in f.law.act %}<span class="ref">{{ ref }} DPDP Act</span>{% endfor %}{% for ref in f.law.rules %}<span class="ref">{{ ref }} DPDP Rules</span>{% endfor %}<br>{{ f.law.requirement }}</dd>
+      <dt>Penalty cap</dt>
+      <dd>{{ f.penalty.cap }} <span class="muted">(Schedule item {{ f.penalty.schedule_item }}: {{ f.penalty.provision }})</span></dd>
+      <dt>Why {{ f.severity }}</dt>
+      <dd>{{ f.severity_reason }}</dd>
+      <dt>Recommended fix</dt>
+      <dd>{{ f.fix }}</dd>
+    </dl>
+  </article>
+  {% endfor %}
+  {% endfor %}
+</section>
+
+<footer id="disclaimer">
+  <p><strong>{{ report.disclaimer }}</strong></p>
+  <p>Evidence and source excerpts are masked: secrets and personal data (emails, phone numbers, Aadhaar, PAN) never appear in full.
+     The scanner reads the code; it does not run it.</p>
+  <p>Sources: {{ sources.act }}; {{ sources.rules }}.</p>
+</footer>
+
+</div>
+</body>
+</html>

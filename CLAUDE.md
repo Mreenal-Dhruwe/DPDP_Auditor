@@ -110,6 +110,7 @@ from the YAML.
   to 200 characters (mask first, so a cut never leaves half a secret). Null for `file` scope,
   for `project` scope without a related line, and when the file can't be read.
 - Report (`report.json`): tool, tool_version, rules_version, target, generated_at, files_scanned,
+  coverage {files_by_kind, rules_checked, rules_not_checked} (what "no findings" means),
   disclaimer, summary {total, by_severity (always all five keys), by_category, by_provision},
   findings (sorted critical → info, then file and line; repeats of the same id dropped).
 

@@ -15,6 +15,7 @@ changing the contract, the rules, target_app or ground_truth.yml.
 from datetime import datetime, timezone
 
 from scanner.config import PROJECT_ROOT
+from scanner.engine import coverage_of
 from scanner.evaluate import Planted, load_ground_truth
 from scanner.ingest import Project
 from scanner.models import Hit, Report
@@ -69,6 +70,7 @@ def build() -> Report:
         disclaimer=catalogue.meta.disclaimer,
         generated_at=GENERATED_AT,
         files_scanned=len(project.files),
+        coverage=coverage_of(project, catalogue),
         findings=[catalogue.to_finding(hit, source_lines(hit.file)) for hit in hits],
     )
 

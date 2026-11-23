@@ -243,6 +243,14 @@ class Summary(ContractModel):
         )
 
 
+class Coverage(ContractModel):
+    """What the scan looked at, so a reader knows what "no findings" means."""
+
+    files_by_kind: dict[str, int] = {}  # python, javascript, typescript, templates, sql, config, other
+    rules_checked: list[RuleId] = []  # rules with an automated detector
+    rules_not_checked: list[RuleId] = []  # rules that need a manual review
+
+
 class Report(ContractModel):
     """The master output format (report.json). HTML, PDF and SARIF are made from it."""
 
@@ -252,6 +260,7 @@ class Report(ContractModel):
     target: Text  # project name shown to the user - never a server path
     generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     files_scanned: int = Field(0, ge=0)
+    coverage: Coverage | None = None
     disclaimer: Text = DISCLAIMER
     summary: Summary = Field(default_factory=Summary)  # recomputed; any input is ignored
     findings: list[Finding] = []

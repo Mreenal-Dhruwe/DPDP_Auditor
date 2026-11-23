@@ -5,6 +5,47 @@
   "target": "target_app",
   "generated_at": "2026-11-23T09:00:00Z",
   "files_scanned": 7,
+  "coverage": {
+    "files_by_kind": {
+      "python": 3,
+      "config": 1,
+      "other": 1,
+      "sql": 1,
+      "templates": 1
+    },
+    "rules_checked": [
+      "DPDP-CON-001",
+      "DPDP-CON-002",
+      "DPDP-SEC-001",
+      "DPDP-SEC-002",
+      "DPDP-SEC-003",
+      "DPDP-SEC-004",
+      "DPDP-SEC-005",
+      "DPDP-SEC-008",
+      "DPDP-TP-001",
+      "DPDP-RET-001",
+      "DPDP-RET-002",
+      "DPDP-CH-001"
+    ],
+    "rules_not_checked": [
+      "DPDP-NOT-001",
+      "DPDP-CON-003",
+      "DPDP-CON-004",
+      "DPDP-CON-005",
+      "DPDP-CON-006",
+      "DPDP-SEC-006",
+      "DPDP-SEC-007",
+      "DPDP-SEC-009",
+      "DPDP-SEC-010",
+      "DPDP-TP-002",
+      "DPDP-BR-001",
+      "DPDP-RET-003",
+      "DPDP-CH-002",
+      "DPDP-RT-001",
+      "DPDP-RT-002",
+      "DPDP-RT-003"
+    ]
+  },
   "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes.",
   "summary": {
     "total": 14,

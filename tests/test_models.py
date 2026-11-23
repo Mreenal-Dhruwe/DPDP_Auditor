@@ -14,7 +14,7 @@ FINDING_KEYS = {
 }
 REPORT_KEYS = {
     "tool", "tool_version", "rules_version", "target", "generated_at", "files_scanned",
-    "disclaimer", "summary", "findings",
+    "coverage", "disclaimer", "summary", "findings",
 }
 
 
