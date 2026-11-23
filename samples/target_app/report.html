@@ -69,7 +69,9 @@
   footer strong { color: var(--ink); }
   details summary { cursor: pointer; color: var(--accent); }
   @media (max-width: 560px) { dl { grid-template-columns: 1fr; } dt { margin-top: 6px; } }
-  @media print { nav { display: none; } .page { padding: 0; } h2 { break-after: avoid; } a { color: inherit; } }
+  @media print { nav { display: none; } .page { padding: 0; } h2 { break-after: avoid; } a { color: inherit; }
+    /* WeasyPrint (PDF) has no grid auto-fit: fixed columns instead */
+    .tiles { grid-template-columns: repeat(6, 1fr); } .cols { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -78,7 +80,7 @@
 <header>
   <h1>DPDP compliance report</h1>
   <p class="sub">target_app · Digital Personal Data Protection Act, 2023 and DPDP Rules, 2025</p>
-  <p class="meta">Generated 23 Nov 2026, 19:41 UTC · DPDP Compliance Auditor 0.1.0 · rules v0.1.0</p>
+  <p class="meta">Generated 23 Nov 2026, 20:55 UTC · DPDP Compliance Auditor 0.1.0 · rules v0.1.0</p>
   <nav aria-label="Sections">
     <a href="#summary">Summary</a>
     <a href="#coverage">Scan coverage</a>
@@ -116,54 +118,48 @@
 
 <section id="coverage">
   <h2>Scan coverage</h2>
-  <p>7 files read (never executed):
-3 python, 1 config, 1 other, 1 sql, 1 templates.</p>
-  <p>Automated checks ran for <strong>14 of 28</strong> rules.
+  <p>10 files read (never executed):
+5 python, 2 config, 1 other, 1 sql, 1 templates.</p>
+  <p>Automated checks ran for <strong>28 of 28</strong> rules.
      No finding for a checked rule means the scanner saw no sign of the problem, not that the code is compliant.</p>
   <div class="table-wrap">
     <table>
       <thead><tr><th>Rule</th><th>Checked automatically</th><th class="num">Findings</th></tr></thead>
       <tbody>
+        <tr><td><code>DPDP-NOT-001</code></td><td>Personal data collected without a notice of data and purpose</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-CON-001</code></td><td>Consent can be given but not withdrawn</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-CON-002</code></td><td>Pre-ticked or default-true consent</td><td class="num">1</td></tr>
+        <tr><td><code>DPDP-CON-003</code></td><td>No evidence of consent stored</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-CON-004</code></td><td>Personal data used without checking consent</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-CON-005</code></td><td>Over-collection beyond the stated purpose</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-CON-006</code></td><td>Consent request offered in one language only</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-SEC-001</code></td><td>Personal data written to logs</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-SEC-002</code></td><td>Personal data stored in plaintext</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-SEC-003</code></td><td>Weak password hashing</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-SEC-004</code></td><td>Hardcoded secrets or credentials</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-SEC-005</code></td><td>Personal data exposed by an unauthenticated route</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-SEC-006</code></td><td>Excessive data in API responses</td><td class="num">1</td></tr>
+        <tr><td><code>DPDP-SEC-007</code></td><td>No access logging on personal-data reads</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-SEC-008</code></td><td>Insecure infrastructure configuration</td><td class="num">1</td></tr>
+        <tr><td><code>DPDP-SEC-009</code></td><td>No backup configured for personal-data stores</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-SEC-010</code></td><td>Log retention shorter than one year</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-TP-001</code></td><td>Personal data sent to a third-party SDK</td><td class="num">1</td></tr>
+        <tr><td><code>DPDP-TP-002</code></td><td>Personal data stored or sent outside India</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-BR-001</code></td><td>No breach notification mechanism</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-RET-001</code></td><td>Personal data with no erase or anonymise path</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-RET-002</code></td><td>Immediate hard delete with no minimum retention</td><td class="num">1</td></tr>
+        <tr><td><code>DPDP-RET-003</code></td><td>No pre-erasure notice to the user</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-CH-001</code></td><td>Child data collected without parental consent flow</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-CH-002</code></td><td>Tracking or targeted ads possible for children</td><td class="num">1</td></tr>
+        <tr><td><code>DPDP-RT-001</code></td><td>No way to access or export one&#39;s data</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-RT-002</code></td><td>No correction or erasure endpoint</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-RT-003</code></td><td>No grievance mechanism or contact published</td><td class="num">0</td></tr>
       </tbody>
     </table>
   </div>
-  <details>
-    <summary>14 rules need a manual review (no automated check yet)</summary>
-    <div class="table-wrap">
-      <table>
-        <tbody>
-          <tr><td><code>DPDP-NOT-001</code></td><td>Personal data collected without a notice of data and purpose</td></tr>
-          <tr><td><code>DPDP-CON-003</code></td><td>No evidence of consent stored</td></tr>
-          <tr><td><code>DPDP-CON-004</code></td><td>Personal data used without checking consent</td></tr>
-          <tr><td><code>DPDP-CON-005</code></td><td>Over-collection beyond the stated purpose</td></tr>
-          <tr><td><code>DPDP-CON-006</code></td><td>Consent request offered in one language only</td></tr>
-          <tr><td><code>DPDP-SEC-007</code></td><td>No access logging on personal-data reads</td></tr>
-          <tr><td><code>DPDP-SEC-009</code></td><td>No backup configured for personal-data stores</td></tr>
-          <tr><td><code>DPDP-SEC-010</code></td><td>Log retention shorter than one year</td></tr>
-          <tr><td><code>DPDP-TP-002</code></td><td>Personal data stored or sent outside India</td></tr>
-          <tr><td><code>DPDP-BR-001</code></td><td>No breach notification mechanism</td></tr>
-          <tr><td><code>DPDP-RET-003</code></td><td>No pre-erasure notice to the user</td></tr>
-          <tr><td><code>DPDP-RT-001</code></td><td>No way to access or export one&#39;s data</td></tr>
-          <tr><td><code>DPDP-RT-002</code></td><td>No correction or erasure endpoint</td></tr>
-          <tr><td><code>DPDP-RT-003</code></td><td>No grievance mechanism or contact published</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </details>
+  <p>Every rule has an automated check. Some rules can only be judged partly from code (a notice in a
+     modal, backups set up in a cloud console): their findings have low confidence and say
+     <em>verify manually</em>.</p>
 </section>
 
 <section id="findings">
@@ -356,7 +352,7 @@
     </header>
     <p class="where"><code>schema.sql:8</code> · confidence high · personal data: aadhaar</p>
     <div class="evidence"><code>aadhaar TEXT NOT NULL, [users.aadhaar stored as TEXT]</code></div>
-    <pre class="code" aria-label="Source around schema.sql:8 (masked)"><span class="ln"><span class="no">5</span>    email         TEXT NOT NULL UNIQUE,</span><span class="ln"><span class="no">6</span>    phone         TEXT NOT NULL,</span><span class="ln"><span class="no">7</span>    dob           TEXT NOT NULL,</span><span class="ln hit"><span class="no">8</span>    aadhaar       TEXT NOT NULL,</span><span class="ln"><span class="no">9</span>    city          TEXT NOT NULL,</span><span class="ln"><span class="no">10</span>    password_hash TEXT NOT NULL,</span><span class="ln"><span class="no">11</span>    created_at    TEXT NOT NULL</span></pre>
+    <pre class="code" aria-label="Source around schema.sql:8 (masked)"><span class="ln"><span class="no">5</span>    email         TEXT NOT NULL UNIQUE,</span><span class="ln"><span class="no">6</span>    phone         TEXT NOT NULL,</span><span class="ln"><span class="no">7</span>    dob           TEXT NOT NULL,</span><span class="ln hit"><span class="no">8</span>    aadhaar       TEXT NOT NULL,</span><span class="ln"><span class="no">9</span>    city          TEXT NOT NULL,</span><span class="ln"><span class="no">10</span>    password_hash TEXT NOT NULL,</span><span class="ln"><span class="no">11</span>    created_at    TEXT NOT NULL,</span></pre>
     <dl>
       <dt>Law</dt>
       <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(a) DPDP Rules</span><br>Encryption, obfuscation, masking or virtual tokens.</dd>

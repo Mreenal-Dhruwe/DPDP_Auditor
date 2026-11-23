@@ -37,11 +37,11 @@ exports, and our accuracy numbers. Words to say are in quotes; actions are in **
 > same report."
 
 **1:00 - 1:40 The dashboard** (opens by itself when the scan is done)
-- **Point at the tiles:** "55 findings: 28 critical, 27 high."
+- **Point at the tiles:** "60 findings: 28 critical, 27 high, the rest medium and info."
 - **Point at the chart:** "Almost all of them fall under section 8(5), the duty to protect
   data, which carries the biggest penalty, up to 250 crore."
-- **Point at "Scan coverage":** "We are honest about what we checked: 14 of 28 rules are
-  automated. The other 14, like privacy notices, need a person, and the report lists them."
+- **Point at "Scan coverage":** "All 28 rules are checked automatically. Where code can only
+  tell part of the story, like whether backups exist, the finding says 'verify manually'."
 - **Click the "Critical" tile** to filter the table: "Hard-coded passwords and private keys
   committed to the repository."
 
@@ -65,7 +65,7 @@ exports, and our accuracy numbers. Words to say are in quotes; actions are in **
 **3:05 - 3:40 Does it work? Accuracy and limits**
 > "We wrote two deliberately vulnerable apps, one Python and one JavaScript, with an answer
 > key of every planted problem and every look-alike that is actually fine. The scanner finds
-> all 13 and all 10, with zero false positives, and our 349 tests fail if that ever drops.
+> all 13 and all 27, with zero false positives, and our 396 tests fail if that ever drops.
 > What it cannot do yet: check that a logged-in user only reads their own records, or see
 > anything outside the code."
 
@@ -84,8 +84,8 @@ exports, and our accuracy numbers. Words to say are in quotes; actions are in **
 | Someone asks about a finding you cannot explain | Open its detail page: the reason and the law are written there. |
 
 ## Numbers to remember
-- Juice Shop: 55 findings (28 critical, 27 high), about 20 s for 1,494 files
-- target_app 13/13, target_app_js 10/10, 0 false positives; 349 tests
-- 28 rules, 14 automated; severity anchored to the s.33 penalty Schedule (up to Rs 250 crore)
+- Juice Shop: 60 findings (28 critical, 27 high, 3 medium, 2 info), about 20 s for 1,494 files
+- target_app 13/13, target_app_js 27/27, 0 false positives; 396 tests
+- 28 rules, all automated (7 low confidence); severity anchored to the s.33 penalty Schedule (up to Rs 250 crore)
 - Rules notified 13 Nov 2025; most apply from 13 May 2027
 - "Legal mapping is indicative, not legal advice."

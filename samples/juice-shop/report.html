@@ -69,7 +69,9 @@
   footer strong { color: var(--ink); }
   details summary { cursor: pointer; color: var(--accent); }
   @media (max-width: 560px) { dl { grid-template-columns: 1fr; } dt { margin-top: 6px; } }
-  @media print { nav { display: none; } .page { padding: 0; } h2 { break-after: avoid; } a { color: inherit; } }
+  @media print { nav { display: none; } .page { padding: 0; } h2 { break-after: avoid; } a { color: inherit; }
+    /* WeasyPrint (PDF) has no grid auto-fit: fixed columns instead */
+    .tiles { grid-template-columns: repeat(6, 1fr); } .cols { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -78,37 +80,37 @@
 <header>
   <h1>DPDP compliance report</h1>
   <p class="sub">juice-shop · Digital Personal Data Protection Act, 2023 and DPDP Rules, 2025</p>
-  <p class="meta">Generated 23 Nov 2026, 19:41 UTC · DPDP Compliance Auditor 0.1.0 · rules v0.1.0</p>
+  <p class="meta">Generated 23 Nov 2026, 20:55 UTC · DPDP Compliance Auditor 0.1.0 · rules v0.1.0</p>
   <nav aria-label="Sections">
     <a href="#summary">Summary</a>
     <a href="#coverage">Scan coverage</a>
-<a href="#sev-critical">Critical (28)</a><a href="#sev-high">High (27)</a>    <a href="#disclaimer">Disclaimer</a>
+<a href="#sev-critical">Critical (28)</a><a href="#sev-high">High (27)</a><a href="#sev-medium">Medium (3)</a><a href="#sev-info">Info (2)</a>    <a href="#disclaimer">Disclaimer</a>
   </nav>
 </header>
 
 <section id="summary">
   <h2>Summary</h2>
   <div class="tiles">
-    <div class="tile"><span class="n">55</span><span class="k">findings</span></div>
+    <div class="tile"><span class="n">60</span><span class="k">findings</span></div>
     <div class="tile critical"><span class="n">28</span><span class="k">critical</span></div>
     <div class="tile high"><span class="n">27</span><span class="k">high</span></div>
-    <div class="tile medium"><span class="n">0</span><span class="k">medium</span></div>
+    <div class="tile medium"><span class="n">3</span><span class="k">medium</span></div>
     <div class="tile low"><span class="n">0</span><span class="k">low</span></div>
-    <div class="tile info"><span class="n">0</span><span class="k">info</span></div>
+    <div class="tile info"><span class="n">2</span><span class="k">info</span></div>
   </div>
   <div class="cols">
     <div class="table-wrap">
       <table>
         <thead><tr><th>DPDP provision</th><th class="num">Findings</th></tr></thead>
         <tbody>
-<tr><td>s.8(5)</td><td class="num">51</td></tr><tr><td>Rule 6(1)(b)</td><td class="num">28</td></tr><tr><td>Rule 6(1)(a)</td><td class="num">23</td></tr><tr><td>s.8(7)</td><td class="num">4</td></tr><tr><td>s.12(3)</td><td class="num">4</td></tr><tr><td>Rule 8</td><td class="num">4</td></tr>        </tbody>
+<tr><td>s.8(5)</td><td class="num">54</td></tr><tr><td>Rule 6(1)(b)</td><td class="num">28</td></tr><tr><td>Rule 6(1)(a)</td><td class="num">23</td></tr><tr><td>s.8(7)</td><td class="num">4</td></tr><tr><td>s.12(3)</td><td class="num">4</td></tr><tr><td>Rule 8</td><td class="num">4</td></tr><tr><td>Rule 6(1)(e)</td><td class="num">3</td></tr><tr><td>Rule 8(3)</td><td class="num">3</td></tr><tr><td>s.16(1)</td><td class="num">2</td></tr><tr><td>Rule 15</td><td class="num">2</td></tr>        </tbody>
       </table>
     </div>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Category</th><th class="num">Findings</th></tr></thead>
         <tbody>
-<tr><td>Security</td><td class="num">51</td></tr><tr><td>Retention</td><td class="num">4</td></tr>        </tbody>
+<tr><td>Security</td><td class="num">54</td></tr><tr><td>Retention</td><td class="num">4</td></tr><tr><td>Transfers</td><td class="num">2</td></tr>        </tbody>
       </table>
     </div>
   </div>
@@ -118,52 +120,46 @@
   <h2>Scan coverage</h2>
   <p>1494 files read (never executed):
 662 typescript, 503 other, 226 config, 84 templates, 16 javascript, 3 python.</p>
-  <p>Automated checks ran for <strong>14 of 28</strong> rules.
+  <p>Automated checks ran for <strong>28 of 28</strong> rules.
      No finding for a checked rule means the scanner saw no sign of the problem, not that the code is compliant.</p>
   <div class="table-wrap">
     <table>
       <thead><tr><th>Rule</th><th>Checked automatically</th><th class="num">Findings</th></tr></thead>
       <tbody>
+        <tr><td><code>DPDP-NOT-001</code></td><td>Personal data collected without a notice of data and purpose</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-CON-001</code></td><td>Consent can be given but not withdrawn</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-CON-002</code></td><td>Pre-ticked or default-true consent</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-CON-003</code></td><td>No evidence of consent stored</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-CON-004</code></td><td>Personal data used without checking consent</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-CON-005</code></td><td>Over-collection beyond the stated purpose</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-CON-006</code></td><td>Consent request offered in one language only</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-SEC-001</code></td><td>Personal data written to logs</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-SEC-002</code></td><td>Personal data stored in plaintext</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-SEC-003</code></td><td>Weak password hashing</td><td class="num">21</td></tr>
         <tr><td><code>DPDP-SEC-004</code></td><td>Hardcoded secrets or credentials</td><td class="num">28</td></tr>
         <tr><td><code>DPDP-SEC-005</code></td><td>Personal data exposed by an unauthenticated route</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-SEC-006</code></td><td>Excessive data in API responses</td><td class="num">1</td></tr>
+        <tr><td><code>DPDP-SEC-007</code></td><td>No access logging on personal-data reads</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-SEC-008</code></td><td>Insecure infrastructure configuration</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-SEC-009</code></td><td>No backup configured for personal-data stores</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-SEC-010</code></td><td>Log retention shorter than one year</td><td class="num">3</td></tr>
         <tr><td><code>DPDP-TP-001</code></td><td>Personal data sent to a third-party SDK</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-TP-002</code></td><td>Personal data stored or sent outside India</td><td class="num">2</td></tr>
+        <tr><td><code>DPDP-BR-001</code></td><td>No breach notification mechanism</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-RET-001</code></td><td>Personal data with no erase or anonymise path</td><td class="num">4</td></tr>
         <tr><td><code>DPDP-RET-002</code></td><td>Immediate hard delete with no minimum retention</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-RET-003</code></td><td>No pre-erasure notice to the user</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-CH-001</code></td><td>Child data collected without parental consent flow</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-CH-002</code></td><td>Tracking or targeted ads possible for children</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-RT-001</code></td><td>No way to access or export one&#39;s data</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-RT-002</code></td><td>No correction or erasure endpoint</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-RT-003</code></td><td>No grievance mechanism or contact published</td><td class="num">0</td></tr>
       </tbody>
     </table>
   </div>
-  <details>
-    <summary>14 rules need a manual review (no automated check yet)</summary>
-    <div class="table-wrap">
-      <table>
-        <tbody>
-          <tr><td><code>DPDP-NOT-001</code></td><td>Personal data collected without a notice of data and purpose</td></tr>
-          <tr><td><code>DPDP-CON-003</code></td><td>No evidence of consent stored</td></tr>
-          <tr><td><code>DPDP-CON-004</code></td><td>Personal data used without checking consent</td></tr>
-          <tr><td><code>DPDP-CON-005</code></td><td>Over-collection beyond the stated purpose</td></tr>
-          <tr><td><code>DPDP-CON-006</code></td><td>Consent request offered in one language only</td></tr>
-          <tr><td><code>DPDP-SEC-007</code></td><td>No access logging on personal-data reads</td></tr>
-          <tr><td><code>DPDP-SEC-009</code></td><td>No backup configured for personal-data stores</td></tr>
-          <tr><td><code>DPDP-SEC-010</code></td><td>Log retention shorter than one year</td></tr>
-          <tr><td><code>DPDP-TP-002</code></td><td>Personal data stored or sent outside India</td></tr>
-          <tr><td><code>DPDP-BR-001</code></td><td>No breach notification mechanism</td></tr>
-          <tr><td><code>DPDP-RET-003</code></td><td>No pre-erasure notice to the user</td></tr>
-          <tr><td><code>DPDP-RT-001</code></td><td>No way to access or export one&#39;s data</td></tr>
-          <tr><td><code>DPDP-RT-002</code></td><td>No correction or erasure endpoint</td></tr>
-          <tr><td><code>DPDP-RT-003</code></td><td>No grievance mechanism or contact published</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </details>
+  <p>Every rule has an automated check. Some rules can only be judged partly from code (a notice in a
+     modal, backups set up in a cloud console): their findings have low confidence and say
+     <em>verify manually</em>.</p>
 </section>
 
 <section id="findings">
@@ -1267,6 +1263,108 @@
       <dd>Fast hashes are easily cracked after a leak.</dd>
       <dt>Recommended fix</dt>
       <dd>Use bcrypt, scrypt or argon2 with per-user salt.</dd>
+    </dl>
+  </article>
+  <h2 id="sev-medium">Medium <span class="count medium">· 3</span></h2>
+  <article class="finding medium" id="f-8f1074efeb5f">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Log retention shorter than one year</h3>
+      <code class="rule">DPDP-SEC-010</code>
+    </header>
+    <p class="where"><code>infrastructure/terraform/main.tf:128</code> · confidence high</p>
+    <div class="evidence"><code>retention_in_days = 30 [retention_in_days = 30: logs are deleted after 30 days; Rule 8(3) asks for at least one year]</code></div>
+    <pre class="code" aria-label="Source around infrastructure/terraform/main.tf:128 (masked)"><span class="ln"><span class="no">125</span></span><span class="ln"><span class="no">126</span>resource &#34;aws_cloudwatch_log_group&#34; &#34;juice_shop&#34; {</span><span class="ln"><span class="no">127</span>  name              = &#34;/ecs/${var.project_name}&#34;</span><span class="ln hit"><span class="no">128</span>  retention_in_days = 30</span><span class="ln"><span class="no">129</span></span><span class="ln"><span class="no">130</span>  tags = {</span><span class="ln"><span class="no">131</span>    Project     = var.project_name</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(e) DPDP Rules</span><span class="ref">Rule 8(3) DPDP Rules</span><br>Retain logs and personal data for one year for detecting and investigating unauthorised access.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Breaches discovered late cannot be investigated.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Retain access/processing logs for at least 365 days in protected storage.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-cdd6f9436798">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Log retention shorter than one year</h3>
+      <code class="rule">DPDP-SEC-010</code>
+    </header>
+    <p class="where"><code>server.ts:368</code> · confidence high</p>
+    <div class="evidence"><code>max_logs: &#39;2d&#39; [rotated logs, max_logs &#39;2d&#39;: logs are deleted after 2 days; Rule 8(3) asks for at least one year]</code></div>
+    <pre class="code" aria-label="Source around server.ts:368 (masked)"><span class="ln"><span class="no">365</span>    audit_file: &#39;logs/audit.json&#39;,</span><span class="ln"><span class="no">366</span>    frequency: &#39;daily&#39;,</span><span class="ln"><span class="no">367</span>    verbose: false,</span><span class="ln hit"><span class="no">368</span>    max_logs: &#39;2d&#39;</span><span class="ln"><span class="no">369</span>  })</span><span class="ln"><span class="no">370</span>  app.use(morgan(&#39;combined&#39;, { stream: accessLogStream }))</span><span class="ln"><span class="no">371</span></span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(e) DPDP Rules</span><span class="ref">Rule 8(3) DPDP Rules</span><br>Retain logs and personal data for one year for detecting and investigating unauthorised access.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Breaches discovered late cannot be investigated.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Retain access/processing logs for at least 365 days in protected storage.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-eda7ce81c187">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Log retention shorter than one year</h3>
+      <code class="rule">DPDP-SEC-010</code>
+    </header>
+    <p class="where"><code>terraform/main.tf:128</code> · confidence high</p>
+    <div class="evidence"><code>retention_in_days = 30 [retention_in_days = 30: logs are deleted after 30 days; Rule 8(3) asks for at least one year]</code></div>
+    <pre class="code" aria-label="Source around terraform/main.tf:128 (masked)"><span class="ln"><span class="no">125</span></span><span class="ln"><span class="no">126</span>resource &#34;aws_cloudwatch_log_group&#34; &#34;juice_shop&#34; {</span><span class="ln"><span class="no">127</span>  name              = &#34;/ecs/${var.project_name}&#34;</span><span class="ln hit"><span class="no">128</span>  retention_in_days = 30</span><span class="ln"><span class="no">129</span></span><span class="ln"><span class="no">130</span>  tags = {</span><span class="ln"><span class="no">131</span>    Project     = var.project_name</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(e) DPDP Rules</span><span class="ref">Rule 8(3) DPDP Rules</span><br>Retain logs and personal data for one year for detecting and investigating unauthorised access.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Breaches discovered late cannot be investigated.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Retain access/processing logs for at least 365 days in protected storage.</dd>
+    </dl>
+  </article>
+  <h2 id="sev-info">Info <span class="count info">· 2</span></h2>
+  <article class="finding info" id="f-f5d1fb9973cb">
+    <header>
+      <span class="badge info">info</span>
+      <h3>Personal data stored or sent outside India</h3>
+      <code class="rule">DPDP-TP-002</code>
+    </header>
+    <p class="where"><code>infrastructure/terraform/variables.tf:4</code> · confidence low</p>
+    <div class="evidence"><code>default = &#34;eu-west-1&#34; [cloud region eu-west-1 is outside India; transfer is allowed unless the Government restricts that country (s.16); verify manually which personal data is stored there]</code></div>
+    <pre class="code" aria-label="Source around infrastructure/terraform/variables.tf:4 (masked)"><span class="ln"><span class="no">1</span>variable &#34;aws_region&#34; {</span><span class="ln"><span class="no">2</span>  description = &#34;AWS region for deployment&#34;</span><span class="ln"><span class="no">3</span>  type        = string</span><span class="ln hit"><span class="no">4</span>  default     = &#34;eu-west-1&#34;</span><span class="ln"><span class="no">5</span>}</span><span class="ln"><span class="no">6</span></span><span class="ln"><span class="no">7</span>variable &#34;project_name&#34; {</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.16(1) DPDP Act</span><span class="ref">Rule 15 DPDP Rules</span><br>Transfers allowed unless the Government restricts a country or sets requirements by order.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 50 crore <span class="muted">(Schedule item 7: any other provision of the Act or Rules)</span></dd>
+      <dt>Why info</dt>
+      <dd>Not a violation by itself; verify against Government notifications.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Record transfer destinations and review them against current Government orders.</dd>
+    </dl>
+  </article>
+  <article class="finding info" id="f-baf6c4ad3c22">
+    <header>
+      <span class="badge info">info</span>
+      <h3>Personal data stored or sent outside India</h3>
+      <code class="rule">DPDP-TP-002</code>
+    </header>
+    <p class="where"><code>terraform/variables.tf:4</code> · confidence low</p>
+    <div class="evidence"><code>default = &#34;eu-west-1&#34; [cloud region eu-west-1 is outside India; transfer is allowed unless the Government restricts that country (s.16); verify manually which personal data is stored there]</code></div>
+    <pre class="code" aria-label="Source around terraform/variables.tf:4 (masked)"><span class="ln"><span class="no">1</span>variable &#34;aws_region&#34; {</span><span class="ln"><span class="no">2</span>  description = &#34;AWS region for deployment&#34;</span><span class="ln"><span class="no">3</span>  type        = string</span><span class="ln hit"><span class="no">4</span>  default     = &#34;eu-west-1&#34;</span><span class="ln"><span class="no">5</span>}</span><span class="ln"><span class="no">6</span></span><span class="ln"><span class="no">7</span>variable &#34;project_name&#34; {</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.16(1) DPDP Act</span><span class="ref">Rule 15 DPDP Rules</span><br>Transfers allowed unless the Government restricts a country or sets requirements by order.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 50 crore <span class="muted">(Schedule item 7: any other provision of the Act or Rules)</span></dd>
+      <dt>Why info</dt>
+      <dd>Not a violation by itself; verify against Government notifications.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Record transfer destinations and review them against current Government orders.</dd>
     </dl>
   </article>
 </section>

@@ -458,8 +458,8 @@
                   "s.8(5)",
                   "Rule 6(1)(d)"
                 ],
-                "security-severity": "3.0",
-                "severity": "low"
+                "security-severity": "1.0",
+                "severity": "info"
               }
             },
             {
@@ -823,7 +823,7 @@
       "invocations": [
         {
           "executionSuccessful": true,
-          "endTimeUtc": "2026-11-23T19:41:07.926477+00:00"
+          "endTimeUtc": "2026-11-23T20:55:26.395327+00:00"
         }
       ],
       "results": [
@@ -926,10 +926,10 @@
           "ruleIndex": 11,
           "level": "error",
           "message": {
-            "text": "Personal data exposed by an unauthenticated route (server.ts:59): GET /api/customers/:id (handler in routes/customers.ts) returns email, phone with no authentication check; anyone can change :id to read other people's data (IDOR)"
+            "text": "Personal data exposed by an unauthenticated route (server.ts:60): GET /api/customers/:id (handler in routes/customers.ts) returns email, phone with no authentication check; anyone can change :id to read other people's data (IDOR)"
           },
           "partialFingerprints": {
-            "dpdpFindingId/v1": "850a7ce62277"
+            "dpdpFindingId/v1": "f044d411957b"
           },
           "properties": {
             "severity": "critical",
@@ -961,7 +961,7 @@
                   "uriBaseId": "%SRCROOT%"
                 },
                 "region": {
-                  "startLine": 59,
+                  "startLine": 60,
                   "snippet": {
                     "text": "GET /api/customers/:id (handler in routes/customers.ts) returns email, phone with no authentication check; anyone can change :id to read other people's data (IDOR)"
                   }
@@ -1118,6 +1118,53 @@
           ]
         },
         {
+          "ruleId": "DPDP-CON-004",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "Personal data used without checking consent (routes/marketing.ts:11): mailer.sendPromo(user?.email, 'Festive offers for you') [marketing call mailer.sendPromo() receives email with no consent check on this path; the app records consent (models.js:28)]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "51165ce1ba93"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "email"
+            ],
+            "law": {
+              "act": [
+                "s.4(1)",
+                "s.6(1)"
+              ],
+              "rules": [],
+              "requirement": "Process only on consent or a legitimate use, limited to the specified purpose."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Processing happens without the legal basis the app itself relies on.",
+            "fix": "Add a consent guard (middleware or decorator) before purpose-specific processing."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "routes/marketing.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 11,
+                  "snippet": {
+                    "text": "mailer.sendPromo(user?.email, 'Festive offers for you') [marketing call mailer.sendPromo() receives email with no consent check on this path; the app records consent (models.js:28)]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
           "ruleId": "DPDP-SEC-001",
           "ruleIndex": 7,
           "level": "error",
@@ -1220,10 +1267,10 @@
           "ruleIndex": 12,
           "level": "error",
           "message": {
-            "text": "Excessive data in API responses (server.ts:42): res.json(await User.findAll()) [GET /admin/users (handler) sends User.findAll() with pan, password; pass `attributes` or pick the fields]"
+            "text": "Excessive data in API responses (server.ts:43): res.json(await User.findAll()) [GET /admin/users (handler) sends User.findAll() with pan, password; pass `attributes` or pick the fields]"
           },
           "partialFingerprints": {
-            "dpdpFindingId/v1": "a23f6c11e52d"
+            "dpdpFindingId/v1": "ee97543b5389"
           },
           "properties": {
             "severity": "high",
@@ -1255,7 +1302,7 @@
                   "uriBaseId": "%SRCROOT%"
                 },
                 "region": {
-                  "startLine": 42,
+                  "startLine": 43,
                   "snippet": {
                     "text": "res.json(await User.findAll()) [GET /admin/users (handler) sends User.findAll() with pan, password; pass `attributes` or pick the fields]"
                   }
@@ -1269,10 +1316,10 @@
           "ruleIndex": 1,
           "level": "error",
           "message": {
-            "text": "Consent can be given but not withdrawn (project-wide (see server.ts:45)): POST /consent grants consent; no route anywhere withdraws or revokes it"
+            "text": "Consent can be given but not withdrawn (project-wide (see server.ts:46)): POST /consent grants consent; no route anywhere withdraws or revokes it"
           },
           "partialFingerprints": {
-            "dpdpFindingId/v1": "4bc3944f1783"
+            "dpdpFindingId/v1": "fa2b0da77201"
           },
           "properties": {
             "severity": "high",
@@ -1302,9 +1349,770 @@
                   "uriBaseId": "%SRCROOT%"
                 },
                 "region": {
-                  "startLine": 45,
+                  "startLine": 46,
                   "snippet": {
                     "text": "POST /consent grants consent; no route anywhere withdraws or revokes it"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-010",
+          "ruleIndex": 16,
+          "level": "warning",
+          "message": {
+            "text": "Log retention shorter than one year (logger.ts:9): new DailyRotateFile({ filename: 'logs/app-%DATE%.log', datePattern: 'YYYY-MM-DD', maxFiles: '14d' }) [daily log files, maxFiles '14d': logs are deleted after 14 days; Rule 8(3) asks for at least one year]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "eed69ce5ed70"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(e)",
+                "Rule 8(3)"
+              ],
+              "requirement": "Retain logs and personal data for one year for detecting and investigating unauthorised access."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Breaches discovered late cannot be investigated.",
+            "fix": "Retain access/processing logs for at least 365 days in protected storage."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "logger.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 9,
+                  "snippet": {
+                    "text": "new DailyRotateFile({ filename: 'logs/app-%DATE%.log', datePattern: 'YYYY-MM-DD', maxFiles: '14d' }) [daily log files, maxFiles '14d': logs are deleted after 14 days; Rule 8(3) asks for at least one year]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-BR-001",
+          "ruleIndex": 19,
+          "level": "warning",
+          "message": {
+            "text": "No breach notification mechanism (project-wide (see models.js:7)): Personal data is held (e.g. table users) but nothing in the project handles a breach: no incident module, no user or Board notification, no alert hook; verify manually: the breach process may be run outside the code"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "a10ffe261e8b"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "project",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(6)"
+              ],
+              "rules": [
+                "Rule 7(1)",
+                "Rule 7(2)"
+              ],
+              "requirement": "Inform affected users without delay; send the Board a detailed report within 72 hours."
+            },
+            "penaltyCap": "Rs 200 crore",
+            "severityReason": "Process often lives outside code; absence is a signal, not proof.",
+            "fix": "Add an incident module that can notify affected users and generate the Board report."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "models.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 7,
+                  "snippet": {
+                    "text": "Personal data is held (e.g. table users) but nothing in the project handles a breach: no incident module, no user or Board notification, no alert hook; verify manually: the breach process may be run outside the code"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-RT-001",
+          "ruleIndex": 25,
+          "level": "warning",
+          "message": {
+            "text": "No way to access or export one's data (project-wide (see models.js:7)): None of the 12 routes lets users see or export their own data (no GET /me, /profile, /account or /export) (personal data is held, e.g. table users)"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "73679b13823f"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "medium",
+            "scope": "project",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.11"
+              ],
+              "rules": [
+                "Rule 14(1)"
+              ],
+              "requirement": "Right to access information about personal data; publish how to make requests."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Users cannot exercise a statutory right.",
+            "fix": "Add GET /me/data returning stored data and processing summary."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "models.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 7,
+                  "snippet": {
+                    "text": "None of the 12 routes lets users see or export their own data (no GET /me, /profile, /account or /export) (personal data is held, e.g. table users)"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-RT-002",
+          "ruleIndex": 26,
+          "level": "warning",
+          "message": {
+            "text": "No correction or erasure endpoint (project-wide (see models.js:7)): No route lets users correct (PUT/PATCH /me or /profile) their own data (personal data is held, e.g. table users)"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "93d09ad71dec"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "medium",
+            "scope": "project",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.12"
+              ],
+              "rules": [
+                "Rule 14"
+              ],
+              "requirement": "Right to correction, completion, updating and erasure."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Users cannot exercise a statutory right.",
+            "fix": "Add PATCH /me and an erasure request endpoint."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "models.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 7,
+                  "snippet": {
+                    "text": "No route lets users correct (PUT/PATCH /me or /profile) their own data (personal data is held, e.g. table users)"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-CON-003",
+          "ruleIndex": 3,
+          "level": "warning",
+          "message": {
+            "text": "No evidence of consent stored (models.js:28): const Consent = sequelize.define('Consent', { [consent table consents (userId, marketing) does not record when it was given or the purpose or notice version]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "44940849df19"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "medium",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.6(10)"
+              ],
+              "rules": [],
+              "requirement": "The Data Fiduciary must be able to prove notice was given and consent obtained."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Burden of proof is on the fiduciary; without a record it cannot defend its processing.",
+            "fix": "Store consent records with user id, purpose, notice version, timestamp and channel."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "models.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 28,
+                  "snippet": {
+                    "text": "const Consent = sequelize.define('Consent', { [consent table consents (userId, marketing) does not record when it was given or the purpose or notice version]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-NOT-001",
+          "ruleIndex": 0,
+          "level": "warning",
+          "message": {
+            "text": "Personal data collected without a notice of data and purpose (public/lead.html:10): <form method=\"post\" action=\"/leads\"> [the form asks for aadhaar, email, mobile but the page shows no notice of what is collected and why; verify manually: the notice may be in a modal or an earlier step]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "008c1fdb8792"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [
+              "aadhaar",
+              "email",
+              "mobile"
+            ],
+            "law": {
+              "act": [
+                "s.5(1)"
+              ],
+              "rules": [
+                "Rule 3(b)"
+              ],
+              "requirement": "Notice must give an itemised description of the personal data and the specified purpose."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Notice is a precondition for valid consent; impact is on transparency, not direct exposure.",
+            "fix": "Show an itemised notice (data fields + purpose) before or with the consent request."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "public/lead.html",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 10,
+                  "snippet": {
+                    "text": "<form method=\"post\" action=\"/leads\"> [the form asks for aadhaar, email, mobile but the page shows no notice of what is collected and why; verify manually: the notice may be in a modal or an earlier step]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-CON-005",
+          "ruleIndex": 5,
+          "level": "warning",
+          "message": {
+            "text": "Over-collection beyond the stated purpose (public/lead.html:14): <label>Aadhaar number <input name=\"aadhaar\" inputmode=\"numeric\" maxlength=\"12\"></label> [the form asks for 'aadhaar' but no code or table uses it; verify manually: another service may read it]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "cdaac546ccc6"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [
+              "aadhaar"
+            ],
+            "law": {
+              "act": [
+                "s.6(1)"
+              ],
+              "rules": [],
+              "requirement": "Consent is limited to personal data necessary for the specified purpose."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Unnecessary data increases breach impact and invalidates part of the consent.",
+            "fix": "Remove unused fields and permissions, or tie each one to a stated purpose."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "public/lead.html",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 14,
+                  "snippet": {
+                    "text": "<label>Aadhaar number <input name=\"aadhaar\" inputmode=\"numeric\" maxlength=\"12\"></label> [the form asks for 'aadhaar' but no code or table uses it; verify manually: another service may read it]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-007",
+          "ruleIndex": 13,
+          "level": "warning",
+          "message": {
+            "text": "No access logging on personal-data reads (server.ts:31): GET /api/users/:id (handler) reads email, pan, password, phone but writes no audit or log entry; the app has a logger (logger.ts:1)"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "89428d750d43"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "medium",
+            "scope": "line",
+            "pii": [
+              "email",
+              "pan",
+              "password",
+              "phone"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(c)"
+              ],
+              "requirement": "Visibility on access to personal data through logs, monitoring and review."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Unauthorised access cannot be detected or investigated.",
+            "fix": "Write an audit event (who, what record, when) for every PII read and change."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 31,
+                  "snippet": {
+                    "text": "GET /api/users/:id (handler) reads email, pan, password, phone but writes no audit or log entry; the app has a logger (logger.ts:1)"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-007",
+          "ruleIndex": 13,
+          "level": "warning",
+          "message": {
+            "text": "No access logging on personal-data reads (server.ts:42): GET /admin/users (handler) reads email, pan, password, phone but writes no audit or log entry; the app has a logger (logger.ts:1)"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "a01ad98a59f2"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "medium",
+            "scope": "line",
+            "pii": [
+              "email",
+              "pan",
+              "password",
+              "phone"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(c)"
+              ],
+              "requirement": "Visibility on access to personal data through logs, monitoring and review."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Unauthorised access cannot be detected or investigated.",
+            "fix": "Write an audit event (who, what record, when) for every PII read and change."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 42,
+                  "snippet": {
+                    "text": "GET /admin/users (handler) reads email, pan, password, phone but writes no audit or log entry; the app has a logger (logger.ts:1)"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-007",
+          "ruleIndex": 13,
+          "level": "warning",
+          "message": {
+            "text": "No access logging on personal-data reads (server.ts:60): GET /api/customers/:id (asyncHandler) reads email, pan, password, phone but writes no audit or log entry; the app has a logger (logger.ts:1)"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "c7101c6136ce"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "medium",
+            "scope": "line",
+            "pii": [
+              "email",
+              "pan",
+              "password",
+              "phone"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(c)"
+              ],
+              "requirement": "Visibility on access to personal data through logs, monitoring and review."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Unauthorised access cannot be detected or investigated.",
+            "fix": "Write an audit event (who, what record, when) for every PII read and change."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 60,
+                  "snippet": {
+                    "text": "GET /api/customers/:id (asyncHandler) reads email, pan, password, phone but writes no audit or log entry; the app has a logger (logger.ts:1)"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-007",
+          "ruleIndex": 13,
+          "level": "warning",
+          "message": {
+            "text": "No access logging on personal-data reads (server.ts:61): GET /admin/customers (listCustomers) reads email, pan, password, phone but writes no audit or log entry; the app has a logger (logger.ts:1)"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "44efd784f046"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "medium",
+            "scope": "line",
+            "pii": [
+              "email",
+              "pan",
+              "password",
+              "phone"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(c)"
+              ],
+              "requirement": "Visibility on access to personal data through logs, monitoring and review."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Unauthorised access cannot be detected or investigated.",
+            "fix": "Write an audit event (who, what record, when) for every PII read and change."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 61,
+                  "snippet": {
+                    "text": "GET /admin/customers (listCustomers) reads email, pan, password, phone but writes no audit or log entry; the app has a logger (logger.ts:1)"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-RET-003",
+          "ruleIndex": 22,
+          "level": "note",
+          "message": {
+            "text": "No pre-erasure notice to the user (jobs/purgeInactive.ts:8): export async function purgeInactiveUsers () { [purgeInactiveUsers() erases inactive accounts but nothing warns the user first; Rule 8(2) asks for 48 hours' notice; verify manually: the notice may be another job, and the rule binds Third Schedule fiduciaries]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "6347ae578534"
+          },
+          "properties": {
+            "severity": "low",
+            "security-severity": "3.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(8)"
+              ],
+              "rules": [
+                "Rule 8(2)"
+              ],
+              "requirement": "Inform the user at least 48 hours before erasure (applies to Third Schedule classes)."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Applies only to large e-commerce, gaming and social media fiduciaries.",
+            "fix": "Send a notice 48 hours before scheduled erasure."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "jobs/purgeInactive.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 8,
+                  "snippet": {
+                    "text": "export async function purgeInactiveUsers () { [purgeInactiveUsers() erases inactive accounts but nothing warns the user first; Rule 8(2) asks for 48 hours' notice; verify manually: the notice may be another job, and the rule binds Third Schedule fiduciaries]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-RT-003",
+          "ruleIndex": 27,
+          "level": "note",
+          "message": {
+            "text": "No grievance mechanism or contact published (project-wide (see models.js:7)): No grievance, complaint or contact route or page, and no grievance officer, DPO or privacy@ contact in the pages (personal data is held, e.g. table users)"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "3950d55112e7"
+          },
+          "properties": {
+            "severity": "low",
+            "security-severity": "3.0",
+            "confidence": "medium",
+            "scope": "project",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(9)",
+                "s.8(10)",
+                "s.13"
+              ],
+              "rules": [
+                "Rule 9",
+                "Rule 14(3)"
+              ],
+              "requirement": "Publish a contact for processing questions; respond to grievances within 90 days."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Often handled outside the app; verify manually.",
+            "fix": "Add a grievance form with tracking and a published DPO/contact page."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "models.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 7,
+                  "snippet": {
+                    "text": "No grievance, complaint or contact route or page, and no grievance officer, DPO or privacy@ contact in the pages (personal data is held, e.g. table users)"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-CON-006",
+          "ruleIndex": 6,
+          "level": "note",
+          "message": {
+            "text": "Consent request offered in one language only (public/lead.html:17): I agree to be contacted about this quote. [consent text only in English: no translations, i18n library or locale files; verify manually: translations may come from a CMS]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "656802799e22"
+          },
+          "properties": {
+            "severity": "low",
+            "security-severity": "3.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.6(3)"
+              ],
+              "rules": [],
+              "requirement": "Option to access the consent request in English or an Eighth Schedule language."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Accessibility gap; static detection is a heuristic.",
+            "fix": "Use i18n resources for notice and consent text with at least one Indian language."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "public/lead.html",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 17,
+                  "snippet": {
+                    "text": "I agree to be contacted about this quote. [consent text only in English: no translations, i18n library or locale files; verify manually: translations may come from a CMS]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-TP-002",
+          "ruleIndex": 18,
+          "level": "note",
+          "message": {
+            "text": "Personal data stored or sent outside India (infra/main.tf:3): region = \"us-east-1\" [cloud region us-east-1 is outside India; transfer is allowed unless the Government restricts that country (s.16); verify manually which personal data is stored there]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "f4560d492807"
+          },
+          "properties": {
+            "severity": "info",
+            "security-severity": "1.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.16(1)"
+              ],
+              "rules": [
+                "Rule 15"
+              ],
+              "requirement": "Transfers allowed unless the Government restricts a country or sets requirements by order."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Not a violation by itself; verify against Government notifications.",
+            "fix": "Record transfer destinations and review them against current Government orders."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "infra/main.tf",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 3,
+                  "snippet": {
+                    "text": "region = \"us-east-1\" [cloud region us-east-1 is outside India; transfer is allowed unless the Government restricts that country (s.16); verify manually which personal data is stored there]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-009",
+          "ruleIndex": 15,
+          "level": "note",
+          "message": {
+            "text": "No backup configured for personal-data stores (infra/main.tf:6): resource \"aws_db_instance\" \"shop\" { [aws_db_instance.shop: backup_retention_period = 0 (backups off); verify manually: backups may be configured outside the repository]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "4a2462773d9c"
+          },
+          "properties": {
+            "severity": "info",
+            "security-severity": "1.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(d)"
+              ],
+              "requirement": "Reasonable measures for continued processing, such as data backups."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Backups are usually configured outside the repo (cloud console, DBA tooling), so the code alone cannot show they are missing; reported for manual verification.",
+            "fix": "Configure automated, encrypted backups with tested restore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "infra/main.tf",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 6,
+                  "snippet": {
+                    "text": "resource \"aws_db_instance\" \"shop\" { [aws_db_instance.shop: backup_retention_period = 0 (backups off); verify manually: backups may be configured outside the repository]"
                   }
                 }
               }
@@ -1315,45 +2123,45 @@
       "properties": {
         "target": "target_app_js",
         "rulesVersion": "0.1.0",
-        "filesScanned": 6,
+        "filesScanned": 11,
         "coverage": {
           "files_by_kind": {
-            "typescript": 3,
+            "typescript": 6,
+            "config": 2,
             "javascript": 2,
-            "config": 1
+            "templates": 1
           },
           "rules_checked": [
+            "DPDP-NOT-001",
             "DPDP-CON-001",
             "DPDP-CON-002",
+            "DPDP-CON-003",
+            "DPDP-CON-004",
+            "DPDP-CON-005",
+            "DPDP-CON-006",
             "DPDP-SEC-001",
             "DPDP-SEC-002",
             "DPDP-SEC-003",
             "DPDP-SEC-004",
             "DPDP-SEC-005",
             "DPDP-SEC-006",
-            "DPDP-SEC-008",
-            "DPDP-TP-001",
-            "DPDP-RET-001",
-            "DPDP-RET-002",
-            "DPDP-CH-001",
-            "DPDP-CH-002"
-          ],
-          "rules_not_checked": [
-            "DPDP-NOT-001",
-            "DPDP-CON-003",
-            "DPDP-CON-004",
-            "DPDP-CON-005",
-            "DPDP-CON-006",
             "DPDP-SEC-007",
+            "DPDP-SEC-008",
             "DPDP-SEC-009",
             "DPDP-SEC-010",
+            "DPDP-TP-001",
             "DPDP-TP-002",
             "DPDP-BR-001",
+            "DPDP-RET-001",
+            "DPDP-RET-002",
             "DPDP-RET-003",
+            "DPDP-CH-001",
+            "DPDP-CH-002",
             "DPDP-RT-001",
             "DPDP-RT-002",
             "DPDP-RT-003"
-          ]
+          ],
+          "rules_not_checked": []
         },
         "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes."
       }

@@ -58,6 +58,13 @@ export function CoverageBox({ coverage, filesScanned }: { coverage: Coverage | n
         </ul>
       </div>
 
+      {coverage.rules_not_checked.length === 0 && (
+        <p className="text-xs text-muted">
+          Every rule has an automated check. Where code shows only part of the picture (a notice in a modal,
+          backups set up in a cloud console) the finding has low confidence and says “verify manually”.
+        </p>
+      )}
+
       {coverage.rules_not_checked.length > 0 && (
         <details className="group">
           <summary className="cursor-pointer list-none text-xs font-semibold uppercase tracking-wide text-muted hover:text-ink">

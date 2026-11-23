@@ -140,10 +140,9 @@ scanner/
   detectors/        # consent, logs, storage, access, retention, thirdparty, children,
                     # rights, config_files, hardcoded_secrets; shared helpers routes.py,
                     # source.py, schemas.py, pii_refs.py, javascript.py (tree-sitter).
-                    # Rule ownership + status in __init__.py. Done (21): CON-001..004,
-                    # SEC-001..008, SEC-010, TP-001, RET-001, RET-002, CH-001, CH-002,
-                    # RT-001..003. Left (batch 2, low confidence): NOT-001, CON-005, CON-006,
-                    # SEC-009, TP-002, BR-001, RET-003.
+                    # Rule ownership + status in __init__.py. All 28 rules have a detector.
+                    # Low confidence + "verify manually" (code shows only part): NOT-001,
+                    # CON-005, CON-006, SEC-009 (info), TP-002 (info), BR-001, RET-003.
                     # Rights checks also accept Express routers mounted with
                     # app.use('/path', router), judged by path words.
                     # SEC-006 also for Express + Sequelize (whole records sent with res.json).

@@ -458,8 +458,8 @@
                   "s.8(5)",
                   "Rule 6(1)(d)"
                 ],
-                "security-severity": "3.0",
-                "severity": "low"
+                "security-severity": "1.0",
+                "severity": "info"
               }
             },
             {
@@ -823,7 +823,7 @@
       "invocations": [
         {
           "executionSuccessful": true,
-          "endTimeUtc": "2026-11-23T19:41:19.115946+00:00"
+          "endTimeUtc": "2026-11-23T20:55:46.071159+00:00"
         }
       ],
       "results": [
@@ -3420,6 +3420,239 @@
               }
             }
           ]
+        },
+        {
+          "ruleId": "DPDP-SEC-010",
+          "ruleIndex": 16,
+          "level": "warning",
+          "message": {
+            "text": "Log retention shorter than one year (infrastructure/terraform/main.tf:128): retention_in_days = 30 [retention_in_days = 30: logs are deleted after 30 days; Rule 8(3) asks for at least one year]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "8f1074efeb5f"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(e)",
+                "Rule 8(3)"
+              ],
+              "requirement": "Retain logs and personal data for one year for detecting and investigating unauthorised access."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Breaches discovered late cannot be investigated.",
+            "fix": "Retain access/processing logs for at least 365 days in protected storage."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "infrastructure/terraform/main.tf",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 128,
+                  "snippet": {
+                    "text": "retention_in_days = 30 [retention_in_days = 30: logs are deleted after 30 days; Rule 8(3) asks for at least one year]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-010",
+          "ruleIndex": 16,
+          "level": "warning",
+          "message": {
+            "text": "Log retention shorter than one year (server.ts:368): max_logs: '2d' [rotated logs, max_logs '2d': logs are deleted after 2 days; Rule 8(3) asks for at least one year]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "cdd6f9436798"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(e)",
+                "Rule 8(3)"
+              ],
+              "requirement": "Retain logs and personal data for one year for detecting and investigating unauthorised access."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Breaches discovered late cannot be investigated.",
+            "fix": "Retain access/processing logs for at least 365 days in protected storage."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 368,
+                  "snippet": {
+                    "text": "max_logs: '2d' [rotated logs, max_logs '2d': logs are deleted after 2 days; Rule 8(3) asks for at least one year]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-010",
+          "ruleIndex": 16,
+          "level": "warning",
+          "message": {
+            "text": "Log retention shorter than one year (terraform/main.tf:128): retention_in_days = 30 [retention_in_days = 30: logs are deleted after 30 days; Rule 8(3) asks for at least one year]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "eda7ce81c187"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(e)",
+                "Rule 8(3)"
+              ],
+              "requirement": "Retain logs and personal data for one year for detecting and investigating unauthorised access."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Breaches discovered late cannot be investigated.",
+            "fix": "Retain access/processing logs for at least 365 days in protected storage."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "terraform/main.tf",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 128,
+                  "snippet": {
+                    "text": "retention_in_days = 30 [retention_in_days = 30: logs are deleted after 30 days; Rule 8(3) asks for at least one year]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-TP-002",
+          "ruleIndex": 18,
+          "level": "note",
+          "message": {
+            "text": "Personal data stored or sent outside India (infrastructure/terraform/variables.tf:4): default = \"eu-west-1\" [cloud region eu-west-1 is outside India; transfer is allowed unless the Government restricts that country (s.16); verify manually which personal data is stored there]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "f5d1fb9973cb"
+          },
+          "properties": {
+            "severity": "info",
+            "security-severity": "1.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.16(1)"
+              ],
+              "rules": [
+                "Rule 15"
+              ],
+              "requirement": "Transfers allowed unless the Government restricts a country or sets requirements by order."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Not a violation by itself; verify against Government notifications.",
+            "fix": "Record transfer destinations and review them against current Government orders."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "infrastructure/terraform/variables.tf",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 4,
+                  "snippet": {
+                    "text": "default = \"eu-west-1\" [cloud region eu-west-1 is outside India; transfer is allowed unless the Government restricts that country (s.16); verify manually which personal data is stored there]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-TP-002",
+          "ruleIndex": 18,
+          "level": "note",
+          "message": {
+            "text": "Personal data stored or sent outside India (terraform/variables.tf:4): default = \"eu-west-1\" [cloud region eu-west-1 is outside India; transfer is allowed unless the Government restricts that country (s.16); verify manually which personal data is stored there]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "baf6c4ad3c22"
+          },
+          "properties": {
+            "severity": "info",
+            "security-severity": "1.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.16(1)"
+              ],
+              "rules": [
+                "Rule 15"
+              ],
+              "requirement": "Transfers allowed unless the Government restricts a country or sets requirements by order."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Not a violation by itself; verify against Government notifications.",
+            "fix": "Record transfer destinations and review them against current Government orders."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "terraform/variables.tf",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 4,
+                  "snippet": {
+                    "text": "default = \"eu-west-1\" [cloud region eu-west-1 is outside India; transfer is allowed unless the Government restricts that country (s.16); verify manually which personal data is stored there]"
+                  }
+                }
+              }
+            }
+          ]
         }
       ],
       "properties": {
@@ -3436,37 +3669,36 @@
             "python": 3
           },
           "rules_checked": [
+            "DPDP-NOT-001",
             "DPDP-CON-001",
             "DPDP-CON-002",
+            "DPDP-CON-003",
+            "DPDP-CON-004",
+            "DPDP-CON-005",
+            "DPDP-CON-006",
             "DPDP-SEC-001",
             "DPDP-SEC-002",
             "DPDP-SEC-003",
             "DPDP-SEC-004",
             "DPDP-SEC-005",
             "DPDP-SEC-006",
-            "DPDP-SEC-008",
-            "DPDP-TP-001",
-            "DPDP-RET-001",
-            "DPDP-RET-002",
-            "DPDP-CH-001",
-            "DPDP-CH-002"
-          ],
-          "rules_not_checked": [
-            "DPDP-NOT-001",
-            "DPDP-CON-003",
-            "DPDP-CON-004",
-            "DPDP-CON-005",
-            "DPDP-CON-006",
             "DPDP-SEC-007",
+            "DPDP-SEC-008",
             "DPDP-SEC-009",
             "DPDP-SEC-010",
+            "DPDP-TP-001",
             "DPDP-TP-002",
             "DPDP-BR-001",
+            "DPDP-RET-001",
+            "DPDP-RET-002",
             "DPDP-RET-003",
+            "DPDP-CH-001",
+            "DPDP-CH-002",
             "DPDP-RT-001",
             "DPDP-RT-002",
             "DPDP-RT-003"
-          ]
+          ],
+          "rules_not_checked": []
         },
         "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes."
       }

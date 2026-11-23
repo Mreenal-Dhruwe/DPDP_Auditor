@@ -69,7 +69,9 @@
   footer strong { color: var(--ink); }
   details summary { cursor: pointer; color: var(--accent); }
   @media (max-width: 560px) { dl { grid-template-columns: 1fr; } dt { margin-top: 6px; } }
-  @media print { nav { display: none; } .page { padding: 0; } h2 { break-after: avoid; } a { color: inherit; } }
+  @media print { nav { display: none; } .page { padding: 0; } h2 { break-after: avoid; } a { color: inherit; }
+    /* WeasyPrint (PDF) has no grid auto-fit: fixed columns instead */
+    .tiles { grid-template-columns: repeat(6, 1fr); } .cols { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -78,37 +80,37 @@
 <header>
   <h1>DPDP compliance report</h1>
   <p class="sub">target_app_js · Digital Personal Data Protection Act, 2023 and DPDP Rules, 2025</p>
-  <p class="meta">Generated 23 Nov 2026, 19:41 UTC · DPDP Compliance Auditor 0.1.0 · rules v0.1.0</p>
+  <p class="meta">Generated 23 Nov 2026, 20:55 UTC · DPDP Compliance Auditor 0.1.0 · rules v0.1.0</p>
   <nav aria-label="Sections">
     <a href="#summary">Summary</a>
     <a href="#coverage">Scan coverage</a>
-<a href="#sev-critical">Critical (3)</a><a href="#sev-high">High (7)</a>    <a href="#disclaimer">Disclaimer</a>
+<a href="#sev-critical">Critical (3)</a><a href="#sev-high">High (8)</a><a href="#sev-medium">Medium (11)</a><a href="#sev-low">Low (3)</a><a href="#sev-info">Info (2)</a>    <a href="#disclaimer">Disclaimer</a>
   </nav>
 </header>
 
 <section id="summary">
   <h2>Summary</h2>
   <div class="tiles">
-    <div class="tile"><span class="n">10</span><span class="k">findings</span></div>
+    <div class="tile"><span class="n">27</span><span class="k">findings</span></div>
     <div class="tile critical"><span class="n">3</span><span class="k">critical</span></div>
-    <div class="tile high"><span class="n">7</span><span class="k">high</span></div>
-    <div class="tile medium"><span class="n">0</span><span class="k">medium</span></div>
-    <div class="tile low"><span class="n">0</span><span class="k">low</span></div>
-    <div class="tile info"><span class="n">0</span><span class="k">info</span></div>
+    <div class="tile high"><span class="n">8</span><span class="k">high</span></div>
+    <div class="tile medium"><span class="n">11</span><span class="k">medium</span></div>
+    <div class="tile low"><span class="n">3</span><span class="k">low</span></div>
+    <div class="tile info"><span class="n">2</span><span class="k">info</span></div>
   </div>
   <div class="cols">
     <div class="table-wrap">
       <table>
         <thead><tr><th>DPDP provision</th><th class="num">Findings</th></tr></thead>
         <tbody>
-<tr><td>s.8(5)</td><td class="num">8</td></tr><tr><td>Rule 6(1)(a)</td><td class="num">5</td></tr><tr><td>Rule 6(1)(b)</td><td class="num">3</td></tr><tr><td>s.8(7)</td><td class="num">1</td></tr><tr><td>s.12(3)</td><td class="num">1</td></tr><tr><td>Rule 8</td><td class="num">1</td></tr><tr><td>s.6(4)</td><td class="num">1</td></tr><tr><td>s.6(6)</td><td class="num">1</td></tr><tr><td>Rule 3(c)(i)</td><td class="num">1</td></tr>        </tbody>
+<tr><td>s.8(5)</td><td class="num">14</td></tr><tr><td>Rule 6(1)(a)</td><td class="num">5</td></tr><tr><td>Rule 6(1)(c)</td><td class="num">4</td></tr><tr><td>Rule 6(1)(b)</td><td class="num">3</td></tr><tr><td>s.6(1)</td><td class="num">2</td></tr><tr><td>s.8(7)</td><td class="num">1</td></tr><tr><td>s.12(3)</td><td class="num">1</td></tr><tr><td>Rule 8</td><td class="num">1</td></tr><tr><td>s.4(1)</td><td class="num">1</td></tr><tr><td>s.6(4)</td><td class="num">1</td></tr><tr><td>s.6(6)</td><td class="num">1</td></tr><tr><td>Rule 3(c)(i)</td><td class="num">1</td></tr><tr><td>Rule 6(1)(e)</td><td class="num">1</td></tr><tr><td>Rule 8(3)</td><td class="num">1</td></tr><tr><td>s.8(6)</td><td class="num">1</td></tr><tr><td>Rule 7(1)</td><td class="num">1</td></tr><tr><td>Rule 7(2)</td><td class="num">1</td></tr><tr><td>s.11</td><td class="num">1</td></tr><tr><td>Rule 14(1)</td><td class="num">1</td></tr><tr><td>s.12</td><td class="num">1</td></tr><tr><td>Rule 14</td><td class="num">1</td></tr><tr><td>s.6(10)</td><td class="num">1</td></tr><tr><td>s.5(1)</td><td class="num">1</td></tr><tr><td>Rule 3(b)</td><td class="num">1</td></tr><tr><td>s.8(8)</td><td class="num">1</td></tr><tr><td>Rule 8(2)</td><td class="num">1</td></tr><tr><td>s.8(9)</td><td class="num">1</td></tr><tr><td>s.8(10)</td><td class="num">1</td></tr><tr><td>s.13</td><td class="num">1</td></tr><tr><td>Rule 9</td><td class="num">1</td></tr><tr><td>Rule 14(3)</td><td class="num">1</td></tr><tr><td>s.6(3)</td><td class="num">1</td></tr><tr><td>s.16(1)</td><td class="num">1</td></tr><tr><td>Rule 15</td><td class="num">1</td></tr><tr><td>Rule 6(1)(d)</td><td class="num">1</td></tr>        </tbody>
       </table>
     </div>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Category</th><th class="num">Findings</th></tr></thead>
         <tbody>
-<tr><td>Security</td><td class="num">8</td></tr><tr><td>Retention</td><td class="num">1</td></tr><tr><td>Consent</td><td class="num">1</td></tr>        </tbody>
+<tr><td>Security</td><td class="num">14</td></tr><tr><td>Consent</td><td class="num">5</td></tr><tr><td>Rights</td><td class="num">3</td></tr><tr><td>Retention</td><td class="num">2</td></tr><tr><td>Breach</td><td class="num">1</td></tr><tr><td>Notice</td><td class="num">1</td></tr><tr><td>Transfers</td><td class="num">1</td></tr>        </tbody>
       </table>
     </div>
   </div>
@@ -116,54 +118,48 @@
 
 <section id="coverage">
   <h2>Scan coverage</h2>
-  <p>6 files read (never executed):
-3 typescript, 2 javascript, 1 config.</p>
-  <p>Automated checks ran for <strong>14 of 28</strong> rules.
+  <p>11 files read (never executed):
+6 typescript, 2 config, 2 javascript, 1 templates.</p>
+  <p>Automated checks ran for <strong>28 of 28</strong> rules.
      No finding for a checked rule means the scanner saw no sign of the problem, not that the code is compliant.</p>
   <div class="table-wrap">
     <table>
       <thead><tr><th>Rule</th><th>Checked automatically</th><th class="num">Findings</th></tr></thead>
       <tbody>
+        <tr><td><code>DPDP-NOT-001</code></td><td>Personal data collected without a notice of data and purpose</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-CON-001</code></td><td>Consent can be given but not withdrawn</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-CON-002</code></td><td>Pre-ticked or default-true consent</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-CON-003</code></td><td>No evidence of consent stored</td><td class="num">1</td></tr>
+        <tr><td><code>DPDP-CON-004</code></td><td>Personal data used without checking consent</td><td class="num">1</td></tr>
+        <tr><td><code>DPDP-CON-005</code></td><td>Over-collection beyond the stated purpose</td><td class="num">1</td></tr>
+        <tr><td><code>DPDP-CON-006</code></td><td>Consent request offered in one language only</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-SEC-001</code></td><td>Personal data written to logs</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-SEC-002</code></td><td>Personal data stored in plaintext</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-SEC-003</code></td><td>Weak password hashing</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-SEC-004</code></td><td>Hardcoded secrets or credentials</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-SEC-005</code></td><td>Personal data exposed by an unauthenticated route</td><td class="num">2</td></tr>
         <tr><td><code>DPDP-SEC-006</code></td><td>Excessive data in API responses</td><td class="num">3</td></tr>
+        <tr><td><code>DPDP-SEC-007</code></td><td>No access logging on personal-data reads</td><td class="num">4</td></tr>
         <tr><td><code>DPDP-SEC-008</code></td><td>Insecure infrastructure configuration</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-SEC-009</code></td><td>No backup configured for personal-data stores</td><td class="num">1</td></tr>
+        <tr><td><code>DPDP-SEC-010</code></td><td>Log retention shorter than one year</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-TP-001</code></td><td>Personal data sent to a third-party SDK</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-TP-002</code></td><td>Personal data stored or sent outside India</td><td class="num">1</td></tr>
+        <tr><td><code>DPDP-BR-001</code></td><td>No breach notification mechanism</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-RET-001</code></td><td>Personal data with no erase or anonymise path</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-RET-002</code></td><td>Immediate hard delete with no minimum retention</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-RET-003</code></td><td>No pre-erasure notice to the user</td><td class="num">1</td></tr>
         <tr><td><code>DPDP-CH-001</code></td><td>Child data collected without parental consent flow</td><td class="num">0</td></tr>
         <tr><td><code>DPDP-CH-002</code></td><td>Tracking or targeted ads possible for children</td><td class="num">0</td></tr>
+        <tr><td><code>DPDP-RT-001</code></td><td>No way to access or export one&#39;s data</td><td class="num">1</td></tr>
+        <tr><td><code>DPDP-RT-002</code></td><td>No correction or erasure endpoint</td><td class="num">1</td></tr>
+        <tr><td><code>DPDP-RT-003</code></td><td>No grievance mechanism or contact published</td><td class="num">1</td></tr>
       </tbody>
     </table>
   </div>
-  <details>
-    <summary>14 rules need a manual review (no automated check yet)</summary>
-    <div class="table-wrap">
-      <table>
-        <tbody>
-          <tr><td><code>DPDP-NOT-001</code></td><td>Personal data collected without a notice of data and purpose</td></tr>
-          <tr><td><code>DPDP-CON-003</code></td><td>No evidence of consent stored</td></tr>
-          <tr><td><code>DPDP-CON-004</code></td><td>Personal data used without checking consent</td></tr>
-          <tr><td><code>DPDP-CON-005</code></td><td>Over-collection beyond the stated purpose</td></tr>
-          <tr><td><code>DPDP-CON-006</code></td><td>Consent request offered in one language only</td></tr>
-          <tr><td><code>DPDP-SEC-007</code></td><td>No access logging on personal-data reads</td></tr>
-          <tr><td><code>DPDP-SEC-009</code></td><td>No backup configured for personal-data stores</td></tr>
-          <tr><td><code>DPDP-SEC-010</code></td><td>Log retention shorter than one year</td></tr>
-          <tr><td><code>DPDP-TP-002</code></td><td>Personal data stored or sent outside India</td></tr>
-          <tr><td><code>DPDP-BR-001</code></td><td>No breach notification mechanism</td></tr>
-          <tr><td><code>DPDP-RET-003</code></td><td>No pre-erasure notice to the user</td></tr>
-          <tr><td><code>DPDP-RT-001</code></td><td>No way to access or export one&#39;s data</td></tr>
-          <tr><td><code>DPDP-RT-002</code></td><td>No correction or erasure endpoint</td></tr>
-          <tr><td><code>DPDP-RT-003</code></td><td>No grievance mechanism or contact published</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </details>
+  <p>Every rule has an automated check. Some rules can only be judged partly from code (a notice in a
+     modal, backups set up in a cloud console): their findings have low confidence and say
+     <em>verify manually</em>.</p>
 </section>
 
 <section id="findings">
@@ -208,15 +204,15 @@
       <dd>Require authentication and check that the requester owns the record.</dd>
     </dl>
   </article>
-  <article class="finding critical" id="f-850a7ce62277">
+  <article class="finding critical" id="f-f044d411957b">
     <header>
       <span class="badge critical">critical</span>
       <h3>Personal data exposed by an unauthenticated route</h3>
       <code class="rule">DPDP-SEC-005</code>
     </header>
-    <p class="where"><code>server.ts:59</code> · confidence high · personal data: email, phone</p>
+    <p class="where"><code>server.ts:60</code> · confidence high · personal data: email, phone</p>
     <div class="evidence"><code>GET /api/customers/:id (handler in routes/customers.ts) returns email, phone with no authentication check; anyone can change :id to read other people&#39;s data (IDOR)</code></div>
-    <pre class="code" aria-label="Source around server.ts:59 (masked)"><span class="ln"><span class="no">56</span>const customers = require(&#39;./routes/customers&#39;)</span><span class="ln"><span class="no">57</span>const asyncHandler = (fn: any) =&gt; fn</span><span class="ln"><span class="no">58</span></span><span class="ln hit"><span class="no">59</span>app.get(&#39;/api/customers/:id&#39;, asyncHandler(getCustomer()))</span><span class="ln"><span class="no">60</span>app.get(&#39;/admin/customers&#39;, customers.listCustomers())</span><span class="ln"><span class="no">61</span></span><span class="ln"><span class="no">62</span>app.listen(3000, () =&gt; logger.info(&#39;listening on 3000&#39;))</span></pre>
+    <pre class="code" aria-label="Source around server.ts:60 (masked)"><span class="ln"><span class="no">57</span>const customers = require(&#39;./routes/customers&#39;)</span><span class="ln"><span class="no">58</span>const asyncHandler = (fn: any) =&gt; fn</span><span class="ln"><span class="no">59</span></span><span class="ln hit"><span class="no">60</span>app.get(&#39;/api/customers/:id&#39;, asyncHandler(getCustomer()))</span><span class="ln"><span class="no">61</span>app.get(&#39;/admin/customers&#39;, customers.listCustomers())</span><span class="ln"><span class="no">62</span></span><span class="ln"><span class="no">63</span>// Marketing handlers in routes/marketing.ts</span></pre>
     <dl>
       <dt>Law</dt>
       <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Appropriate measures to control access.</dd>
@@ -228,7 +224,7 @@
       <dd>Require authentication and check that the requester owns the record.</dd>
     </dl>
   </article>
-  <h2 id="sev-high">High <span class="count high">· 7</span></h2>
+  <h2 id="sev-high">High <span class="count high">· 8</span></h2>
   <article class="finding high" id="f-8199461f1965">
     <header>
       <span class="badge high">high</span>
@@ -289,6 +285,26 @@
       <dd>Return a response schema/serializer with only the needed fields; mask identifiers.</dd>
     </dl>
   </article>
+  <article class="finding high" id="f-51165ce1ba93">
+    <header>
+      <span class="badge high">high</span>
+      <h3>Personal data used without checking consent</h3>
+      <code class="rule">DPDP-CON-004</code>
+    </header>
+    <p class="where"><code>routes/marketing.ts:11</code> · confidence high · personal data: email</p>
+    <div class="evidence"><code>mailer.sendPromo(user?.email, &#39;Festive offers for you&#39;) [marketing call mailer.sendPromo() receives email with no consent check on this path; the app records consent (models.js:28)]</code></div>
+    <pre class="code" aria-label="Source around routes/marketing.ts:11 (masked)"><span class="ln"><span class="no">8</span>export const sendOffers = () =&gt; async (req: Request, res: Response) =&gt; {</span><span class="ln"><span class="no">9</span>  const user = await User.findByPk(req.params.id)</span><span class="ln"><span class="no">10</span>  logger.info(`offers sent to user ${user?.id}`)</span><span class="ln hit"><span class="no">11</span>  mailer.sendPromo(user?.email, &#39;Festive offers for you&#39;)</span><span class="ln"><span class="no">12</span>  res.status(202).end()</span><span class="ln"><span class="no">13</span>}</span><span class="ln"><span class="no">14</span></span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.4(1) DPDP Act</span><span class="ref">s.6(1) DPDP Act</span><br>Process only on consent or a legitimate use, limited to the specified purpose.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 50 crore <span class="muted">(Schedule item 7: any other provision of the Act or Rules)</span></dd>
+      <dt>Why high</dt>
+      <dd>Processing happens without the legal basis the app itself relies on.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Add a consent guard (middleware or decorator) before purpose-specific processing.</dd>
+    </dl>
+  </article>
   <article class="finding high" id="f-efdf12f3087f">
     <header>
       <span class="badge high">high</span>
@@ -317,7 +333,7 @@
     </header>
     <p class="where"><code>server.ts:33</code> · confidence high · personal data: pan, password</p>
     <div class="evidence"><code>res.json(user) [GET /api/users/:id (handler) sends User.findByPk() with pan, password; pass `attributes` or pick the fields]</code></div>
-    <pre class="code" aria-label="Source around server.ts:33 (masked)"><span class="ln"><span class="no">30</span></span><span class="ln"><span class="no">31</span>app.get(&#39;/api/users/:id&#39;, async (req: Request, res: Response) =&gt; {</span><span class="ln"><span class="no">32</span>  const user = await User.findByPk(req.params.id)</span><span class="ln hit"><span class="no">33</span>  res.json(user)</span><span class="ln"><span class="no">34</span>})</span><span class="ln"><span class="no">35</span></span><span class="ln"><span class="no">36</span>app.get(&#39;/api/me&#39;, requireAuth, async (req: Request, res: Response) =&gt; {</span></pre>
+    <pre class="code" aria-label="Source around server.ts:33 (masked)"><span class="ln"><span class="no">30</span></span><span class="ln"><span class="no">31</span>app.get(&#39;/api/users/:id&#39;, async (req: Request, res: Response) =&gt; {</span><span class="ln"><span class="no">32</span>  const user = await User.findByPk(req.params.id)</span><span class="ln hit"><span class="no">33</span>  res.json(user)</span><span class="ln"><span class="no">34</span>})</span><span class="ln"><span class="no">35</span></span><span class="ln"><span class="no">36</span>app.get(&#39;/api/leads/:id&#39;, requireAuth, async (req: Request, res: Response) =&gt; {</span></pre>
     <dl>
       <dt>Law</dt>
       <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(a) DPDP Rules</span><br>Masking and minimising exposed personal data.</dd>
@@ -329,15 +345,15 @@
       <dd>Return a response schema/serializer with only the needed fields; mask identifiers.</dd>
     </dl>
   </article>
-  <article class="finding high" id="f-a23f6c11e52d">
+  <article class="finding high" id="f-ee97543b5389">
     <header>
       <span class="badge high">high</span>
       <h3>Excessive data in API responses</h3>
       <code class="rule">DPDP-SEC-006</code>
     </header>
-    <p class="where"><code>server.ts:42</code> · confidence high · personal data: pan, password</p>
+    <p class="where"><code>server.ts:43</code> · confidence high · personal data: pan, password</p>
     <div class="evidence"><code>res.json(await User.findAll()) [GET /admin/users (handler) sends User.findAll() with pan, password; pass `attributes` or pick the fields]</code></div>
-    <pre class="code" aria-label="Source around server.ts:42 (masked)"><span class="ln"><span class="no">39</span>})</span><span class="ln"><span class="no">40</span></span><span class="ln"><span class="no">41</span>app.get(&#39;/admin/users&#39;, async (req: Request, res: Response) =&gt; {</span><span class="ln hit"><span class="no">42</span>  res.json(await User.findAll())</span><span class="ln"><span class="no">43</span>})</span><span class="ln"><span class="no">44</span></span><span class="ln"><span class="no">45</span>app.post(&#39;/consent&#39;, requireAuth, (req: Request, res: Response) =&gt; {</span></pre>
+    <pre class="code" aria-label="Source around server.ts:43 (masked)"><span class="ln"><span class="no">40</span>})</span><span class="ln"><span class="no">41</span></span><span class="ln"><span class="no">42</span>app.get(&#39;/admin/users&#39;, async (req: Request, res: Response) =&gt; {</span><span class="ln hit"><span class="no">43</span>  res.json(await User.findAll())</span><span class="ln"><span class="no">44</span>})</span><span class="ln"><span class="no">45</span></span><span class="ln"><span class="no">46</span>app.post(&#39;/consent&#39;, requireAuth, (req: Request, res: Response) =&gt; {</span></pre>
     <dl>
       <dt>Law</dt>
       <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(a) DPDP Rules</span><br>Masking and minimising exposed personal data.</dd>
@@ -349,15 +365,15 @@
       <dd>Return a response schema/serializer with only the needed fields; mask identifiers.</dd>
     </dl>
   </article>
-  <article class="finding high" id="f-4bc3944f1783">
+  <article class="finding high" id="f-fa2b0da77201">
     <header>
       <span class="badge high">high</span>
       <h3>Consent can be given but not withdrawn</h3>
       <code class="rule">DPDP-CON-001</code>
     </header>
-    <p class="where"><code>project-wide (see server.ts:45)</code> · confidence high</p>
+    <p class="where"><code>project-wide (see server.ts:46)</code> · confidence high</p>
     <div class="evidence"><code>POST /consent grants consent; no route anywhere withdraws or revokes it</code></div>
-    <pre class="code" aria-label="Source around project-wide (see server.ts:45) (masked)"><span class="ln"><span class="no">42</span>  res.json(await User.findAll())</span><span class="ln"><span class="no">43</span>})</span><span class="ln"><span class="no">44</span></span><span class="ln hit"><span class="no">45</span>app.post(&#39;/consent&#39;, requireAuth, (req: Request, res: Response) =&gt; {</span><span class="ln"><span class="no">46</span>  res.json({ ok: true, purpose: req.body.purpose })</span><span class="ln"><span class="no">47</span>})</span><span class="ln"><span class="no">48</span></span></pre>
+    <pre class="code" aria-label="Source around project-wide (see server.ts:46) (masked)"><span class="ln"><span class="no">43</span>  res.json(await User.findAll())</span><span class="ln"><span class="no">44</span>})</span><span class="ln"><span class="no">45</span></span><span class="ln hit"><span class="no">46</span>app.post(&#39;/consent&#39;, requireAuth, (req: Request, res: Response) =&gt; {</span><span class="ln"><span class="no">47</span>  res.json({ ok: true, purpose: req.body.purpose })</span><span class="ln"><span class="no">48</span>})</span><span class="ln"><span class="no">49</span></span></pre>
     <dl>
       <dt>Law</dt>
       <dd><span class="ref">s.6(4) DPDP Act</span><span class="ref">s.6(6) DPDP Act</span><span class="ref">Rule 3(c)(i) DPDP Rules</span><br>Withdrawal must be possible at any time, with ease comparable to giving consent; processing must then stop.</dd>
@@ -367,6 +383,329 @@
       <dd>Consent is the legal basis for processing; with no withdrawal path the user cannot stop it.</dd>
       <dt>Recommended fix</dt>
       <dd>Add DELETE /consent (or POST /consent/withdraw) that clears consent and stops downstream processing.</dd>
+    </dl>
+  </article>
+  <h2 id="sev-medium">Medium <span class="count medium">· 11</span></h2>
+  <article class="finding medium" id="f-eed69ce5ed70">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Log retention shorter than one year</h3>
+      <code class="rule">DPDP-SEC-010</code>
+    </header>
+    <p class="where"><code>logger.ts:9</code> · confidence high</p>
+    <div class="evidence"><code>new DailyRotateFile({ filename: &#39;logs/app-%DATE%.log&#39;, datePattern: &#39;YYYY-MM-DD&#39;, maxFiles: &#39;14d&#39; }) [daily log files, maxFiles &#39;14d&#39;: logs are deleted after 14 days; Rule 8(3) asks for at least one year]</code></div>
+    <pre class="code" aria-label="Source around logger.ts:9 (masked)"><span class="ln"><span class="no">6</span>  transports: [</span><span class="ln"><span class="no">7</span>    new winston.transports.Console(),</span><span class="ln"><span class="no">8</span>    // one file per day, deleted after two weeks</span><span class="ln hit"><span class="no">9</span>    new DailyRotateFile({ filename: &#39;logs/app-%DATE%.log&#39;, datePattern: &#39;YYYY-MM-DD&#39;, maxFiles: &#39;14d&#39; })</span><span class="ln"><span class="no">10</span>  ]</span><span class="ln"><span class="no">11</span>})</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(e) DPDP Rules</span><span class="ref">Rule 8(3) DPDP Rules</span><br>Retain logs and personal data for one year for detecting and investigating unauthorised access.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Breaches discovered late cannot be investigated.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Retain access/processing logs for at least 365 days in protected storage.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-a10ffe261e8b">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>No breach notification mechanism</h3>
+      <code class="rule">DPDP-BR-001</code>
+    </header>
+    <p class="where"><code>project-wide (see models.js:7)</code> · confidence low</p>
+    <div class="evidence"><code>Personal data is held (e.g. table users) but nothing in the project handles a breach: no incident module, no user or Board notification, no alert hook; verify manually: the breach process may be run outside the code</code></div>
+    <pre class="code" aria-label="Source around project-wide (see models.js:7) (masked)"><span class="ln"><span class="no">4</span></span><span class="ln"><span class="no">5</span>const sequelize = new Sequelize({ dialect: &#39;sqlite&#39;, storage: config.dbStorage })</span><span class="ln"><span class="no">6</span></span><span class="ln hit"><span class="no">7</span>const User = sequelize.define(&#39;User&#39;, {</span><span class="ln"><span class="no">8</span>  email: { type: DataTypes.STRING, allowNull: false, unique: true },</span><span class="ln"><span class="no">9</span>  phone: DataTypes.STRING,</span><span class="ln"><span class="no">10</span>  pan: DataTypes.STRING,</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(6) DPDP Act</span><span class="ref">Rule 7(1) DPDP Rules</span><span class="ref">Rule 7(2) DPDP Rules</span><br>Inform affected users without delay; send the Board a detailed report within 72 hours.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 200 crore <span class="muted">(Schedule item 2: s.8(6) breach intimation)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Process often lives outside code; absence is a signal, not proof.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Add an incident module that can notify affected users and generate the Board report.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-73679b13823f">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>No way to access or export one&#39;s data</h3>
+      <code class="rule">DPDP-RT-001</code>
+    </header>
+    <p class="where"><code>project-wide (see models.js:7)</code> · confidence medium</p>
+    <div class="evidence"><code>None of the 12 routes lets users see or export their own data (no GET /me, /profile, /account or /export) (personal data is held, e.g. table users)</code></div>
+    <pre class="code" aria-label="Source around project-wide (see models.js:7) (masked)"><span class="ln"><span class="no">4</span></span><span class="ln"><span class="no">5</span>const sequelize = new Sequelize({ dialect: &#39;sqlite&#39;, storage: config.dbStorage })</span><span class="ln"><span class="no">6</span></span><span class="ln hit"><span class="no">7</span>const User = sequelize.define(&#39;User&#39;, {</span><span class="ln"><span class="no">8</span>  email: { type: DataTypes.STRING, allowNull: false, unique: true },</span><span class="ln"><span class="no">9</span>  phone: DataTypes.STRING,</span><span class="ln"><span class="no">10</span>  pan: DataTypes.STRING,</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.11 DPDP Act</span><span class="ref">Rule 14(1) DPDP Rules</span><br>Right to access information about personal data; publish how to make requests.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 50 crore <span class="muted">(Schedule item 7: any other provision of the Act or Rules)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Users cannot exercise a statutory right.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Add GET /me/data returning stored data and processing summary.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-93d09ad71dec">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>No correction or erasure endpoint</h3>
+      <code class="rule">DPDP-RT-002</code>
+    </header>
+    <p class="where"><code>project-wide (see models.js:7)</code> · confidence medium</p>
+    <div class="evidence"><code>No route lets users correct (PUT/PATCH /me or /profile) their own data (personal data is held, e.g. table users)</code></div>
+    <pre class="code" aria-label="Source around project-wide (see models.js:7) (masked)"><span class="ln"><span class="no">4</span></span><span class="ln"><span class="no">5</span>const sequelize = new Sequelize({ dialect: &#39;sqlite&#39;, storage: config.dbStorage })</span><span class="ln"><span class="no">6</span></span><span class="ln hit"><span class="no">7</span>const User = sequelize.define(&#39;User&#39;, {</span><span class="ln"><span class="no">8</span>  email: { type: DataTypes.STRING, allowNull: false, unique: true },</span><span class="ln"><span class="no">9</span>  phone: DataTypes.STRING,</span><span class="ln"><span class="no">10</span>  pan: DataTypes.STRING,</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.12 DPDP Act</span><span class="ref">Rule 14 DPDP Rules</span><br>Right to correction, completion, updating and erasure.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 50 crore <span class="muted">(Schedule item 7: any other provision of the Act or Rules)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Users cannot exercise a statutory right.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Add PATCH /me and an erasure request endpoint.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-44940849df19">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>No evidence of consent stored</h3>
+      <code class="rule">DPDP-CON-003</code>
+    </header>
+    <p class="where"><code>models.js:28</code> · confidence medium</p>
+    <div class="evidence"><code>const Consent = sequelize.define(&#39;Consent&#39;, { [consent table consents (userId, marketing) does not record when it was given or the purpose or notice version]</code></div>
+    <pre class="code" aria-label="Source around models.js:28 (masked)"><span class="ln"><span class="no">25</span>}, { sequelize, tableName: &#39;leads&#39; })</span><span class="ln"><span class="no">26</span></span><span class="ln"><span class="no">27</span>// Marketing consent as a bare yes/no flag: no time, notice version or purpose is kept</span><span class="ln hit"><span class="no">28</span>const Consent = sequelize.define(&#39;Consent&#39;, {</span><span class="ln"><span class="no">29</span>  userId: DataTypes.INTEGER,</span><span class="ln"><span class="no">30</span>  marketing: DataTypes.BOOLEAN</span><span class="ln"><span class="no">31</span>}, { tableName: &#39;consents&#39;, timestamps: false })</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.6(10) DPDP Act</span><br>The Data Fiduciary must be able to prove notice was given and consent obtained.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 50 crore <span class="muted">(Schedule item 7: any other provision of the Act or Rules)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Burden of proof is on the fiduciary; without a record it cannot defend its processing.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Store consent records with user id, purpose, notice version, timestamp and channel.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-008c1fdb8792">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Personal data collected without a notice of data and purpose</h3>
+      <code class="rule">DPDP-NOT-001</code>
+    </header>
+    <p class="where"><code>public/lead.html:10</code> · confidence low · personal data: aadhaar, email, mobile</p>
+    <div class="evidence"><code>&lt;form method=&#34;post&#34; action=&#34;/leads&#34;&gt; [the form asks for aadhaar, email, mobile but the page shows no notice of what is collected and why; verify manually: the notice may be in a modal or an earlier step]</code></div>
+    <pre class="code" aria-label="Source around public/lead.html:10 (masked)"><span class="ln"><span class="no">7</span>&lt;body&gt;</span><span class="ln"><span class="no">8</span>  &lt;h1&gt;Get a free quote&lt;/h1&gt;</span><span class="ln"><span class="no">9</span></span><span class="ln hit"><span class="no">10</span>  &lt;form method=&#34;post&#34; action=&#34;/leads&#34;&gt;</span><span class="ln"><span class="no">11</span>    &lt;label&gt;Name &lt;input name=&#34;name&#34; required&gt;&lt;/label&gt;</span><span class="ln"><span class="no">12</span>    &lt;label&gt;Email &lt;input type=&#34;email&#34; name=&#34;email&#34; required&gt;&lt;/label&gt;</span><span class="ln"><span class="no">13</span>    &lt;label&gt;Mobile &lt;input type=&#34;tel&#34; name=&#34;mobile&#34; required&gt;&lt;/label&gt;</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.5(1) DPDP Act</span><span class="ref">Rule 3(b) DPDP Rules</span><br>Notice must give an itemised description of the personal data and the specified purpose.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 50 crore <span class="muted">(Schedule item 7: any other provision of the Act or Rules)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Notice is a precondition for valid consent; impact is on transparency, not direct exposure.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Show an itemised notice (data fields + purpose) before or with the consent request.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-cdaac546ccc6">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Over-collection beyond the stated purpose</h3>
+      <code class="rule">DPDP-CON-005</code>
+    </header>
+    <p class="where"><code>public/lead.html:14</code> · confidence low · personal data: aadhaar</p>
+    <div class="evidence"><code>&lt;label&gt;Aadhaar number &lt;input name=&#34;aadhaar&#34; inputmode=&#34;numeric&#34; maxlength=&#34;12&#34;&gt;&lt;/label&gt; [the form asks for &#39;aadhaar&#39; but no code or table uses it; verify manually: another service may read it]</code></div>
+    <pre class="code" aria-label="Source around public/lead.html:14 (masked)"><span class="ln"><span class="no">11</span>    &lt;label&gt;Name &lt;input name=&#34;name&#34; required&gt;&lt;/label&gt;</span><span class="ln"><span class="no">12</span>    &lt;label&gt;Email &lt;input type=&#34;email&#34; name=&#34;email&#34; required&gt;&lt;/label&gt;</span><span class="ln"><span class="no">13</span>    &lt;label&gt;Mobile &lt;input type=&#34;tel&#34; name=&#34;mobile&#34; required&gt;&lt;/label&gt;</span><span class="ln hit"><span class="no">14</span>    &lt;label&gt;Aadhaar number &lt;input name=&#34;aadhaar&#34; inputmode=&#34;numeric&#34; maxlength=&#34;12&#34;&gt;&lt;/label&gt;</span><span class="ln"><span class="no">15</span>    &lt;label&gt;</span><span class="ln"><span class="no">16</span>      &lt;input type=&#34;checkbox&#34; name=&#34;contact_consent&#34; value=&#34;yes&#34; required&gt;</span><span class="ln"><span class="no">17</span>      I agree to be contacted about this quote.</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.6(1) DPDP Act</span><br>Consent is limited to personal data necessary for the specified purpose.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 50 crore <span class="muted">(Schedule item 7: any other provision of the Act or Rules)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Unnecessary data increases breach impact and invalidates part of the consent.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Remove unused fields and permissions, or tie each one to a stated purpose.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-89428d750d43">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>No access logging on personal-data reads</h3>
+      <code class="rule">DPDP-SEC-007</code>
+    </header>
+    <p class="where"><code>server.ts:31</code> · confidence medium · personal data: email, pan, password, phone</p>
+    <div class="evidence"><code>GET /api/users/:id (handler) reads email, pan, password, phone but writes no audit or log entry; the app has a logger (logger.ts:1)</code></div>
+    <pre class="code" aria-label="Source around server.ts:31 (masked)"><span class="ln"><span class="no">28</span>  res.status(201).end()</span><span class="ln"><span class="no">29</span>})</span><span class="ln"><span class="no">30</span></span><span class="ln hit"><span class="no">31</span>app.get(&#39;/api/users/:id&#39;, async (req: Request, res: Response) =&gt; {</span><span class="ln"><span class="no">32</span>  const user = await User.findByPk(req.params.id)</span><span class="ln"><span class="no">33</span>  res.json(user)</span><span class="ln"><span class="no">34</span>})</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(c) DPDP Rules</span><br>Visibility on access to personal data through logs, monitoring and review.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Unauthorised access cannot be detected or investigated.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Write an audit event (who, what record, when) for every PII read and change.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-a01ad98a59f2">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>No access logging on personal-data reads</h3>
+      <code class="rule">DPDP-SEC-007</code>
+    </header>
+    <p class="where"><code>server.ts:42</code> · confidence medium · personal data: email, pan, password, phone</p>
+    <div class="evidence"><code>GET /admin/users (handler) reads email, pan, password, phone but writes no audit or log entry; the app has a logger (logger.ts:1)</code></div>
+    <pre class="code" aria-label="Source around server.ts:42 (masked)"><span class="ln"><span class="no">39</span>  res.json({ name: lead?.name, source: lead?.source })</span><span class="ln"><span class="no">40</span>})</span><span class="ln"><span class="no">41</span></span><span class="ln hit"><span class="no">42</span>app.get(&#39;/admin/users&#39;, async (req: Request, res: Response) =&gt; {</span><span class="ln"><span class="no">43</span>  res.json(await User.findAll())</span><span class="ln"><span class="no">44</span>})</span><span class="ln"><span class="no">45</span></span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(c) DPDP Rules</span><br>Visibility on access to personal data through logs, monitoring and review.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Unauthorised access cannot be detected or investigated.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Write an audit event (who, what record, when) for every PII read and change.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-c7101c6136ce">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>No access logging on personal-data reads</h3>
+      <code class="rule">DPDP-SEC-007</code>
+    </header>
+    <p class="where"><code>server.ts:60</code> · confidence medium · personal data: email, pan, password, phone</p>
+    <div class="evidence"><code>GET /api/customers/:id (asyncHandler) reads email, pan, password, phone but writes no audit or log entry; the app has a logger (logger.ts:1)</code></div>
+    <pre class="code" aria-label="Source around server.ts:60 (masked)"><span class="ln"><span class="no">57</span>const customers = require(&#39;./routes/customers&#39;)</span><span class="ln"><span class="no">58</span>const asyncHandler = (fn: any) =&gt; fn</span><span class="ln"><span class="no">59</span></span><span class="ln hit"><span class="no">60</span>app.get(&#39;/api/customers/:id&#39;, asyncHandler(getCustomer()))</span><span class="ln"><span class="no">61</span>app.get(&#39;/admin/customers&#39;, customers.listCustomers())</span><span class="ln"><span class="no">62</span></span><span class="ln"><span class="no">63</span>// Marketing handlers in routes/marketing.ts</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(c) DPDP Rules</span><br>Visibility on access to personal data through logs, monitoring and review.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Unauthorised access cannot be detected or investigated.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Write an audit event (who, what record, when) for every PII read and change.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-44efd784f046">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>No access logging on personal-data reads</h3>
+      <code class="rule">DPDP-SEC-007</code>
+    </header>
+    <p class="where"><code>server.ts:61</code> · confidence medium · personal data: email, pan, password, phone</p>
+    <div class="evidence"><code>GET /admin/customers (listCustomers) reads email, pan, password, phone but writes no audit or log entry; the app has a logger (logger.ts:1)</code></div>
+    <pre class="code" aria-label="Source around server.ts:61 (masked)"><span class="ln"><span class="no">58</span>const asyncHandler = (fn: any) =&gt; fn</span><span class="ln"><span class="no">59</span></span><span class="ln"><span class="no">60</span>app.get(&#39;/api/customers/:id&#39;, asyncHandler(getCustomer()))</span><span class="ln hit"><span class="no">61</span>app.get(&#39;/admin/customers&#39;, customers.listCustomers())</span><span class="ln"><span class="no">62</span></span><span class="ln"><span class="no">63</span>// Marketing handlers in routes/marketing.ts</span><span class="ln"><span class="no">64</span>const marketing = require(&#39;./routes/marketing&#39;)</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(c) DPDP Rules</span><br>Visibility on access to personal data through logs, monitoring and review.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Unauthorised access cannot be detected or investigated.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Write an audit event (who, what record, when) for every PII read and change.</dd>
+    </dl>
+  </article>
+  <h2 id="sev-low">Low <span class="count low">· 3</span></h2>
+  <article class="finding low" id="f-6347ae578534">
+    <header>
+      <span class="badge low">low</span>
+      <h3>No pre-erasure notice to the user</h3>
+      <code class="rule">DPDP-RET-003</code>
+    </header>
+    <p class="where"><code>jobs/purgeInactive.ts:8</code> · confidence low</p>
+    <div class="evidence"><code>export async function purgeInactiveUsers () { [purgeInactiveUsers() erases inactive accounts but nothing warns the user first; Rule 8(2) asks for 48 hours&#39; notice; verify manually: the notice may be another job, and the rule binds Third Schedule fiduciaries]</code></div>
+    <pre class="code" aria-label="Source around jobs/purgeInactive.ts:8 (masked)"><span class="ln"><span class="no">5</span></span><span class="ln"><span class="no">6</span>const THREE_YEARS_MS = 3 * 365 * 24 * 60 * 60 * 1000</span><span class="ln"><span class="no">7</span></span><span class="ln hit"><span class="no">8</span>export async function purgeInactiveUsers () {</span><span class="ln"><span class="no">9</span>  const cutoff = new Date(Date.now() - THREE_YEARS_MS)</span><span class="ln"><span class="no">10</span>  const removed = await User.destroy({ where: { lastLoginAt: { [Op.lt]: cutoff } } })</span><span class="ln"><span class="no">11</span>  logger.info(`purged ${removed} inactive accounts`)</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(8) DPDP Act</span><span class="ref">Rule 8(2) DPDP Rules</span><br>Inform the user at least 48 hours before erasure (applies to Third Schedule classes).</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 50 crore <span class="muted">(Schedule item 7: any other provision of the Act or Rules)</span></dd>
+      <dt>Why low</dt>
+      <dd>Applies only to large e-commerce, gaming and social media fiduciaries.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Send a notice 48 hours before scheduled erasure.</dd>
+    </dl>
+  </article>
+  <article class="finding low" id="f-3950d55112e7">
+    <header>
+      <span class="badge low">low</span>
+      <h3>No grievance mechanism or contact published</h3>
+      <code class="rule">DPDP-RT-003</code>
+    </header>
+    <p class="where"><code>project-wide (see models.js:7)</code> · confidence medium</p>
+    <div class="evidence"><code>No grievance, complaint or contact route or page, and no grievance officer, DPO or privacy@ contact in the pages (personal data is held, e.g. table users)</code></div>
+    <pre class="code" aria-label="Source around project-wide (see models.js:7) (masked)"><span class="ln"><span class="no">4</span></span><span class="ln"><span class="no">5</span>const sequelize = new Sequelize({ dialect: &#39;sqlite&#39;, storage: config.dbStorage })</span><span class="ln"><span class="no">6</span></span><span class="ln hit"><span class="no">7</span>const User = sequelize.define(&#39;User&#39;, {</span><span class="ln"><span class="no">8</span>  email: { type: DataTypes.STRING, allowNull: false, unique: true },</span><span class="ln"><span class="no">9</span>  phone: DataTypes.STRING,</span><span class="ln"><span class="no">10</span>  pan: DataTypes.STRING,</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(9) DPDP Act</span><span class="ref">s.8(10) DPDP Act</span><span class="ref">s.13 DPDP Act</span><span class="ref">Rule 9 DPDP Rules</span><span class="ref">Rule 14(3) DPDP Rules</span><br>Publish a contact for processing questions; respond to grievances within 90 days.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 50 crore <span class="muted">(Schedule item 7: any other provision of the Act or Rules)</span></dd>
+      <dt>Why low</dt>
+      <dd>Often handled outside the app; verify manually.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Add a grievance form with tracking and a published DPO/contact page.</dd>
+    </dl>
+  </article>
+  <article class="finding low" id="f-656802799e22">
+    <header>
+      <span class="badge low">low</span>
+      <h3>Consent request offered in one language only</h3>
+      <code class="rule">DPDP-CON-006</code>
+    </header>
+    <p class="where"><code>public/lead.html:17</code> · confidence low</p>
+    <div class="evidence"><code>I agree to be contacted about this quote. [consent text only in English: no translations, i18n library or locale files; verify manually: translations may come from a CMS]</code></div>
+    <pre class="code" aria-label="Source around public/lead.html:17 (masked)"><span class="ln"><span class="no">14</span>    &lt;label&gt;Aadhaar number &lt;input name=&#34;aadhaar&#34; inputmode=&#34;numeric&#34; maxlength=&#34;12&#34;&gt;&lt;/label&gt;</span><span class="ln"><span class="no">15</span>    &lt;label&gt;</span><span class="ln"><span class="no">16</span>      &lt;input type=&#34;checkbox&#34; name=&#34;contact_consent&#34; value=&#34;yes&#34; required&gt;</span><span class="ln hit"><span class="no">17</span>      I agree to be contacted about this quote.</span><span class="ln"><span class="no">18</span>    &lt;/label&gt;</span><span class="ln"><span class="no">19</span>    &lt;button type=&#34;submit&#34;&gt;Get my quote&lt;/button&gt;</span><span class="ln"><span class="no">20</span>  &lt;/form&gt;</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.6(3) DPDP Act</span><br>Option to access the consent request in English or an Eighth Schedule language.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 50 crore <span class="muted">(Schedule item 7: any other provision of the Act or Rules)</span></dd>
+      <dt>Why low</dt>
+      <dd>Accessibility gap; static detection is a heuristic.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Use i18n resources for notice and consent text with at least one Indian language.</dd>
+    </dl>
+  </article>
+  <h2 id="sev-info">Info <span class="count info">· 2</span></h2>
+  <article class="finding info" id="f-f4560d492807">
+    <header>
+      <span class="badge info">info</span>
+      <h3>Personal data stored or sent outside India</h3>
+      <code class="rule">DPDP-TP-002</code>
+    </header>
+    <p class="where"><code>infra/main.tf:3</code> · confidence low</p>
+    <div class="evidence"><code>region = &#34;us-east-1&#34; [cloud region us-east-1 is outside India; transfer is allowed unless the Government restricts that country (s.16); verify manually which personal data is stored there]</code></div>
+    <pre class="code" aria-label="Source around infra/main.tf:3 (masked)"><span class="ln"><span class="no">1</span># Infrastructure for the demo shop. Answer key: ../../ground_truth_js.yml</span><span class="ln"><span class="no">2</span>provider &#34;aws&#34; {</span><span class="ln hit"><span class="no">3</span>  region = &#34;us-east-1&#34;</span><span class="ln"><span class="no">4</span>}</span><span class="ln"><span class="no">5</span></span><span class="ln"><span class="no">6</span>resource &#34;aws_db_instance&#34; &#34;shop&#34; {</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.16(1) DPDP Act</span><span class="ref">Rule 15 DPDP Rules</span><br>Transfers allowed unless the Government restricts a country or sets requirements by order.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 50 crore <span class="muted">(Schedule item 7: any other provision of the Act or Rules)</span></dd>
+      <dt>Why info</dt>
+      <dd>Not a violation by itself; verify against Government notifications.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Record transfer destinations and review them against current Government orders.</dd>
+    </dl>
+  </article>
+  <article class="finding info" id="f-4a2462773d9c">
+    <header>
+      <span class="badge info">info</span>
+      <h3>No backup configured for personal-data stores</h3>
+      <code class="rule">DPDP-SEC-009</code>
+    </header>
+    <p class="where"><code>infra/main.tf:6</code> · confidence low</p>
+    <div class="evidence"><code>resource &#34;aws_db_instance&#34; &#34;shop&#34; { [aws_db_instance.shop: backup_retention_period = 0 (backups off); verify manually: backups may be configured outside the repository]</code></div>
+    <pre class="code" aria-label="Source around infra/main.tf:6 (masked)"><span class="ln"><span class="no">3</span>  region = &#34;us-east-1&#34;</span><span class="ln"><span class="no">4</span>}</span><span class="ln"><span class="no">5</span></span><span class="ln hit"><span class="no">6</span>resource &#34;aws_db_instance&#34; &#34;shop&#34; {</span><span class="ln"><span class="no">7</span>  identifier              = &#34;shop-db&#34;</span><span class="ln"><span class="no">8</span>  engine                  = &#34;postgres&#34;</span><span class="ln"><span class="no">9</span>  instance_class          = &#34;db.t4g.micro&#34;</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(d) DPDP Rules</span><br>Reasonable measures for continued processing, such as data backups.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why info</dt>
+      <dd>Backups are usually configured outside the repo (cloud console, DBA tooling), so the code alone cannot show they are missing; reported for manual verification.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Configure automated, encrypted backups with tested restore.</dd>
     </dl>
   </article>
 </section>

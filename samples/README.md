@@ -1,19 +1,19 @@
 # Saved reports
 
-Generated with `python -m scanner.cli <folder> --out samples/<name>` (rules v0.1.0, 14 detectors
-covering 14 of 28 rules). Each folder holds `report.json` (master format), `report.html`
+Generated with `python -m scanner.cli <folder> --out samples/<name>` (rules v0.1.0, 28 detectors
+covering all 28 rules). Each folder holds `report.json` (master format), `report.html`
 (open in a browser; also the offline demo backup) and `report.sarif` (GitHub code scanning).
 All evidence and code excerpts are masked. Legal mapping is indicative, not legal advice.
 
 | Folder | What was scanned | Findings |
 |---|---|---|
 | `target_app/` | our Flask target app (deliverable 2) | 13: critical 3, high 8, medium 2 — all 13 planted issues, 0 false positives |
-| `target_app_js/` | our Express + Sequelize target | 10: critical 3, high 7 — all 10 planted issues, 0 false positives |
-| `juice-shop/` | OWASP Juice Shop 20.4.0-SNAPSHOT, commit `c9f99228` (2026-11-19), 1494 files, 19 s | 55: critical 28, high 27 |
+| `target_app_js/` | our Express + Sequelize target | 27: critical 3, high 8, medium 11, low 3, info 2 — all 27 planted issues, 0 false positives |
+| `juice-shop/` | OWASP Juice Shop 20.4.0-SNAPSHOT, commit `c9f99228` (2026-11-19), 1494 files, 18 s | 60: critical 28, high 27, medium 3, info 2 |
 
 ## Reading the Juice Shop results
 
-Juice Shop has no answer key, so this is our manual review of the 55 findings:
+Juice Shop has no answer key, so this is our manual review of the 60 findings:
 
 - **Real and serious (high confidence)**
   - `models/user.ts:73` stores passwords as unsalted MD5 via `security.hash()` (Juice Shop's own
@@ -24,6 +24,9 @@ Juice Shop has no answer key, so this is our manual review of the 55 findings:
   - `Cards.cardNum` stored as a plain INTEGER (SEC-002)
   - `routes/changePassword.ts:56` sends the whole User record, password hash included, back
     to the browser after a password change (SEC-006)
+  - access logs deleted after 2 days (`server.ts:368`, `max_logs: '2d'`) and CloudWatch logs after
+    30 days (both Terraform setups), against Rule 8(3)'s one year (SEC-010)
+- **Info**: both Terraform setups deploy to `eu-west-1`, outside India; allowed unless restricted (TP-002)
 - **Real pattern, not app code (high confidence)**: 14 SEC-003 hits in `data/static/codefixes/` —
   Juice Shop's coding-challenge answer snippets, which repeat the vulnerable login code
 - **Low confidence, by design**: 12 hard-coded JWTs / password hashes in test files; 4 RET-001
