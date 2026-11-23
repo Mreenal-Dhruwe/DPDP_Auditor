@@ -9,7 +9,7 @@ from scanner.detectors.access import unauthenticated_pii_routes
 from scanner.detectors.consent import consent_withdrawal
 from scanner.detectors.logs import pii_in_logs
 from scanner.detectors.retention import no_erase_path
-from scanner.detectors.routes import find_routes
+from scanner.detectors.routes import find_routes, resolve_js_handler
 from scanner.detectors.schemas import find_tables
 from scanner.detectors.storage import plaintext_sensitive_columns
 from scanner.ingest import Project
@@ -63,6 +63,41 @@ def test_js_logs_with_personal_data(tmp_path, code, pii):
 ])
 def test_js_logs_without_personal_data(tmp_path, code):
     assert pii_in_logs(project(tmp_path, {"svc.js": code + "\n"})) == []
+
+
+# --- handlers imported from other files ----------------------------------------------------
+
+HANDLERS = {
+    "routes/users.ts": """
+        import { UserModel } from '../models/user'
+        export function getUser () {
+          return async (req, res) => { res.json(await UserModel.findByPk(req.params.id)) }
+        }
+        async function listUsers (req, res) { res.json(await UserModel.findAll()) }
+        export default () => listUsers
+    """,
+    "routes/legacy.js": "module.exports = function profile (req, res) { res.json({ email: req.user.email }) }\n",
+}
+
+
+@pytest.mark.parametrize(("wiring", "expected"), [
+    ("import { getUser } from './routes/users'\napp.get('/u/:id', utils.asyncHandler(getUser()))", "routes/users.ts"),
+    ("import * as users from './routes/users'\napp.get('/u/:id', users.getUser())", "routes/users.ts"),
+    ("import listUsers from './routes/users'\napp.get('/u', listUsers())", "routes/users.ts"),   # default factory
+    ("const profile = require('./routes/legacy')\napp.get('/p', profile)", "routes/legacy.js"),
+    ("import { nope } from './routes/users'\napp.get('/x', nope())", None),                         # not found
+    ("import { get } from 'some-package'\napp.get('/x', get())", None),                             # packages are not followed
+])
+def test_imported_handlers_are_resolved(tmp_path, wiring, expected):
+    p = project(tmp_path, {**HANDLERS, "server.ts": wiring + "\n"})
+    [route] = find_routes(p)
+    assert resolve_js_handler(p, route)[0] == expected
+
+
+def test_imported_handler_is_checked_for_sec_005(tmp_path):
+    wiring = "import * as users from './routes/users'\napp.get('/u/:id', users.getUser())\n"
+    [hit] = unauthenticated_pii_routes(project(tmp_path, {**HANDLERS, "server.ts": wiring}))
+    assert "(handler in routes/users.ts)" in hit.evidence and hit.pii == ["user record"]
 
 
 # --- SEC-005 ------------------------------------------------------------------------------

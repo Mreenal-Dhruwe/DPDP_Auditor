@@ -10,7 +10,9 @@ import ast
 from dataclasses import dataclass, field
 from typing import Any
 
-from scanner.detectors.javascript import FUNCTION_TYPES, arguments, dotted, js_files, line_of, string_value, walk
+from scanner.detectors.javascript import (
+    FUNCTION_TYPES, arguments, dotted, find_function, imports, js_files, line_of, resolve_module, string_value, walk,
+)
 from scanner.detectors.source import dotted_name, is_test_file, python_trees
 from scanner.ingest import Project
 
@@ -137,6 +139,72 @@ def _express_routes(project: Project, include_tests: bool) -> list[Route]:
             routes.append(Route(f.rel, line_of(call), name, path, methods, tuple(middleware + guarded),
                                 node=handler, language="js", module=f.root))
     return routes
+
+
+def _handler_from(file: Any, definition: Any, factory: bool) -> Any:
+    """The (req, res) function: the definition itself, or for a factory (whoami()) the
+    function it returns - inline, or by name (export default () => retrieveUserList)."""
+    if not factory:
+        return definition
+
+    def as_function(node: Any) -> Any:
+        if node is not None and node.type in FUNCTION_TYPES:
+            return node
+        if node is not None and node.type == "identifier":
+            return find_function(file, dotted(node))
+        return None
+
+    if (found := as_function(definition.child_by_field_name("body"))) is not None:
+        return found  # () => (req, res) => ...   or   () => retrieveUserList
+    for node in walk(definition):
+        if node.type == "return_statement" and node.named_children:
+            if (found := as_function(node.named_children[0])) is not None:
+                return found
+    return None
+
+
+def _lookup(files: dict, f: Any, name: str) -> tuple[Any, Any]:
+    """(file, function) for a handler name used in file f: local, imported, or ns.name."""
+    parts = name.split(".")
+    if len(parts) == 1 and name:
+        if (local := find_function(f, name)) is not None:
+            return f, local
+        spec, imported = imports(f).get(name, (None, None))
+        target = resolve_module(files, f.rel, spec) if spec else None
+        if target is not None:
+            if imported == "default":  # import x from './x': the module's default export
+                return target, find_function(target, "default")
+            if imported == "*":  # const x = require('./x'): module.exports, or a function named x
+                return target, find_function(target, "*") or find_function(target, name)
+            return target, find_function(target, imported)
+    elif len(parts) == 2:  # verify.x() with `import * as verify` or `const verify = require(...)`
+        spec, imported = imports(f).get(parts[0], (None, None))
+        target = resolve_module(files, f.rel, spec) if spec and imported in {"*", "default"} else None
+        if target is not None:
+            return target, find_function(target, parts[1])
+    return None, None
+
+
+def resolve_js_handler(project: Project, route: Route) -> tuple[str | None, Any]:
+    """(file, handler function) for an Express route, or (None, None). Follows up to 4 steps:
+    inline functions, same-file functions, imports from other files (ES and CommonJS),
+    factories (whoami() returning (req, res) => ...) and wrappers (asyncHandler(whoami()))."""
+    files = {f.rel: f for f in js_files(project)}
+    f, node = files.get(route.file), route.node
+    for _ in range(4):
+        if node is None or f is None:
+            return None, None
+        if node.type in FUNCTION_TYPES:
+            return f.rel, node
+        factory = node.type == "call_expression"
+        target_file, definition = _lookup(files, f, dotted(node))
+        if definition is not None and (handler := _handler_from(target_file, definition, factory)) is not None:
+            return target_file.rel, handler
+        if factory and arguments(node):  # also a local wrapper like const asyncHandler = (fn) => fn
+            node = arguments(node)[-1]  # wrapper: utils.asyncHandler(handler) -> handler
+            continue
+        return None, None
+    return None, None
 
 
 def _strings(node: ast.expr) -> list[str] | None:

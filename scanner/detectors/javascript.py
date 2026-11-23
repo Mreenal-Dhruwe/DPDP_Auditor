@@ -9,6 +9,7 @@ JsPiiRefs is the JavaScript twin of pii_refs.PiiRefs: which personal data does a
 expression pass along (identifiers, user.email, row['phone'], {email}, `${aadhaar}`)?
 """
 
+import posixpath
 from collections.abc import Iterator
 from dataclasses import dataclass
 from functools import lru_cache
@@ -184,3 +185,86 @@ class JsPiiRefs:
             return  # literal text and callbacks are not data
         for child in node.named_children:
             self.visit(child)
+
+
+# --- following imports (Express handlers defined in other files) --------------------------
+
+JS_EXTENSIONS = (".ts", ".js", ".tsx", ".jsx", ".mjs", ".cjs")
+
+
+def imports(f: JsFile) -> dict[str, tuple[str, str]]:
+    """local name -> (module path as written, imported name). The imported name is "*" for
+    `import * as ns` and for CommonJS `const ns = require(...)`, "default" for default imports."""
+    found: dict[str, tuple[str, str]] = {}
+    for node in f.root.named_children:
+        if node.type != "import_statement" or not (spec := string_value(node.child_by_field_name("source"))):
+            continue
+        for clause in (c for c in node.named_children if c.type == "import_clause"):
+            for part in clause.named_children:
+                if part.type == "identifier":
+                    found[text(part)] = (spec, "default")
+                elif part.type == "namespace_import":
+                    names = [c for c in part.named_children if c.type == "identifier"]
+                    if names:
+                        found[text(names[0])] = (spec, "*")
+                elif part.type == "named_imports":
+                    for item in (s for s in part.named_children if s.type == "import_specifier"):
+                        name, alias = item.child_by_field_name("name"), item.child_by_field_name("alias")
+                        found[text(alias or name)] = (spec, text(name))
+    for node in walk(f.root):  # const x = require('./x')  /  const { a, b: c } = require('./x')
+        value = node.child_by_field_name("value") if node.type == "variable_declarator" else None
+        if value is None or value.type != "call_expression" or callee(value) != "require":
+            continue
+        spec = string_value((arguments(value) or [None])[0])
+        target = node.child_by_field_name("name")
+        if not spec or target is None:
+            continue
+        if target.type == "identifier":
+            found[text(target)] = (spec, "*")
+        elif target.type == "object_pattern":
+            for item in target.named_children:
+                if item.type == "shorthand_property_identifier_pattern":
+                    found[text(item)] = (spec, text(item))
+                elif item.type == "pair_pattern":
+                    found[text(item.child_by_field_name("value"))] = (spec, text(item.child_by_field_name("key")))
+    return found
+
+
+def resolve_module(files: dict[str, JsFile], from_rel: str, spec: str) -> JsFile | None:
+    """'./routes/login' imported from server.ts -> the JsFile for routes/login.ts (or .js,
+    or routes/login/index.ts). Packages (express, lodash) are not followed."""
+    if not spec.startswith("."):
+        return None
+    base = posixpath.normpath(posixpath.join(posixpath.dirname(from_rel), spec))
+    candidates = [base] + [base + ext for ext in JS_EXTENSIONS] + [f"{base}/index{ext}" for ext in JS_EXTENSIONS]
+    return next((files[c] for c in candidates if c in files), None)
+
+
+def find_function(f: JsFile, name: str) -> Node | None:
+    """A function called `name` in a file: function declarations, const name = () => ...,
+    exports.name = function ..., and for "default" / "*" also `export default ...` and
+    module.exports = function ..."""
+    if name in {"default", "*"}:
+        for node in f.root.named_children:
+            if node.type == "export_statement" and any(c.type == "default" for c in node.children):
+                value = node.child_by_field_name("value") or node.child_by_field_name("declaration")
+                if value is not None and value.type in FUNCTION_TYPES:
+                    return value
+                if value is not None and value.type == "identifier":
+                    return find_function(f, text(value))
+    for node in walk(f.root):
+        if node.type == "function_declaration" and text(node.child_by_field_name("name")) == name:
+            return node
+        if node.type == "variable_declarator" and text(node.child_by_field_name("name")) == name:
+            value = node.child_by_field_name("value")
+            if value is not None and value.type in FUNCTION_TYPES:
+                return value
+        if node.type == "assignment_expression":
+            right = node.child_by_field_name("right")
+            target = dotted(node.child_by_field_name("left"))
+            if right is not None and right.type in FUNCTION_TYPES and (
+                target in {f"exports.{name}", f"module.exports.{name}"}
+                or (name in {"default", "*"} and target == "module.exports")
+            ):
+                return right
+    return None

@@ -18,7 +18,7 @@ import re
 from tree_sitter import Node
 
 from scanner.detectors.javascript import FUNCTION_TYPES, JsPiiRefs, arguments, callee, string_value, text, walk
-from scanner.detectors.routes import Route, find_routes
+from scanner.detectors.routes import Route, find_routes, resolve_js_handler
 from scanner.detectors.source import PEOPLE_TABLES, dotted_name, python_trees, string_key
 from scanner.ingest import Project
 from scanner.models import Hit
@@ -140,34 +140,6 @@ def _returned_pii(route: Route, matcher: PiiMatcher) -> set[str]:
 
 # --- Express (JavaScript / TypeScript) ------------------------------------------------------
 
-def _js_handler(route: Route) -> Node | None:
-    """The function that handles an Express route: inline, or defined in the same file
-    (handler or handler(): a factory returning the real (req, res) => ... function)."""
-    node = route.node
-    if node.type in FUNCTION_TYPES:
-        return node
-    if not route.function or route.module is None:
-        return None
-    for candidate in walk(route.module):
-        target = None
-        if candidate.type == "function_declaration" and text(candidate.child_by_field_name("name")) == route.function:
-            target = candidate
-        elif candidate.type == "variable_declarator" and text(candidate.child_by_field_name("name")) == route.function:
-            value = candidate.child_by_field_name("value")
-            target = value if value is not None and value.type in FUNCTION_TYPES else None
-        if target is None:
-            continue
-        if node.type != "call_expression":
-            return target
-        body = target.child_by_field_name("body")
-        if body is not None and body.type in FUNCTION_TYPES:
-            return body  # () => (req, res) => ...
-        for ret in walk(target):
-            if ret.type == "return_statement" and ret.named_children and ret.named_children[0].type in FUNCTION_TYPES:
-                return ret.named_children[0]
-    return None
-
-
 def _js_has_auth(route: Route, handler: Node | None) -> bool:
     if any(any(word in name.lower() for word in JS_AUTH_WORDS) for name in route.decorators):
         return True
@@ -222,8 +194,9 @@ def unauthenticated_pii_routes(project: Project) -> list[Hit]:
     guarded = _auth_hook_files(project)
     hits = []
     for route in find_routes(project):
+        handler_file = route.file
         if route.language == "js":
-            handler = _js_handler(route)
+            handler_file, handler = resolve_js_handler(project, route)
             if handler is None or _js_has_auth(route, handler):
                 continue
             labels = _js_returned_pii(handler, matcher)
@@ -234,7 +207,8 @@ def unauthenticated_pii_routes(project: Project) -> list[Hit]:
         if not labels:
             continue
         idor = _PATH_ID.search(route.path)
-        evidence = f"{route.describe()} returns {', '.join(sorted(labels))} with no authentication check"
+        described = route.describe() if handler_file == route.file else             f"{'/'.join(sorted(route.methods))} {route.path or '?'} (handler in {handler_file})"
+        evidence = f"{described} returns {', '.join(sorted(labels))} with no authentication check"
         if idor:
             evidence += f"; anyone can change {idor.group(0)} to read other people's data (IDOR)"
         broad = any(label.startswith("all columns") or label.endswith("record") for label in labels)

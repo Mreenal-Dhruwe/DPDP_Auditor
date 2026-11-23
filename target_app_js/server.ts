@@ -51,4 +51,12 @@ app.delete('/api/me', requireAuth, async (req: Request, res: Response) => {
   res.status(204).end()
 })
 
+// Handlers defined in routes/customers.ts, wired here
+const { getCustomer } = require('./routes/customers')
+const customers = require('./routes/customers')
+const asyncHandler = (fn: any) => fn
+
+app.get('/api/customers/:id', asyncHandler(getCustomer()))
+app.get('/admin/customers', customers.listCustomers())
+
 app.listen(3000, () => logger.info('listening on 3000'))

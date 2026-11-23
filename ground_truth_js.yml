@@ -59,6 +59,14 @@ planted:
     clue: absence
     note: POST /consent grants consent; no route withdraws it.
 
+  - id: JS-07
+    rule_id: DPDP-SEC-005
+    file: server.ts
+    line: 59
+    anchor: "app.get('/api/customers/:id', asyncHandler(getCustomer()))"
+    clue: structure
+    note: Handler imported from routes/customers.ts (via require and a wrapper) returns email and phone with no auth.
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -69,7 +77,7 @@ compliant:
   - rule_id: DPDP-SEC-001
     note: logger.info logs only the internal user id.
   - rule_id: DPDP-SEC-005
-    note: GET /api/me uses requireAuth; GET /admin/users is guarded by app.use('/admin', requireAuth).
+    note: GET /api/me uses requireAuth; GET /admin/users and /admin/customers (handler in routes/customers.ts) are guarded by app.use('/admin', requireAuth).
 
 out_of_scope:
   - {rule_id: DPDP-NOT-001, note: Not judged by the JS fixture app; see target_app.}

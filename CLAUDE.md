@@ -141,8 +141,14 @@ scanner/
                     # Rule ownership + status in __init__.py. Done (12): CON-001, CON-002,
                     # SEC-001..005, SEC-008, TP-001, RET-001, RET-002, CH-001.
                     # JS/TS (Express + Sequelize): SEC-001, SEC-005, CON-001 (routes),
-                    # SEC-002 + RET-001 (Sequelize models), SEC-004 (text). Express handlers
-                    # are resolved within the same file only; Prisma/Mongoose not yet.
+                    # SEC-002 + RET-001 (Sequelize models), SEC-003 (createHash/md5 incl.
+                    # hash helpers called with passwords), SEC-004 (text). Express handlers
+                    # are resolved across files (ES import, require, ns.fn(), factories,
+                    # wrappers like asyncHandler(fn())): 100/163 Juice Shop routes.
+                    # Known limits: no ownership (IDOR-behind-login) check; data reshaped
+                    # via .map()/spread (...user.dataValues) is not traced; handlers from
+                    # packages and generated endpoints (finale-rest) are invisible;
+                    # Prisma/Mongoose not yet.
                     # Parsed files, routes and tables are cached on Project per scan.
   models.py         # Pydantic Finding, Report
   severity.py
