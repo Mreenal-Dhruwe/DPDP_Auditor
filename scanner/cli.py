@@ -3,7 +3,8 @@
     python -m scanner.cli <folder> --out report/
 
 Loads settings and the rule catalogue, scans the folder (scanner/engine.py) and writes the
-reports: report.json (the master format) and report.html by default; --formats picks which.
+reports: report.json (the master format), report.html and report.sarif by default;
+--formats picks which.
 """
 
 import argparse
@@ -18,6 +19,7 @@ from scanner.ingest import IngestError
 from scanner.models import SEVERITIES
 from scanner.report.html_out import write_html
 from scanner.report.json_out import write_json
+from scanner.report.sarif_out import write_sarif
 from scanner.rules_loader import RulesError, load_rules
 
 
@@ -25,6 +27,7 @@ from scanner.rules_loader import RulesError, load_rules
 WRITERS = {
     "json": lambda report, out, catalogue: write_json(report, out),
     "html": write_html,
+    "sarif": write_sarif,
 }
 
 
