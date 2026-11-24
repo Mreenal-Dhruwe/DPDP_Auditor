@@ -46,3 +46,33 @@ def test_fastapi_cors_wildcard(tmp_path):
     (tmp_path / "main.py").write_text(code, encoding="utf-8")
     [hit] = scan(tmp_path)
     assert "every website" in hit.evidence
+
+
+# --- Express session cookie and plain-HTTP listener -------------------------------------------
+
+def _express(tmp_path, code):
+    (tmp_path / "server.js").write_text(code, encoding="utf-8")
+    return insecure_infrastructure(Project.from_folder(tmp_path, max_files=100))
+
+
+def test_express_session_without_secure_cookie(tmp_path):
+    hits = _express(tmp_path, "app.use(session({ secret: s, resave: false }))\n")
+    assert [(h.line, h.confidence) for h in hits] == [(1, "high")] and "secure" in hits[0].evidence
+    hits = _express(tmp_path, "app.use(session({ secret: s, cookie: { httpOnly: true } }))\n")
+    assert len(hits) == 1
+    hits = _express(tmp_path, "app.use(session({ secret: s, cookie: { secure: false } }))\n")
+    assert len(hits) == 1
+
+
+def test_express_session_fixed_and_commented_code(tmp_path):
+    assert _express(tmp_path, "app.use(session({ secret: s, cookie: { secure: true, httpOnly: true } }))\n") == []
+    assert _express(tmp_path, "app.use(session({ secret: s, cookie: { secure: process.env.NODE_ENV === 'production' } }))\n") == []
+    assert _express(tmp_path, "// app.use(session({ secret: s }))\nconst x = session()\n") == []  # a comment, and not express-session
+    hits = _express(tmp_path, "app.use(session({ secret: s, cookie: { secure: true, httpOnly: false } }))\n")
+    assert len(hits) == 1 and "httpOnly" in hits[0].evidence
+
+
+def test_http_listener_is_low_confidence_and_fine_with_an_https_server(tmp_path):
+    [hit] = _express(tmp_path, "http.createServer(app).listen(80)\n")
+    assert hit.confidence == "low" and "verify manually" in hit.evidence
+    assert _express(tmp_path, "http.createServer(app).listen(80)\nhttps.createServer(opts, app).listen(443)\n") == []

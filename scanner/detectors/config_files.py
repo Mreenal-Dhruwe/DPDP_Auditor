@@ -16,6 +16,7 @@ backups, info) and DPDP-TP-002 (cloud regions outside India, info); see their se
 import ast
 import re
 
+from scanner.detectors.javascript import arguments, callee, js_files, line_of, string_value, text, walk
 from scanner.detectors.source import (
     dotted_name, is_config_file, is_example_file, is_test_file, name_of, python_trees, string_key, suffix_of,
     text_files,
@@ -116,6 +117,62 @@ def _python(rel: str, tree: ast.Module, lines: list[str]) -> list[Hit]:
     return hits
 
 
+# --- Express: session cookie and plain-HTTP listener (JavaScript / TypeScript) -------------------
+#   session({...}) from express-session / cookie-session whose options have no `cookie` object,
+#   or one without `secure` (or secure: false): the cookie also travels over plain HTTP, and
+#   http.createServer(app) when the project never creates an https server (low confidence: TLS may
+#   be terminated by a proxy in front). Commented-out code is not read: the parser skips comments.
+
+def _express_hits(project: Project) -> list[Hit]:
+    files = js_files(project)
+    has_https = any(callee(n).endswith("https.createServer") for f in files if not is_test_file(f.rel)
+                    for n in walk(f.root) if n.type == "call_expression")
+    hits = []
+    for f in files:
+        if is_test_file(f.rel):
+            continue
+        lines = project.read_text(f.rel).splitlines()
+        for node in walk(f.root):
+            if node.type != "call_expression":
+                continue
+            called = callee(node)
+            args = arguments(node)
+            line = line_of(node)
+            evidence = lines[line - 1].strip() if line <= len(lines) else called
+            if called in {"session", "cookieSession"} or called.endswith((".session", "expressSession")):
+                options = next((a for a in args if a.type == "object"), None)
+                if options is None:
+                    continue
+                keys = {}
+                for item in options.named_children:
+                    if item.type == "pair":
+                        key = item.child_by_field_name("key")
+                        keys[(string_value(key) if key is not None and key.type == "string" else text(key))] = item.child_by_field_name("value")
+                if "secret" not in keys and "keys" not in keys:
+                    continue  # not an express-session call
+                cookie = keys.get("cookie")
+                secure = None
+                if cookie is not None and cookie.type == "object":
+                    for item in cookie.named_children:
+                        if item.type == "pair" and text(item.child_by_field_name("key")) in {"secure"}:
+                            secure = item.child_by_field_name("value")
+                        if item.type == "pair" and text(item.child_by_field_name("key")) == "httpOnly" \
+                                and text(item.child_by_field_name("value")) == "false":
+                            hits.append(Hit(rule_id=SEC_008, file=f.rel, line=line_of(item), confidence="high",
+                                            evidence=f"{lines[line_of(item) - 1].strip()}  [session cookie readable by page scripts (httpOnly: false)]"))
+                if cookie is not None and cookie.type != "object":
+                    continue  # options built elsewhere: cannot tell
+                if secure is None or text(secure) == "false":
+                    why = "session cookie has no `secure` flag, so it is also sent over plain HTTP" if cookie is not None \
+                        else "session cookie options are missing: no `secure` flag, so it is also sent over plain HTTP"
+                    hits.append(Hit(rule_id=SEC_008, file=f.rel, line=line, confidence="high", evidence=f"{evidence}  [{why}]"))
+            elif called.endswith("http.createServer") and not has_https:
+                hits.append(Hit(rule_id=SEC_008, file=f.rel, line=line, confidence="low",
+                                evidence=f"{evidence}  [serves over plain HTTP and the project never creates an https server; "
+                                         f"verify manually: TLS may be ended by a proxy or load balancer in front]"))
+    return hits
+
+
 def insecure_infrastructure(project: Project) -> list[Hit]:
     hits = []
     trees = dict(python_trees(project))
@@ -134,6 +191,7 @@ def insecure_infrastructure(project: Project) -> list[Hit]:
                         hits.append(Hit(rule_id=SEC_008, file=rel, line=n, confidence="high",
                                         evidence=f"{line.strip()}  [{why}]"))
                         break
+    hits += _express_hits(project)
     return sorted(hits, key=lambda h: (h.file, h.line or 0))
 
 

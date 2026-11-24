@@ -252,7 +252,17 @@ planted:
     clue: pattern
     note: Field-encryption key hard-coded in config.js (a *Key name that is not api_key or secret).
 
+  - id: JS-31
+    rule_id: DPDP-SEC-008
+    file: web.js
+    line: 12
+    anchor: "app.use(session({ secret"
+    clue: structure
+    note: express-session is configured without cookie options, so the session cookie has no secure flag.
+
 compliant:
+  - rule_id: DPDP-SEC-008
+    note: The admin session (web.js:15) sets cookie secure and httpOnly; http.createServer (web.js:21) only redirects because an https server exists.
   - rule_id: DPDP-SEC-004
     note: dbPassword, dbStorage and signingKey come from process.env; primaryKey, cacheKey and tokenType hold plain field names and labels, not secrets.
   - rule_id: DPDP-SEC-002
@@ -281,7 +291,6 @@ compliant:
 out_of_scope:
   - {rule_id: DPDP-CON-002, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-SEC-003, note: Not judged by the JS fixture app; see target_app.}
-  - {rule_id: DPDP-SEC-008, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-TP-001, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-RET-002, note: Not judged by the JS fixture app; see target_app.}
   - {rule_id: DPDP-CH-001, note: Not judged by the JS fixture app; see target_app.}
