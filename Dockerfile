@@ -33,7 +33,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_ROOT_USER_ACTION=ignore \
     UPLOAD_DIR=/data/uploads \
-    REPORT_DIR=/data/reports \n    SCAN_TTL_MINUTES=30
+    REPORT_DIR=/data/reports \
+    SCAN_TTL_MINUTES=30
 
 WORKDIR /app
 COPY requirements.txt ./
