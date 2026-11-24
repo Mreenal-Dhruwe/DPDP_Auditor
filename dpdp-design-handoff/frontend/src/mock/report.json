@@ -1,0 +1,434 @@
+{
+  "id": "DPDP-024",
+  "repository": "atlas-commerce",
+  "branch": "main",
+  "demo": true,
+  "disclaimer": "Legal mapping is indicative, not legal advice.",
+  "coverage": {
+    "analyzed": 128,
+    "eligible": 136,
+    "technologies": ["Python", "TypeScript", "Flask", "SQLAlchemy"],
+    "excluded": "8 unsupported or generated files",
+    "executed": [
+      "DPDP-CON-001",
+      "DPDP-CON-002",
+      "DPDP-SEC-001",
+      "DPDP-SEC-002",
+      "DPDP-SEC-003",
+      "DPDP-SEC-004",
+      "DPDP-SEC-005",
+      "DPDP-SEC-008",
+      "DPDP-TP-001",
+      "DPDP-RET-001",
+      "DPDP-RET-002",
+      "DPDP-CH-001"
+    ],
+    "skipped": [
+      "DPDP-CON-003",
+      "DPDP-CON-004",
+      "DPDP-NOT-001",
+      "DPDP-SEC-006",
+      "DPDP-SEC-007",
+      "DPDP-SEC-010",
+      "DPDP-BR-001",
+      "DPDP-CH-002",
+      "DPDP-RT-001",
+      "DPDP-RT-002",
+      "DPDP-RT-003"
+    ],
+    "manual": [
+      "DPDP-CON-005",
+      "DPDP-CON-006",
+      "DPDP-SEC-009",
+      "DPDP-TP-002",
+      "DPDP-RET-003"
+    ]
+  },
+  "findings": [
+    {
+      "id": "FND-1001",
+      "rule_id": "DPDP-SEC-004",
+      "category": "Security",
+      "title": "Hardcoded secrets or credentials",
+      "scope": "line",
+      "file": "config/settings.py",
+      "line": 12,
+      "evidence": "SERVICE_TOKEN = \"••••••••\"",
+      "context": {
+        "start_line": 11,
+        "lines": [
+          "# Service configuration",
+          "SERVICE_TOKEN = \"••••••••\"",
+          "REGION = \"demo\""
+        ]
+      },
+      "pii": ["credential"],
+      "confidence": "high",
+      "law": {
+        "act": ["s.8(5)"],
+        "rules": ["Rule 6(1)(b)"],
+        "requirement": "Apply reasonable security safeguards to personal data."
+      },
+      "penalty": "Rs 250 crore",
+      "severity": "critical",
+      "severity_reason": "A committed token can expose services processing personal data.",
+      "fix": "Rotate the token and load its replacement from a secret manager."
+    },
+    {
+      "id": "FND-1002",
+      "rule_id": "DPDP-SEC-005",
+      "category": "Security",
+      "title": "PII exposed by an unauthenticated route",
+      "scope": "line",
+      "file": "api/profile.py",
+      "line": 26,
+      "evidence": "return profile.to_json()",
+      "context": {
+        "start_line": 25,
+        "lines": [
+          "profile = load_profile(user_id)",
+          "return profile.to_json()",
+          "# End of handler"
+        ]
+      },
+      "pii": ["email", "phone"],
+      "confidence": "high",
+      "law": {
+        "act": ["s.8(5)"],
+        "rules": ["Rule 6(1)(b)"],
+        "requirement": "Apply reasonable security safeguards to personal data."
+      },
+      "penalty": "Rs 250 crore",
+      "severity": "critical",
+      "severity_reason": "A profile response is reachable without a visible access check.",
+      "fix": "Require authentication and verify the caller owns the profile."
+    },
+    {
+      "id": "FND-1003",
+      "rule_id": "DPDP-SEC-001",
+      "category": "Security",
+      "title": "Personal data written to logs",
+      "scope": "line",
+      "file": "api/signup.py",
+      "line": 18,
+      "evidence": "logger.info(\"Registered\", email, phone)",
+      "context": {
+        "start_line": 17,
+        "lines": [
+          "phone = payload.get(\"phone\")",
+          "logger.info(\"Registered\", email, phone)",
+          "return created_response()"
+        ]
+      },
+      "pii": ["email", "phone"],
+      "confidence": "high",
+      "law": {
+        "act": ["s.8(5)"],
+        "rules": ["Rule 6(1)(a)"],
+        "requirement": "Apply reasonable security safeguards to personal data."
+      },
+      "penalty": "Rs 250 crore",
+      "severity": "high",
+      "severity_reason": "Application logs retain contact fields beyond their original use.",
+      "fix": "Log an internal event ID and mask contact fields."
+    },
+    {
+      "id": "FND-1004",
+      "rule_id": "DPDP-CON-002",
+      "category": "Consent",
+      "title": "Pre-ticked or default-true consent",
+      "scope": "line",
+      "file": "web/Consent.tsx",
+      "line": 31,
+      "evidence": "<Checkbox defaultChecked name=\"consent\" />",
+      "context": {
+        "start_line": 30,
+        "lines": [
+          "<ConsentForm>",
+          "<Checkbox defaultChecked name=\"consent\" />",
+          "</ConsentForm>"
+        ]
+      },
+      "pii": ["consent"],
+      "confidence": "high",
+      "law": {
+        "act": ["s.6(1)"],
+        "rules": [],
+        "requirement": "Support informed, affirmative consent and withdrawal."
+      },
+      "penalty": "Rs 50 crore",
+      "severity": "high",
+      "severity_reason": "The default selection obscures whether the person actively agreed.",
+      "fix": "Leave the control unchecked and record the affirmative action."
+    },
+    {
+      "id": "FND-1005",
+      "rule_id": "DPDP-RET-001",
+      "category": "Retention",
+      "title": "PII with no erase or anonymise path",
+      "scope": "project",
+      "file": null,
+      "line": null,
+      "evidence": "No erasure handler found in the sampled route inventory.",
+      "context": null,
+      "pii": ["email", "profile"],
+      "confidence": "low",
+      "law": {
+        "act": ["s.8(7)", "s.12(3)"],
+        "rules": ["Rule 8"],
+        "requirement": "Apply justified retention and erasure controls."
+      },
+      "penalty": "Rs 50 crore",
+      "severity": "high",
+      "severity_reason": "A missing handler may prevent erasure. Generated routes require confirmation.",
+      "fix": "Verify generated routes and document the erasure workflow."
+    },
+    {
+      "id": "FND-1006",
+      "rule_id": "DPDP-TP-001",
+      "category": "Third parties",
+      "title": "PII sent to analytics or monitoring SDKs",
+      "scope": "line",
+      "file": "web/metrics.ts",
+      "line": 42,
+      "evidence": "analytics.identify(user.id, { email: user.email })",
+      "context": {
+        "start_line": 41,
+        "lines": [
+          "const user = session.user",
+          "analytics.identify(user.id, { email: user.email })",
+          "analytics.track(\"session\")"
+        ]
+      },
+      "pii": ["email"],
+      "confidence": "medium",
+      "law": {
+        "act": ["s.8(1)–(2)"],
+        "rules": ["Rule 6(1)(f)"],
+        "requirement": "Review processor arrangements and safeguards."
+      },
+      "penalty": "Rs 50 crore",
+      "severity": "medium",
+      "severity_reason": "A processor receives contact information in telemetry.",
+      "fix": "Confirm the processor terms and remove unnecessary attributes."
+    },
+    {
+      "id": "FND-1007",
+      "rule_id": "DPDP-SEC-002",
+      "category": "Security",
+      "title": "Personal data stored in plaintext",
+      "scope": "line",
+      "file": "models/customer.py",
+      "line": 14,
+      "evidence": "phone = Column(String)",
+      "context": {
+        "start_line": 13,
+        "lines": [
+          "class Customer(Base):",
+          "phone = Column(String)",
+          "active = Column(Boolean)"
+        ]
+      },
+      "pii": ["phone"],
+      "confidence": "high",
+      "law": {
+        "act": ["s.8(5)"],
+        "rules": ["Rule 6(1)(a)"],
+        "requirement": "Apply reasonable security safeguards to personal data."
+      },
+      "penalty": "Rs 250 crore",
+      "severity": "high",
+      "severity_reason": "The model stores a contact field with no visible protection.",
+      "fix": "Confirm storage-layer safeguards and protect the field where required."
+    },
+    {
+      "id": "FND-1008",
+      "rule_id": "DPDP-RET-002",
+      "category": "Retention",
+      "title": "Immediate hard delete, no minimum retention",
+      "scope": "line",
+      "file": "api/close.py",
+      "line": 47,
+      "evidence": "store.delete(account)",
+      "context": {
+        "start_line": 46,
+        "lines": [
+          "account = lookup(account_id)",
+          "store.delete(account)",
+          "return closed_response()"
+        ]
+      },
+      "pii": ["account ID"],
+      "confidence": "high",
+      "law": {
+        "act": [],
+        "rules": ["Rule 8(3)"],
+        "requirement": "Apply justified retention and erasure controls."
+      },
+      "penalty": "Rs 50 crore",
+      "severity": "medium",
+      "severity_reason": "Immediate deletion bypasses the documented retention decision.",
+      "fix": "Apply a reviewed retention schedule before final erasure."
+    },
+    {
+      "id": "FND-1009",
+      "rule_id": "DPDP-SEC-008",
+      "category": "Security",
+      "title": "Insecure infrastructure configuration",
+      "scope": "file",
+      "file": "Dockerfile",
+      "line": null,
+      "evidence": "USER root",
+      "context": null,
+      "pii": ["service configuration"],
+      "confidence": "medium",
+      "law": {
+        "act": ["s.8(5)"],
+        "rules": ["Rule 6(1)(b), (g)"],
+        "requirement": "Apply reasonable security safeguards to personal data."
+      },
+      "penalty": "Rs 250 crore",
+      "severity": "high",
+      "severity_reason": "The application image requests broad operating-system privileges.",
+      "fix": "Run the service with a dedicated unprivileged user."
+    },
+    {
+      "id": "FND-1010",
+      "rule_id": "DPDP-CON-001",
+      "category": "Consent",
+      "title": "Consent can be given but not withdrawn",
+      "scope": "project",
+      "file": null,
+      "line": null,
+      "evidence": "Consent grant is present. Withdrawal was absent from the route inventory.",
+      "context": null,
+      "pii": ["consent"],
+      "confidence": "high",
+      "law": {
+        "act": ["s.6(4)", "s.6(6)"],
+        "rules": ["Rule 3(c)(i)"],
+        "requirement": "Support informed, affirmative consent and withdrawal."
+      },
+      "penalty": "Rs 50 crore",
+      "severity": "high",
+      "severity_reason": "People may be unable to withdraw an earlier choice.",
+      "fix": "Provide a withdrawal action as accessible as the grant action."
+    },
+    {
+      "id": "FND-1011",
+      "rule_id": "DPDP-SEC-003",
+      "category": "Security",
+      "title": "Weak password hashing",
+      "scope": "line",
+      "file": "auth/passwords.py",
+      "line": 9,
+      "evidence": "digest = legacy_hash(password)",
+      "context": {
+        "start_line": 8,
+        "lines": [
+          "password = form.password",
+          "digest = legacy_hash(password)",
+          "return digest"
+        ]
+      },
+      "pii": ["password"],
+      "confidence": "high",
+      "law": {
+        "act": ["s.8(5)"],
+        "rules": ["Rule 6(1)(a)"],
+        "requirement": "Apply reasonable security safeguards to personal data."
+      },
+      "penalty": "Rs 250 crore",
+      "severity": "high",
+      "severity_reason": "A legacy digest offers limited protection for stored credentials.",
+      "fix": "Use a reviewed adaptive password-hashing implementation."
+    },
+    {
+      "id": "FND-1012",
+      "rule_id": "DPDP-CH-001",
+      "category": "Children",
+      "title": "Child data without parental consent",
+      "scope": "line",
+      "file": "forms/account.ts",
+      "line": 53,
+      "evidence": "fields.push(\"date_of_birth\")",
+      "context": {
+        "start_line": 52,
+        "lines": [
+          "const fields = [\"name\"]",
+          "fields.push(\"date_of_birth\")",
+          "return fields"
+        ]
+      },
+      "pii": ["date of birth"],
+      "confidence": "medium",
+      "law": {
+        "act": ["s.9(1)"],
+        "rules": ["Rule 10"],
+        "requirement": "Verify parental consent where required."
+      },
+      "penalty": "Rs 200 crore",
+      "severity": "high",
+      "severity_reason": "The registration flow lacks visible guardian verification.",
+      "fix": "Review the age gate and verify parental consent where applicable."
+    },
+    {
+      "id": "FND-1013",
+      "rule_id": "DPDP-SEC-001",
+      "category": "Security",
+      "title": "Personal data written to logs",
+      "scope": "line",
+      "file": "jobs/notify.py",
+      "line": 24,
+      "evidence": "logger.debug(\"Recipient\", recipient.email)",
+      "context": {
+        "start_line": 23,
+        "lines": [
+          "recipient = job.recipient",
+          "logger.debug(\"Recipient\", recipient.email)",
+          "send_notification(job)"
+        ]
+      },
+      "pii": ["email"],
+      "confidence": "high",
+      "law": {
+        "act": ["s.8(5)"],
+        "rules": ["Rule 6(1)(a)"],
+        "requirement": "Apply reasonable security safeguards to personal data."
+      },
+      "penalty": "Rs 250 crore",
+      "severity": "high",
+      "severity_reason": "A background worker records recipient contact data.",
+      "fix": "Replace the email value with a masked delivery reference."
+    },
+    {
+      "id": "FND-1014",
+      "rule_id": "DPDP-TP-001",
+      "category": "Third parties",
+      "title": "PII sent to analytics or monitoring SDKs",
+      "scope": "line",
+      "file": "web/monitor.ts",
+      "line": 22,
+      "evidence": "monitor.setUser({ email: account.email })",
+      "context": {
+        "start_line": 21,
+        "lines": [
+          "const account = session.account",
+          "monitor.setUser({ email: account.email })",
+          "monitor.capture(event)"
+        ]
+      },
+      "pii": ["email"],
+      "confidence": "high",
+      "law": {
+        "act": ["s.8(1)–(2)"],
+        "rules": ["Rule 6(1)(f)"],
+        "requirement": "Review processor arrangements and safeguards."
+      },
+      "penalty": "Rs 50 crore",
+      "severity": "medium",
+      "severity_reason": "Error monitoring receives identifiable account metadata.",
+      "fix": "Remove email from the monitoring context and review processor access."
+    }
+  ]
+}

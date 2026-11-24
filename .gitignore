@@ -15,3 +15,6 @@ frontend/dist/
 # Local agent tooling (skills, settings): never committed
 .claude/
 skills-lock.json
+
+# Large screen recording from the design handoff (keep a local copy; not committed)
+dpdp-design-handoff/references/reference.mp4

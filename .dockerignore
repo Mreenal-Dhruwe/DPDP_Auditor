@@ -30,3 +30,6 @@ demo
 scripts
 *.md
 !README.md
+
+# Design reference material is not needed in the image
+dpdp-design-handoff

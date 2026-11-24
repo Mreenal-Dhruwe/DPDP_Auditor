@@ -1,0 +1,226 @@
+[
+  {
+    "id": "DPDP-CON-001",
+    "category": "Consent",
+    "title": "Consent can be given but not withdrawn",
+    "provision": "s.6(4), s.6(6), Rule 3(c)(i)",
+    "severity": "high",
+    "status": "Executed"
+  },
+  {
+    "id": "DPDP-CON-002",
+    "category": "Consent",
+    "title": "Pre-ticked or default-true consent",
+    "provision": "s.6(1)",
+    "severity": "high",
+    "status": "Executed"
+  },
+  {
+    "id": "DPDP-CON-003",
+    "category": "Consent",
+    "title": "No evidence of consent stored",
+    "provision": "s.6(10)",
+    "severity": "medium",
+    "status": "Skipped"
+  },
+  {
+    "id": "DPDP-CON-004",
+    "category": "Consent",
+    "title": "Personal data used without a consent check",
+    "provision": "s.4(1), s.6(1)",
+    "severity": "high",
+    "status": "Skipped"
+  },
+  {
+    "id": "DPDP-CON-005",
+    "category": "Consent",
+    "title": "Over-collection beyond purpose",
+    "provision": "s.6(1)",
+    "severity": "medium",
+    "status": "Manual review"
+  },
+  {
+    "id": "DPDP-CON-006",
+    "category": "Consent",
+    "title": "Consent request in one language only",
+    "provision": "s.6(3)",
+    "severity": "low",
+    "status": "Manual review"
+  },
+  {
+    "id": "DPDP-NOT-001",
+    "category": "Notice",
+    "title": "PII collected without notice of data and purpose",
+    "provision": "s.5(1), Rule 3(b)",
+    "severity": "medium",
+    "status": "Skipped"
+  },
+  {
+    "id": "DPDP-SEC-001",
+    "category": "Security",
+    "title": "Personal data written to logs",
+    "provision": "s.8(5), Rule 6(1)(a)",
+    "severity": "high",
+    "status": "Executed"
+  },
+  {
+    "id": "DPDP-SEC-002",
+    "category": "Security",
+    "title": "Personal data stored in plaintext",
+    "provision": "s.8(5), Rule 6(1)(a)",
+    "severity": "high",
+    "status": "Executed"
+  },
+  {
+    "id": "DPDP-SEC-003",
+    "category": "Security",
+    "title": "Weak password hashing",
+    "provision": "s.8(5), Rule 6(1)(a)",
+    "severity": "high",
+    "status": "Executed"
+  },
+  {
+    "id": "DPDP-SEC-004",
+    "category": "Security",
+    "title": "Hardcoded secrets or credentials",
+    "provision": "s.8(5), Rule 6(1)(b)",
+    "severity": "critical",
+    "status": "Executed"
+  },
+  {
+    "id": "DPDP-SEC-005",
+    "category": "Security",
+    "title": "PII exposed by an unauthenticated route",
+    "provision": "s.8(5), Rule 6(1)(b)",
+    "severity": "critical",
+    "status": "Executed"
+  },
+  {
+    "id": "DPDP-SEC-006",
+    "category": "Security",
+    "title": "Excessive data in API responses",
+    "provision": "s.8(5), Rule 6(1)(a)",
+    "severity": "high",
+    "status": "Skipped"
+  },
+  {
+    "id": "DPDP-SEC-007",
+    "category": "Security",
+    "title": "No access logging on PII reads",
+    "provision": "s.8(5), Rule 6(1)(c)",
+    "severity": "medium",
+    "status": "Skipped"
+  },
+  {
+    "id": "DPDP-SEC-008",
+    "category": "Security",
+    "title": "Insecure infrastructure configuration",
+    "provision": "s.8(5), Rule 6(1)(b), (g)",
+    "severity": "high",
+    "status": "Executed"
+  },
+  {
+    "id": "DPDP-SEC-009",
+    "category": "Security",
+    "title": "No backup for PII stores",
+    "provision": "s.8(5), Rule 6(1)(d)",
+    "severity": "low",
+    "status": "Manual review"
+  },
+  {
+    "id": "DPDP-SEC-010",
+    "category": "Security",
+    "title": "Log retention under one year",
+    "provision": "s.8(5), Rule 6(1)(e), Rule 8(3)",
+    "severity": "medium",
+    "status": "Skipped"
+  },
+  {
+    "id": "DPDP-TP-001",
+    "category": "Third parties",
+    "title": "PII sent to analytics or monitoring SDKs",
+    "provision": "s.8(1)–(2), Rule 6(1)(f)",
+    "severity": "medium",
+    "status": "Executed"
+  },
+  {
+    "id": "DPDP-TP-002",
+    "category": "Transfers",
+    "title": "PII stored or sent outside India",
+    "provision": "s.16(1), Rule 15",
+    "severity": "info",
+    "status": "Manual review"
+  },
+  {
+    "id": "DPDP-BR-001",
+    "category": "Breach",
+    "title": "No breach notification mechanism",
+    "provision": "s.8(6), Rule 7",
+    "severity": "medium",
+    "status": "Skipped"
+  },
+  {
+    "id": "DPDP-RET-001",
+    "category": "Retention",
+    "title": "PII with no erase or anonymise path",
+    "provision": "s.8(7), s.12(3), Rule 8",
+    "severity": "high",
+    "status": "Executed"
+  },
+  {
+    "id": "DPDP-RET-002",
+    "category": "Retention",
+    "title": "Immediate hard delete, no minimum retention",
+    "provision": "Rule 8(3)",
+    "severity": "medium",
+    "status": "Executed"
+  },
+  {
+    "id": "DPDP-RET-003",
+    "category": "Retention",
+    "title": "No 48-hour pre-erasure notice",
+    "provision": "s.8(8), Rule 8(2)",
+    "severity": "low",
+    "status": "Manual review"
+  },
+  {
+    "id": "DPDP-CH-001",
+    "category": "Children",
+    "title": "Child data without parental consent",
+    "provision": "s.9(1), Rule 10",
+    "severity": "high",
+    "status": "Executed"
+  },
+  {
+    "id": "DPDP-CH-002",
+    "category": "Children",
+    "title": "Tracking or ads where children's data is collected",
+    "provision": "s.9(3)",
+    "severity": "critical",
+    "status": "Skipped"
+  },
+  {
+    "id": "DPDP-RT-001",
+    "category": "Rights",
+    "title": "No access or export of one's data",
+    "provision": "s.11, Rule 14(1)",
+    "severity": "medium",
+    "status": "Skipped"
+  },
+  {
+    "id": "DPDP-RT-002",
+    "category": "Rights",
+    "title": "No correction or erasure endpoint",
+    "provision": "s.12, Rule 14",
+    "severity": "medium",
+    "status": "Skipped"
+  },
+  {
+    "id": "DPDP-RT-003",
+    "category": "Rights",
+    "title": "No grievance mechanism or contact",
+    "provision": "s.8(9)–(10), s.13, Rules 9, 14(3)",
+    "severity": "low",
+    "status": "Skipped"
+  }
+]

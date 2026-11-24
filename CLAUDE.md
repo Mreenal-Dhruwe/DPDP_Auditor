@@ -186,18 +186,28 @@ backend/
                     # REPORT_DIR/<scan_id>/ expire after REPORT_TTL_DAYS. Git ingest: https on
                     # ALLOWED_GIT_HOSTS only, shallow clone via the git CLI (no GitPython)
 frontend/           # React 19 + Vite 8 + TypeScript 7 + Tailwind 4 + react-router 8 + Recharts 3
-  src/pages/        # Upload.tsx (upload + ScanProgress), Dashboard.tsx, FindingDetail.tsx
-                    # routes: / , /scans/:id/progress , /scans/:id , /scans/:id/findings/:fid
-                    # dashboard filters live in the URL (?sev=&rule=&prov=&conf=&q=)
-  src/components/   # SeverityBadge, StatTiles, ProvisionChart, CoverageBox, FindingsTable,
-                    # CodeViewer, LawCard, ExportButtons, ReportError, States, Layout
+                    # + lucide-react + motion. Design: dpdp-design-handoff/ (docs + skill);
+                    # dark Aurora system, Pixelify Sans only via .type-pixel / .eyebrow
+  src/landing/      # Landing.tsx (/), Aurora.tsx (strands, parallax), BrandIntro.tsx (landing
+                    # only, once per session, skippable, none with reduced motion), css
+  src/pages/        # Scan.tsx (/scan, /scans/:id/progress), ScanLayout.tsx (loads the report
+                    # once for /scans/:id/*), Overview.tsx (/scans/:id), Findings.tsx (board,
+                    # list, drawer: /scans/:id/findings/:findingId?), FindingDetail.tsx,
+                    # Report.tsx (/scans/:id/report), Rules.tsx (/rules)
+                    # filters live in the URL (?sev=&rule=&prov=&conf=&cat=&q=&view=)
+  src/components/   # Shell (rail, breadcrumb, health), ui (Heading, SeverityBadge,
+                    # ConfidenceMeter, Notice, PageSkeleton), FindingsTable, ProvisionChart,
+                    # CodeViewer, LawCard, ExportButtons, ReviewSelect
+  src/lib/          # findings (filters, labels), reviews (review status per scan + finding id
+                    # in localStorage; never touches scanner fields), scope (last scan), toast
+  src/styles/       # base.css (tokens, controls), shell.css, screens.css
   src/types/contract.ts  # GENERATED (scripts/make_ts_types.py) - never edit by hand
-  src/api.ts        # typed calls to /api. `npm run dev:mock` (.env.mock) simulates scans with
-                    # the mock report; scan id "sample" always shows it (offline demo)
-  src/index.css     # design tokens (light + dark); severity colours always next to a label
-  e2e/smoke.mjs     # `npm run e2e [-- --git]`: headless Chrome (playwright-core, local Chrome/
-                    # Edge) drives upload -> progress -> dashboard -> detail -> exports against
-                    # the live API; BASE_URL=http://localhost:8000 tests the production build
+  src/api.ts        # typed calls to /api (+ /api/rules, /api/health). `npm run dev:mock`
+                    # (.env.mock) simulates scans; scan id "sample" always shows the mock report
+  e2e/smoke.mjs     # `npm run e2e [-- --git] [-- --pdf]`: headless Chrome against the live API:
+                    # zip and Git scans, a failed scan, findings, exports, board moves (select,
+                    # drag, Undo, reload, scanner fields unchanged), drawer, keyboard order,
+                    # intro and reduced motion, 390 px layouts; BASE_URL for the container
   vite.config.ts    # proxy /api -> http://localhost:8000 (API_URL overrides)
 requirements.txt
 .env.example

@@ -62,16 +62,27 @@ python -m scanner.cli <folder> --out report/ --formats json  # choose formats
 It prints each finding with its location and masked evidence, then writes the reports.
 
 ### Web app
-1. **Scan** - drop a `.zip` of the project, or paste a public Git URL (GitHub, GitLab,
-   Bitbucket; "Use OWASP Juice Shop" fills one in). The progress view follows each step.
-2. **Dashboard** - findings by severity (the tiles also filter), a chart of findings per
-   DPDP provision (Act sections or Rules; click a bar to filter), what the scan covered,
-   and a findings table filtered by severity, rule, provision, confidence or text. Filters
-   live in the URL, so a link shows the same view.
-3. **Finding** - the masked code around the flagged line, the law card (section, Rule,
-   requirement, penalty cap), severity and reason, confidence, the fix, and exports.
+The landing page (`/`) introduces the tool; "Start a scan" opens the workspace. A charcoal
+rail on the left links the screens of the current scan:
 
-"Sample report" in the header opens the target_app report without any backend.
+1. **New scan** (`/scan`) - drop a `.zip` of the project, or paste a public Git URL
+   (GitHub, GitLab, Bitbucket; "Use OWASP Juice Shop" fills one in). The progress view
+   follows each stage and, if the scan fails, says where and why.
+2. **Overview** (`/scans/<id>`) - findings by severity split by detection confidence (each
+   row filters), findings per DPDP provision (click a bar to filter), a scan summary, what
+   the scan covered, which kinds of personal data are exposed, the review queue, and the
+   findings table. Filters live in the URL, so a link shows the same view.
+3. **Findings** (`/scans/<id>/findings`) - a review board (Open, Triaged, In progress,
+   Resolved): drag cards between columns or use the status menu on each card (keyboard
+   and touch). Review status is kept in your browser; the scanner's severity, confidence
+   and legal mapping never change. A card opens the evidence drawer: masked code around
+   the flagged line, the law card (section, Rule, requirement, penalty cap), severity
+   and reason, confidence, the fix, and exports.
+4. **Report** (`/scans/<id>/report`) - the summary, coverage, low-confidence findings to
+   verify by hand, and downloads (HTML, PDF, SARIF, JSON).
+5. **Rule catalogue** (`/rules`) - the 28 rules with their legal references.
+
+"View sample" on the landing page opens the target_app report without any backend.
 
 ### API
 | Endpoint | |
