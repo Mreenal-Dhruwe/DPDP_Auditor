@@ -3,7 +3,7 @@
   "tool_version": "0.1.0",
   "rules_version": "0.1.0",
   "target": "juice-shop",
-  "generated_at": "2026-11-23T20:55:46.071159Z",
+  "generated_at": "2026-11-24T01:32:24.566187Z",
   "files_scanned": 1494,
   "coverage": {
     "files_by_kind": {

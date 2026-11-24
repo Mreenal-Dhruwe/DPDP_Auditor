@@ -3,7 +3,7 @@
   "tool_version": "0.1.0",
   "rules_version": "0.1.0",
   "target": "target_app_js",
-  "generated_at": "2026-11-23T20:55:26.395327Z",
+  "generated_at": "2026-11-24T01:31:40.529766Z",
   "files_scanned": 11,
   "coverage": {
     "files_by_kind": {
