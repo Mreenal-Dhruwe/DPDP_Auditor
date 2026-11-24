@@ -247,7 +247,7 @@ planted:
   - id: JS-30
     rule_id: DPDP-SEC-004
     file: config.js
-    line: 8
+    line: 7
     anchor: "cryptoKey: '"
     clue: pattern
     note: Field-encryption key hard-coded in config.js (a *Key name that is not api_key or secret).
