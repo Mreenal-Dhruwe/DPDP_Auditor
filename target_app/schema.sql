@@ -10,7 +10,8 @@ CREATE TABLE users (
     password_hash TEXT NOT NULL,
     created_at    TEXT NOT NULL,
     last_login_at TEXT,
-    erasure_notice_sent_at TEXT
+    erasure_notice_sent_at TEXT,
+    deleted_at    TEXT
 );
 
 CREATE TABLE consents (

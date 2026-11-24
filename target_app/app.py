@@ -199,5 +199,26 @@ def kyc_record(user_id):
     return jsonify(dict(row))
 
 
+# --- Compliant look-alikes (answer key: ground_truth.yml, "compliant"). Nothing here may be reported.
+
+def file_checksum(path):
+    """Integrity check of an uploaded KYC document. Not a password, so a fast hash is fine."""
+    with open(path, "rb") as handle:
+        return hashlib.sha256(handle.read()).hexdigest()
+
+
+def tag_error_context(user_id):
+    """Error monitoring gets a pseudonymous id only, never an email or phone."""
+    import sentry_sdk
+
+    sentry_sdk.set_user({"id": str(user_id)})
+
+
+def close_account(user_id):
+    """Soft delete: the row is kept for the retention period, then erased by a later job."""
+    db().execute("UPDATE users SET deleted_at = ? WHERE id = ?", (now(), user_id))
+    db().commit()
+
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000)

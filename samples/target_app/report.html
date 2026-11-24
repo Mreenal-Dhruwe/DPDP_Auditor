@@ -80,7 +80,7 @@
 <header>
   <h1>DPDP compliance report</h1>
   <p class="sub">target_app · Digital Personal Data Protection Act, 2023 and DPDP Rules, 2025</p>
-  <p class="meta">Generated 24 Nov 2026, 01:31 UTC · DPDP Compliance Auditor 0.1.0 · rules v0.1.0</p>
+  <p class="meta">Generated 24 Nov 2026, 01:41 UTC · DPDP Compliance Auditor 0.1.0 · rules v0.1.0</p>
   <nav aria-label="Sections">
     <a href="#summary">Summary</a>
     <a href="#coverage">Scan coverage</a>
@@ -332,7 +332,7 @@
     </header>
     <p class="where"><code>app.py:199</code> · confidence high · personal data: aadhaar, password</p>
     <div class="evidence"><code>return jsonify(dict(row)) [GET /api/kyc/&lt;int:user_id&gt; (kyc_record) sends SELECT * FROM users with aadhaar, password; return only the fields the client needs]</code></div>
-    <pre class="code" aria-label="Source around app.py:199 (masked)"><span class="ln"><span class="no">196</span>def kyc_record(user_id):</span><span class="ln"><span class="no">197</span>    audit(session[&#34;user_id&#34;], &#34;read&#34;, &#34;users&#34;, user_id)</span><span class="ln"><span class="no">198</span>    row = db().execute(&#34;SELECT * FROM users WHERE id = ?&#34;, (user_id,)).fetchone()</span><span class="ln hit"><span class="no">199</span>    return jsonify(dict(row))</span><span class="ln"><span class="no">200</span></span><span class="ln"><span class="no">201</span></span><span class="ln"><span class="no">202</span>if __name__ == &#34;__main__&#34;:</span></pre>
+    <pre class="code" aria-label="Source around app.py:199 (masked)"><span class="ln"><span class="no">196</span>def kyc_record(user_id):</span><span class="ln"><span class="no">197</span>    audit(session[&#34;user_id&#34;], &#34;read&#34;, &#34;users&#34;, user_id)</span><span class="ln"><span class="no">198</span>    row = db().execute(&#34;SELECT * FROM users WHERE id = ?&#34;, (user_id,)).fetchone()</span><span class="ln hit"><span class="no">199</span>    return jsonify(dict(row))</span><span class="ln"><span class="no">200</span></span><span class="ln"><span class="no">201</span></span><span class="ln"><span class="no">202</span># --- Compliant look-alikes (answer key: ground_truth.yml, &#34;compliant&#34;). Nothing here may be reported.</span></pre>
     <dl>
       <dt>Law</dt>
       <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(a) DPDP Rules</span><br>Masking and minimising exposed personal data.</dd>

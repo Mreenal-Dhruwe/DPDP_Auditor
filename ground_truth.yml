@@ -174,6 +174,16 @@ compliant:
     note: PATCH /api/me corrects data and DELETE /api/me erases it.
   - rule_id: DPDP-RT-003
     note: POST /grievance, plus a published Grievance Officer contact in the page footer.
+  - rule_id: DPDP-SEC-003
+    note: "file_checksum() hashes an uploaded document with sha256: a fast hash is fine for integrity, only passwords need a slow one (GT-01)."
+  - rule_id: DPDP-TP-001
+    note: "tag_error_context() sends Sentry a pseudonymous id only (no email or phone); the Mixpanel call with personal data is GT-04."
+  - rule_id: DPDP-RET-002
+    note: "close_account() is a soft delete (deleted_at), kept for the retention period; the immediate hard delete is GT-06."
+  - rule_id: DPDP-SEC-008
+    note: "app.run() binds 127.0.0.1 without debug, and settings come from environment variables; only the Dockerfile has a gap (GT-11)."
+  - rule_id: DPDP-CON-002
+    note: "The kyc_consent checkbox is unticked and required; only the marketing checkbox is pre-ticked (GT-10)."
 
 not_applicable: []  # every rule now has a planted issue or a compliant look-alike
 

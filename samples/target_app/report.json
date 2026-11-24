@@ -3,7 +3,7 @@
   "tool_version": "0.1.0",
   "rules_version": "0.1.0",
   "target": "target_app",
-  "generated_at": "2026-11-24T01:31:39.641945Z",
+  "generated_at": "2026-11-24T01:41:16.864487Z",
   "files_scanned": 10,
   "coverage": {
     "files_by_kind": {
@@ -428,7 +428,7 @@
           "    return jsonify(dict(row))",
           "",
           "",
-          "if __name__ == \"__main__\":"
+          "# --- Compliant look-alikes (answer key: ground_truth.yml, \"compliant\"). Nothing here may be reported."
         ]
       },
       "pii": [

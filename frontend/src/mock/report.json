@@ -435,7 +435,7 @@
           "    return jsonify(dict(row))",
           "",
           "",
-          "if __name__ == \"__main__\":"
+          "# --- Compliant look-alikes (answer key: ground_truth.yml, \"compliant\"). Nothing here may be reported."
         ]
       },
       "pii": [],
