@@ -104,3 +104,14 @@ def test_key_named_secrets_are_found_and_plain_key_names_are_not(tmp_path):
         }
     """)
     assert sorted(h.line for h in scan(tmp_path)) == [3, 4, 5, 6]
+
+
+def test_secrets_in_dev_and_test_config_are_lowered_to_medium(tmp_path):
+    write(tmp_path, "config/env/production.js", "module.exports = { jwtSecret: 'prod-9f8e7d6c5b4a39281706' }\n")
+    write(tmp_path, "config/env/development.js", "module.exports = { jwtSecret: 'dev-9f8e7d6c5b4a39281706' }\n")
+    write(tmp_path, ".env.test", "API_TOKEN=tok-9f8e7d6c5b4a39281706\n")
+    report = scan_folder(tmp_path)
+    severity = {f.file: f.severity for f in report.findings if f.rule_id == "DPDP-SEC-004"}
+    assert severity == {"config/env/production.js": "critical", "config/env/development.js": "medium", ".env.test": "medium"}
+    lowered = next(f for f in report.findings if f.file == "config/env/development.js")
+    assert "development or test file" in lowered.severity_reason and "critical" in lowered.severity_reason

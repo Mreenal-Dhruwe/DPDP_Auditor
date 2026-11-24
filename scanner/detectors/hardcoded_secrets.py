@@ -18,7 +18,7 @@ import ast
 import re
 
 from scanner.detectors.source import (
-    dotted_name, is_config_file, is_example_file, is_test_file, python_trees, string_key, text_files,
+    dotted_name, is_config_file, is_dev_or_test_file, is_example_file, is_test_file, python_trees, string_key, text_files,
 )
 from scanner.ingest import Project
 from scanner.masking import CONNECTION_PASSWORD, KNOWN_SECRET_PATTERNS, PRIVATE_KEY_HEADER, SECRET_NAME, mask_secret
@@ -107,8 +107,12 @@ def hardcoded_secrets(project: Project) -> list[Hit]:
     def report(rel: str, line_no: int, line: str, value: str, why: str, confidence: str) -> None:
         if (rel, line_no) not in found:
             confidence = "low" if is_test_file(rel) else confidence
-            found[(rel, line_no)] = Hit(rule_id=SEC_004, file=rel, line=line_no, confidence=confidence,
-                                        evidence=f"{_masked(line, value).strip()}  [{why}]")
+            lowered = is_dev_or_test_file(rel)
+            found[(rel, line_no)] = Hit(
+                rule_id=SEC_004, file=rel, line=line_no, confidence=confidence,
+                evidence=f"{_masked(line, value).strip()}  [{why}]",
+                severity="medium" if lowered else None,
+                severity_note="Found in a development or test file: lowered to medium, critical if the same value is used in production." if lowered else None)
 
     trees = dict(python_trees(project))
     for rel in text_files(project):

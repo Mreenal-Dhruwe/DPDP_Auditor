@@ -174,6 +174,9 @@ class Hit(ContractModel):
     evidence: Evidence  # secrets the detector knows about must already be masked
     pii: PiiLabels = []
     confidence: Confidence
+    # A detector may lower the rule's severity for one finding, with the reason. Never raises it.
+    severity: Severity | None = None
+    severity_note: Text | None = None
 
     @model_validator(mode="after")
     def _location_fits_scope(self) -> "Hit":

@@ -1,6 +1,7 @@
 """File helpers shared by detectors. Everything here reads files; nothing runs them."""
 
 import ast
+import re
 from collections.abc import Iterator
 
 from scanner.ingest import Project
@@ -44,6 +45,17 @@ def is_example_file(rel: str) -> bool:
 def is_config_file(rel: str) -> bool:
     name = name_of(rel)
     return is_env_file(rel) or suffix_of(rel) in CONFIG_SUFFIXES or name.startswith("dockerfile")
+
+
+DEV_WORDS = {"dev", "development", "test", "tests", "testing", "local", "e2e", "ci", "sandbox", "mock", "fixture", "fixtures"}
+
+
+def is_dev_or_test_file(rel: str) -> bool:
+    """A test file, or a config whose name or folder says development / test / local
+    (config/env/development.js, .env.test, application-dev.yml, docker-compose.dev.yml)."""
+    if is_test_file(rel):
+        return True
+    return bool(DEV_WORDS & set(re.split(r"[^a-z0-9]+", rel.lower())))
 
 
 def is_test_file(rel: str) -> bool:

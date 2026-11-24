@@ -164,6 +164,10 @@ class RuleCatalogue(ContractModel):
             known = _file_secrets(source_lines)
             masked = [mask_evidence(source_lines[n - 1], self.personal_data.identifiers, known) for n in range(start, end + 1)]
             context = Context(start_line=start, lines=masked)
+        severity, severity_reason = rule.severity, rule.severity_reason
+        if hit.severity and SEVERITIES.index(hit.severity) > SEVERITIES.index(rule.severity) and hit.severity_note:
+            severity = hit.severity
+            severity_reason = f"{hit.severity_note} (rule default: {rule.severity}) {rule.severity_reason}"
         return Finding(
             context=context,
             rule_id=rule.id,
@@ -177,8 +181,8 @@ class RuleCatalogue(ContractModel):
             confidence=hit.confidence,
             law=rule.law.model_copy(deep=True),  # copies, so a finding can't change the rule
             penalty=self.penalty_caps[rule.penalty].model_copy(),
-            severity=rule.severity,
-            severity_reason=rule.severity_reason,
+            severity=severity,
+            severity_reason=severity_reason,
             fix=rule.fix,
         )
 
