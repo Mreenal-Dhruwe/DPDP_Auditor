@@ -8,8 +8,9 @@ All evidence and code excerpts are masked. Legal mapping is indicative, not lega
 | Folder | What was scanned | Findings |
 |---|---|---|
 | `target_app/` | our Flask target app (deliverable 2) | 13: critical 3, high 8, medium 2 — all 13 planted issues, 0 false positives |
-| `target_app_js/` | our Express + Sequelize target | 27: critical 3, high 8, medium 11, low 3, info 2 — all 27 planted issues, 0 false positives |
-| `juice-shop/` | OWASP Juice Shop 20.4.0-SNAPSHOT, commit `c9f99228` (2026-11-19), 1494 files, 18 s | 60: critical 28, high 27, medium 3, info 2 |
+| `target_app_js/` | our Express target (Sequelize and the raw MongoDB driver) | 31: critical 4, high 11, medium 11, low 3, info 2 — all 31 planted issues, 0 false positives |
+| `juice-shop/` | OWASP Juice Shop 20.4.0-SNAPSHOT, commit `c9f9922` (2026-11-19), 1494 files, 40 s | 60: critical 18, high 27, medium 13, info 2 (10 secrets in test files lowered from critical to medium) |
+| `nodegoat/` | OWASP NodeGoat, commit `c5cb68a`, 111 files, 2 s | 23: critical 7, high 8, medium 6, low 1, info 1 |
 
 ## Reading the Juice Shop results
 
@@ -37,3 +38,20 @@ Juice Shop has no answer key, so this is our manual review of the 60 findings:
   routes that *are* authenticated but skip an ownership check, which we do not analyse yet.
   SEC-001 reports nothing because Juice Shop's log calls carry no personal data. CH-001 and
   CH-002 do not apply: Juice Shop never asks for a date of birth or age.
+
+## Reading the NodeGoat results
+
+NodeGoat (Express + the raw MongoDB driver) has no answer key; our reading of the 23 findings:
+
+- **Real:** plaintext `ssn`, `bankAcc`, `bankRouting` and `password` written with `users.update` /
+  `insert` (SEC-002); hardcoded `cookieSecret`, `cryptoKey`, a committed private key and plaintext
+  seed passwords (SEC-004); session cookie without `secure` (SEC-008); no erase route and no
+  breach or grievance process (RET-001, RT-002, RT-003, BR-001, low confidence); no notice on the
+  profile and signup forms (NOT-001, low confidence).
+- **Lowered:** the ZAP API key in `config/env/development.js` and `test.js` (medium, development files).
+- **Doubtful:** CH-001 (a date of birth on an adult profile, low confidence); SEC-008 on
+  `http.createServer` (low confidence, TLS may end at a proxy); SEC-004 on
+  `app/views/tutorial/a6.html:83`, an example snippet in a tutorial page.
+- **Not found:** SEC-006 for the DAO results spread into templates (`profile.js`, `session.js`: the
+  record comes from a DAO in another file), the IDOR on `/allocations/:userId`, a plaintext
+  password comparison (not a hashing choice) and the end-of-life `node:12` image.

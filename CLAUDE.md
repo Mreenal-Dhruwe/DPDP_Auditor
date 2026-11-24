@@ -142,7 +142,8 @@ scanner/
                     # source.py, schemas.py, pii_refs.py, javascript.py (tree-sitter).
                     # Rule ownership + status in __init__.py. All 28 rules have a detector.
                     # Low confidence + "verify manually" (code shows only part): NOT-001,
-                    # CON-005, CON-006, SEC-009 (info), TP-002 (info), BR-001, RET-003.
+                    # CON-005, CON-006, SEC-009 (info), TP-002 (info), BR-001, RET-003; CH-001 is
+                    # low too unless the code shows minors (age check against 18, minor words).
                     # Rights checks also accept Express routers mounted with
                     # app.use('/path', router), judged by path words.
                     # SEC-006 also for Express + Sequelize (whole records sent with res.json).
@@ -155,7 +156,17 @@ scanner/
                     # Known limits: no ownership (IDOR-behind-login) check; data reshaped
                     # via .map()/spread (...user.dataValues) is not traced; handlers from
                     # packages and generated endpoints (finale-rest) are invisible;
-                    # Prisma/Mongoose not yet.
+                    # Prisma/Mongoose not yet. Raw MongoDB driver: fields come from writes
+                    # (insertOne/insert/updateOne/update/save with an object, `user.x = ...`
+                    # above the write, $set) -> SEC-002, RET-001 (deleteOne/remove count as
+                    # erase), SEC-006 (findOne + callback/await sent whole, no projection,
+                    # in the same handler; DAOs in other files are not followed).
+                    # SEC-004 also reads crypto/signing/jwt/hmac/master *Key names and generated-
+                    # looking *Key values; secrets in dev/test files are lowered to medium
+                    # (Hit.severity + severity_note; never raised). SEC-008 also checks Express
+                    # session cookies without secure and plain http.createServer (low).
+                    # Masking: secret values found anywhere in a file are masked everywhere in
+                    # its context lines; quoted values of personal-data names are masked.
                     # Parsed files, routes and tables are cached on Project per scan.
   models.py         # Pydantic Finding, Report
   severity.py

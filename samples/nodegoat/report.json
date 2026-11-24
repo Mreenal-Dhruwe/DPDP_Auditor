@@ -1,0 +1,1066 @@
+{
+  "tool": "DPDP Compliance Auditor",
+  "tool_version": "0.1.0",
+  "rules_version": "0.1.0",
+  "target": "NodeGoat",
+  "generated_at": "2026-11-24T03:02:43.305963Z",
+  "files_scanned": 111,
+  "coverage": {
+    "files_by_kind": {
+      "javascript": 50,
+      "templates": 24,
+      "other": 23,
+      "config": 14
+    },
+    "rules_checked": [
+      "DPDP-NOT-001",
+      "DPDP-CON-001",
+      "DPDP-CON-002",
+      "DPDP-CON-003",
+      "DPDP-CON-004",
+      "DPDP-CON-005",
+      "DPDP-CON-006",
+      "DPDP-SEC-001",
+      "DPDP-SEC-002",
+      "DPDP-SEC-003",
+      "DPDP-SEC-004",
+      "DPDP-SEC-005",
+      "DPDP-SEC-006",
+      "DPDP-SEC-007",
+      "DPDP-SEC-008",
+      "DPDP-SEC-009",
+      "DPDP-SEC-010",
+      "DPDP-TP-001",
+      "DPDP-TP-002",
+      "DPDP-BR-001",
+      "DPDP-RET-001",
+      "DPDP-RET-002",
+      "DPDP-RET-003",
+      "DPDP-CH-001",
+      "DPDP-CH-002",
+      "DPDP-RT-001",
+      "DPDP-RT-002",
+      "DPDP-RT-003"
+    ],
+    "rules_not_checked": []
+  },
+  "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes.",
+  "summary": {
+    "total": 23,
+    "by_severity": {
+      "critical": 7,
+      "high": 8,
+      "medium": 6,
+      "low": 1,
+      "info": 1
+    },
+    "by_category": {
+      "Security": 16,
+      "Rights": 2,
+      "Notice": 2,
+      "Retention": 1,
+      "Children": 1,
+      "Breach": 1
+    },
+    "by_provision": {
+      "s.8(5)": 16,
+      "Rule 6(1)(b)": 11,
+      "Rule 6(1)(a)": 4,
+      "Rule 6(1)(g)": 2,
+      "s.5(1)": 2,
+      "Rule 3(b)": 2,
+      "s.8(7)": 1,
+      "s.12(3)": 1,
+      "Rule 8": 1,
+      "s.9(1)": 1,
+      "Rule 10": 1,
+      "s.8(6)": 1,
+      "Rule 7(1)": 1,
+      "Rule 7(2)": 1,
+      "s.12": 1,
+      "Rule 14": 1,
+      "s.8(9)": 1,
+      "s.8(10)": 1,
+      "s.13": 1,
+      "Rule 9": 1,
+      "Rule 14(3)": 1,
+      "Rule 6(1)(d)": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "a4cea7984769",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "app/views/tutorial/a6.html",
+      "line": 83,
+      "evidence": "cryptoKey: \"a_se********\", [literal value for cryptoKey]",
+      "context": {
+        "start_line": 80,
+        "lines": [
+          "",
+          "//Set keys config object",
+          "var config = {",
+          "    cryptoKey: \"a_se********\",",
+          "    cryptoAlgo: \"aes256\", // or other secure encryption algo here",
+          "    iv: \"\"",
+          "};"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "b49dedc105f3",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "artifacts/cert/server.key",
+      "line": 1,
+      "evidence": "-----BEGIN RSA PRIVATE KEY----- [private key]",
+      "context": {
+        "start_line": 1,
+        "lines": [
+          "-----BEGIN RSA PRIVATE KEY-----",
+          "MIIC********",
+          "AZtU********",
+          "/hfU********"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "763e78a9ca93",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "artifacts/db-reset.js",
+      "line": 18,
+      "evidence": "\"password\": \"********\", [literal value for password]",
+      "context": {
+        "start_line": 15,
+        "lines": [
+          "        \"userName\": \"admin\",",
+          "        \"firstName\": \"N********\",",
+          "        \"lastName\": \"A********\",",
+          "        \"password\": \"********\",",
+          "        //\"password\" : \"$2a$********\", // ********",
+          "        \"isAdmin\": true",
+          "    }, {"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "8f5d26a7a951",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "artifacts/db-reset.js",
+      "line": 27,
+      "evidence": "\"password\": \"********\" [literal value for password]",
+      "context": {
+        "start_line": 24,
+        "lines": [
+          "        \"firstName\": \"J********\",",
+          "        \"lastName\": \"D********\",",
+          "        \"benefitStartDate\": \"2030-01-10\",",
+          "        \"password\": \"********\"",
+          "        // \"password\" : \"$2a$********\",// ********",
+          "    }, {",
+          "        \"_id\": 3,"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "fda6be088669",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "artifacts/db-reset.js",
+      "line": 35,
+      "evidence": "\"password\": \"********\" [literal value for password]",
+      "context": {
+        "start_line": 32,
+        "lines": [
+          "        \"firstName\": \"W********\",",
+          "        \"lastName\": \"S********\",",
+          "        \"benefitStartDate\": \"2025-11-30\",",
+          "        \"password\": \"********\"",
+          "        //\"password\" : \"$2a$********\", // ********",
+          "    }];",
+          ""
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "668e32718946",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "config/env/all.js",
+      "line": 8,
+      "evidence": "cookieSecret: \"sess********\", [literal value for cookieSecret]",
+      "context": {
+        "start_line": 5,
+        "lines": [
+          "module.exports = {",
+          "    port,",
+          "    db,",
+          "    cookieSecret: \"sess********\",",
+          "    cryptoKey: \"a_se********\",",
+          "    cryptoAlgo: \"aes256\",",
+          "    hostName: \"localhost\","
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "1b702acea884",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "config/env/all.js",
+      "line": 9,
+      "evidence": "cryptoKey: \"a_se********\", [literal value for cryptoKey]",
+      "context": {
+        "start_line": 6,
+        "lines": [
+          "    port,",
+          "    db,",
+          "    cookieSecret: \"sess********\",",
+          "    cryptoKey: \"a_se********\",",
+          "    cryptoAlgo: \"aes256\",",
+          "    hostName: \"localhost\",",
+          "    environmentalScripts: []"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "30b8d3b8e801",
+      "rule_id": "DPDP-SEC-002",
+      "title": "Personal data stored in plaintext",
+      "category": "Security",
+      "scope": "line",
+      "file": "app/data/profile-dao.js",
+      "line": 56,
+      "evidence": "user.bankAcc = bankAcc; [users.bankAcc stored as STRING]",
+      "context": {
+        "start_line": 53,
+        "lines": [
+          "            user.address = address;",
+          "        }",
+          "        if (bankAcc) {",
+          "            user.bankAcc = bankAcc;",
+          "        }",
+          "        if (bankRouting) {",
+          "            user.bankRouting = bankRouting;"
+        ]
+      },
+      "pii": [
+        "bank_account"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Encryption, obfuscation, masking or virtual tokens."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "A database leak exposes the data directly.",
+      "fix": "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+    },
+    {
+      "id": "14b732dec425",
+      "rule_id": "DPDP-SEC-002",
+      "title": "Personal data stored in plaintext",
+      "category": "Security",
+      "scope": "line",
+      "file": "app/data/profile-dao.js",
+      "line": 59,
+      "evidence": "user.bankRouting = bankRouting; [users.bankRouting stored as STRING]",
+      "context": {
+        "start_line": 56,
+        "lines": [
+          "            user.bankAcc = bankAcc;",
+          "        }",
+          "        if (bankRouting) {",
+          "            user.bankRouting = bankRouting;",
+          "        }",
+          "        if (ssn) {",
+          "            user.ssn = ssn;"
+        ]
+      },
+      "pii": [
+        "bank_routing"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Encryption, obfuscation, masking or virtual tokens."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "A database leak exposes the data directly.",
+      "fix": "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+    },
+    {
+      "id": "aac1ce90e3a4",
+      "rule_id": "DPDP-SEC-002",
+      "title": "Personal data stored in plaintext",
+      "category": "Security",
+      "scope": "line",
+      "file": "app/data/profile-dao.js",
+      "line": 62,
+      "evidence": "user.ssn = ssn; [users.ssn stored as STRING]",
+      "context": {
+        "start_line": 59,
+        "lines": [
+          "            user.bankRouting = bankRouting;",
+          "        }",
+          "        if (ssn) {",
+          "            user.ssn = ssn;",
+          "        }",
+          "        if (dob) {",
+          "            user.dob = dob;"
+        ]
+      },
+      "pii": [
+        "ssn"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Encryption, obfuscation, masking or virtual tokens."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "A database leak exposes the data directly.",
+      "fix": "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+    },
+    {
+      "id": "ffda57c0d041",
+      "rule_id": "DPDP-RET-001",
+      "title": "Personal data with no erase or anonymise path",
+      "category": "Retention",
+      "scope": "line",
+      "file": "app/data/profile-dao.js",
+      "line": 78,
+      "evidence": "users.update({ [table users holds address, bank_account, bank_routing, dob, full_name, ssn; no code deletes or anonymises it]",
+      "context": {
+        "start_line": 75,
+        "lines": [
+          "        }",
+          "        */",
+          "",
+          "        users.update({",
+          "                _id: parseInt(userId)",
+          "            }, {",
+          "                $set: user"
+        ]
+      },
+      "pii": [
+        "address",
+        "bank_account",
+        "bank_routing",
+        "dob",
+        "full_name",
+        "ssn"
+      ],
+      "confidence": "medium",
+      "law": {
+        "act": [
+          "s.8(7)",
+          "s.12(3)"
+        ],
+        "rules": [
+          "Rule 8"
+        ],
+        "requirement": "Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Data is kept indefinitely and erasure requests cannot be honoured.",
+      "fix": "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds."
+    },
+    {
+      "id": "466ebae48924",
+      "rule_id": "DPDP-SEC-002",
+      "title": "Personal data stored in plaintext",
+      "category": "Security",
+      "scope": "line",
+      "file": "app/data/user-dao.js",
+      "line": 25,
+      "evidence": "password //received from request param [users.password stored as STRING; the code hashes passwords with pbkdf2, check this column stores that hash]",
+      "context": {
+        "start_line": 22,
+        "lines": [
+          "            firstName,",
+          "            lastName,",
+          "            benefitStartDate: this.getRandomFutureDate(),",
+          "            password //received from request param",
+          "            /*",
+          "            // Fix for A2-1 - Broken Auth",
+          "            // Stores password  in a safer way using one way encryption and salt hashing"
+        ]
+      },
+      "pii": [
+        "password"
+      ],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Encryption, obfuscation, masking or virtual tokens."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "A database leak exposes the data directly.",
+      "fix": "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+    },
+    {
+      "id": "7889a1154240",
+      "rule_id": "DPDP-CH-001",
+      "title": "Child data collected without parental consent flow",
+      "category": "Children",
+      "scope": "project",
+      "file": "app/views/profile.html",
+      "line": 53,
+      "evidence": "Date of birth / age is collected (a form asks for 'dob'), but no parent or guardian consent flow exists anywhere, so under-18s are processed without a parent's consent [only a date of birth was found, nothing shows minors use the app; verify manually: it may be collected from adults only]",
+      "context": {
+        "start_line": 50,
+        "lines": [
+          "                    </div>",
+          "                    <div class=\"form-group\">",
+          "                        <label for=\"dob\">Date of Birth</label>",
+          "                        <input type=\"date\" class=\"form-control\" id=\"dob\" name=\"dob\" value=\"{{dob}}\" placeholder=\"Enter date of birth\">",
+          "                    </div>",
+          "                    <div class=\"form-group\">",
+          "                        <label for=\"bankAcc\">Bank Account #</label>"
+        ]
+      },
+      "pii": [
+        "dob"
+      ],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.9(1)"
+        ],
+        "rules": [
+          "Rule 10"
+        ],
+        "requirement": "Verifiable consent of the parent before processing a child's personal data."
+      },
+      "penalty": {
+        "schedule_item": 3,
+        "provision": "s.9 children",
+        "cap": "Rs 200 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Rs 200 crore cap; affects a protected group.",
+      "fix": "Gate under-18 sign-ups behind verified parental consent (Rule 10 methods)."
+    },
+    {
+      "id": "3e59559df5ce",
+      "rule_id": "DPDP-SEC-008",
+      "title": "Insecure infrastructure configuration",
+      "category": "Security",
+      "scope": "line",
+      "file": "server.js",
+      "line": 78,
+      "evidence": "app.use(session({ [session cookie options are missing: no `secure` flag, so it is also sent over plain HTTP]",
+      "context": {
+        "start_line": 75,
+        "lines": [
+          "    }));",
+          "",
+          "    // Enable session management using express middleware",
+          "    app.use(session({",
+          "        // genid: (req) => {",
+          "        //    return genuuid() // use UUIDs for session IDs",
+          "        //},"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)",
+          "Rule 6(1)(g)"
+        ],
+        "requirement": "Access control and appropriate technical and organisational measures."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Raises the chance and impact of a breach of stored personal data.",
+      "fix": "Run as non-root, disable debug in production, restrict CORS, enforce TLS, block public buckets."
+    },
+    {
+      "id": "532a19c1ee7e",
+      "rule_id": "DPDP-SEC-008",
+      "title": "Insecure infrastructure configuration",
+      "category": "Security",
+      "scope": "line",
+      "file": "server.js",
+      "line": 145,
+      "evidence": "http.createServer(app).listen(port, () => { [serves over plain HTTP and the project never creates an https server; verify manually: TLS may be ended by a proxy or load balancer in front]",
+      "context": {
+        "start_line": 142,
+        "lines": [
+          "    });",
+          "",
+          "    // Insecure HTTP connection",
+          "    http.createServer(app).listen(port, () => {",
+          "        console.log(`Express http server listening on port ${port}`);",
+          "    });",
+          ""
+        ]
+      },
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)",
+          "Rule 6(1)(g)"
+        ],
+        "requirement": "Access control and appropriate technical and organisational measures."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Raises the chance and impact of a breach of stored personal data.",
+      "fix": "Run as non-root, disable debug in production, restrict CORS, enforce TLS, block public buckets."
+    },
+    {
+      "id": "aef9d6cb6080",
+      "rule_id": "DPDP-BR-001",
+      "title": "No breach notification mechanism",
+      "category": "Breach",
+      "scope": "project",
+      "file": "app/data/profile-dao.js",
+      "line": 78,
+      "evidence": "Personal data is held (e.g. table users) but nothing in the project handles a breach: no incident module, no user or Board notification, no alert hook; verify manually: the breach process may be run outside the code",
+      "context": {
+        "start_line": 75,
+        "lines": [
+          "        }",
+          "        */",
+          "",
+          "        users.update({",
+          "                _id: parseInt(userId)",
+          "            }, {",
+          "                $set: user"
+        ]
+      },
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(6)"
+        ],
+        "rules": [
+          "Rule 7(1)",
+          "Rule 7(2)"
+        ],
+        "requirement": "Inform affected users without delay; send the Board a detailed report within 72 hours."
+      },
+      "penalty": {
+        "schedule_item": 2,
+        "provision": "s.8(6) breach intimation",
+        "cap": "Rs 200 crore"
+      },
+      "severity": "medium",
+      "severity_reason": "Process often lives outside code; absence is a signal, not proof.",
+      "fix": "Add an incident module that can notify affected users and generate the Board report."
+    },
+    {
+      "id": "f8ad8c337582",
+      "rule_id": "DPDP-RT-002",
+      "title": "No correction or erasure endpoint",
+      "category": "Rights",
+      "scope": "project",
+      "file": "app/data/profile-dao.js",
+      "line": 78,
+      "evidence": "No route lets users erase (DELETE /me or /account) their own data (personal data is held, e.g. table users)",
+      "context": {
+        "start_line": 75,
+        "lines": [
+          "        }",
+          "        */",
+          "",
+          "        users.update({",
+          "                _id: parseInt(userId)",
+          "            }, {",
+          "                $set: user"
+        ]
+      },
+      "pii": [],
+      "confidence": "medium",
+      "law": {
+        "act": [
+          "s.12"
+        ],
+        "rules": [
+          "Rule 14"
+        ],
+        "requirement": "Right to correction, completion, updating and erasure."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "medium",
+      "severity_reason": "Users cannot exercise a statutory right.",
+      "fix": "Add PATCH /me and an erasure request endpoint."
+    },
+    {
+      "id": "43060e611866",
+      "rule_id": "DPDP-NOT-001",
+      "title": "Personal data collected without a notice of data and purpose",
+      "category": "Notice",
+      "scope": "line",
+      "file": "app/views/profile.html",
+      "line": 38,
+      "evidence": "<form role=\"form\" method=\"post\" action=\"/profile\"> [the form asks for address, bank_account, bank_routing, dob, full_name, ssn but the page shows no notice of what is collected and why; verify manually: the notice may be in a modal or an earlier step]",
+      "context": {
+        "start_line": 35,
+        "lines": [
+          "                <h3 class=\"panel-title\">Edit Profile</h3>",
+          "            </div>",
+          "            <div class=\"panel-body\">",
+          "                <form role=\"form\" method=\"post\" action=\"/profile\">",
+          "                    <div class=\"form-group\">",
+          "                        <label for=\"firstName\">First Name</label>",
+          "                        <input type=\"text\" class=\"form-control\" id=\"firstName\" name=\"firstName\" value=\"{{firstNameSafeString}}\" placeholder=\"Enter first name\">"
+        ]
+      },
+      "pii": [
+        "address",
+        "bank_account",
+        "bank_routing",
+        "dob",
+        "full_name",
+        "ssn"
+      ],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.5(1)"
+        ],
+        "rules": [
+          "Rule 3(b)"
+        ],
+        "requirement": "Notice must give an itemised description of the personal data and the specified purpose."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "medium",
+      "severity_reason": "Notice is a precondition for valid consent; impact is on transparency, not direct exposure.",
+      "fix": "Show an itemised notice (data fields + purpose) before or with the consent request."
+    },
+    {
+      "id": "8a5557116970",
+      "rule_id": "DPDP-NOT-001",
+      "title": "Personal data collected without a notice of data and purpose",
+      "category": "Notice",
+      "scope": "line",
+      "file": "app/views/signup.html",
+      "line": 72,
+      "evidence": "<form method=\"post\" role=\"form\" method=\"post\"> [the form asks for email, full_name, password but the page shows no notice of what is collected and why; verify manually: the notice may be in a modal or an earlier step]",
+      "context": {
+        "start_line": 69,
+        "lines": [
+          "                        </div>",
+          "                        <div class=\"panel-body\">",
+          "",
+          "                            <form method=\"post\" role=\"form\" method=\"post\">",
+          "                                <div class=\"form-group\">",
+          "                                    <label for=\"userName\">User Name</label>",
+          "                                    <input type=\"text\" class=\"form-control\" id=\"userName\" value=\"{{userName}}\" name=\"userName\" placeholder=\"Enter user name\">"
+        ]
+      },
+      "pii": [
+        "email",
+        "full_name",
+        "password"
+      ],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.5(1)"
+        ],
+        "rules": [
+          "Rule 3(b)"
+        ],
+        "requirement": "Notice must give an itemised description of the personal data and the specified purpose."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "medium",
+      "severity_reason": "Notice is a precondition for valid consent; impact is on transparency, not direct exposure.",
+      "fix": "Show an itemised notice (data fields + purpose) before or with the consent request."
+    },
+    {
+      "id": "35a6d88e30f2",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "config/env/development.js",
+      "line": 6,
+      "evidence": "zapApiKey: \"v9dn********\", [literal value for zapApiKey]",
+      "context": {
+        "start_line": 3,
+        "lines": [
+          "   zapHostName: \"192.168.56.20\",",
+          "   zapPort: \"8080\",",
+          "   // Required from Zap 2.4.1. This key is set in Zap Options -> API _Api Key.",
+          "   zapApiKey: \"v9dn********\",",
+          "   // Required if debugging security regression tests.",
+          "   zapApiFeedbackSpeed: 5000, // Milliseconds.",
+          "   environmentalScripts: ["
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "medium",
+      "severity_reason": "Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "9f7e60264713",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "config/env/test.js",
+      "line": 6,
+      "evidence": "zapApiKey: \"v9dn********\", [literal value for zapApiKey]",
+      "context": {
+        "start_line": 3,
+        "lines": [
+          "   zapHostName: \"192.168.56.20\",",
+          "   zapPort: \"8080\",",
+          "   // Required from Zap 2.4.1. This key is set in Zap Options -> API _Api Key.",
+          "   zapApiKey: \"v9dn********\",",
+          "   zapApiFeedbackSpeed: 5000 // Milliseconds.",
+          "};"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "medium",
+      "severity_reason": "Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "2ae8400cbe32",
+      "rule_id": "DPDP-RT-003",
+      "title": "No grievance mechanism or contact published",
+      "category": "Rights",
+      "scope": "project",
+      "file": "app/data/profile-dao.js",
+      "line": 78,
+      "evidence": "No grievance, complaint or contact route or page, and no grievance officer, DPO or privacy@ contact in the pages (personal data is held, e.g. table users)",
+      "context": {
+        "start_line": 75,
+        "lines": [
+          "        }",
+          "        */",
+          "",
+          "        users.update({",
+          "                _id: parseInt(userId)",
+          "            }, {",
+          "                $set: user"
+        ]
+      },
+      "pii": [],
+      "confidence": "medium",
+      "law": {
+        "act": [
+          "s.8(9)",
+          "s.8(10)",
+          "s.13"
+        ],
+        "rules": [
+          "Rule 9",
+          "Rule 14(3)"
+        ],
+        "requirement": "Publish a contact for processing questions; respond to grievances within 90 days."
+      },
+      "penalty": {
+        "schedule_item": 7,
+        "provision": "any other provision of the Act or Rules",
+        "cap": "Rs 50 crore"
+      },
+      "severity": "low",
+      "severity_reason": "Often handled outside the app; verify manually.",
+      "fix": "Add a grievance form with tracking and a published DPO/contact page."
+    },
+    {
+      "id": "88210fc857a5",
+      "rule_id": "DPDP-SEC-009",
+      "title": "No backup configured for personal-data stores",
+      "category": "Security",
+      "scope": "line",
+      "file": "docker-compose.yml",
+      "line": 14,
+      "evidence": "image: mongo:4.4 [mongo service with nothing in the repo backing it up; verify manually: backups may be configured outside the repository]",
+      "context": {
+        "start_line": 11,
+        "lines": [
+          "      - \"4000:4000\"",
+          "",
+          "  mongo:",
+          "    image: mongo:4.4",
+          "    user: mongodb",
+          "    expose:",
+          "      - 27017"
+        ]
+      },
+      "pii": [],
+      "confidence": "low",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(d)"
+        ],
+        "requirement": "Reasonable measures for continued processing, such as data backups."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "info",
+      "severity_reason": "Backups are usually configured outside the repo (cloud console, DBA tooling), so the code alone cannot show they are missing; reported for manual verification.",
+      "fix": "Configure automated, encrypted backups with tested restore."
+    }
+  ]
+}

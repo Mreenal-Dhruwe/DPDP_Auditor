@@ -101,6 +101,9 @@ def test_key_named_secrets_are_found_and_plain_key_names_are_not(tmp_path):
           cacheKey: 'user-profile-cache',
           sortKey: 'created_at_desc',
           tokenType: 'Bearer',
+          publicKey: 'pQECAwQFBgcICQoLDA0ODxAREhMUFRYX',
+          welcomeBannerCookieKey: 'welcomebanner_status',
+          key: 'web3SnippetChallenge2026',
         }
     """)
     assert sorted(h.line for h in scan(tmp_path)) == [3, 4, 5, 6]

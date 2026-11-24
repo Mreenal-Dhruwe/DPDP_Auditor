@@ -823,7 +823,7 @@
       "invocations": [
         {
           "executionSuccessful": true,
-          "endTimeUtc": "2026-11-24T01:32:24.566187+00:00"
+          "endTimeUtc": "2026-11-24T03:02:29.360269+00:00"
         }
       ],
       "results": [
@@ -1476,144 +1476,6 @@
           "ruleIndex": 10,
           "level": "error",
           "message": {
-            "text": "Hardcoded secrets or credentials (frontend/src/app/app.guard.spec.ts:46): localStorage.setItem('token', 'eyJh********') [known key format]"
-          },
-          "partialFingerprints": {
-            "dpdpFindingId/v1": "fd549a39c7da"
-          },
-          "properties": {
-            "severity": "critical",
-            "security-severity": "9.5",
-            "confidence": "low",
-            "scope": "line",
-            "pii": [],
-            "law": {
-              "act": [
-                "s.8(5)"
-              ],
-              "rules": [
-                "Rule 6(1)(b)"
-              ],
-              "requirement": "Measures to control access to computer resources."
-            },
-            "penaltyCap": "Rs 250 crore",
-            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
-            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "frontend/src/app/app.guard.spec.ts",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 46,
-                  "snippet": {
-                    "text": "localStorage.setItem('token', 'eyJh********') [known key format]"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "DPDP-SEC-004",
-          "ruleIndex": 10,
-          "level": "error",
-          "message": {
-            "text": "Hardcoded secrets or credentials (frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:72): localStorage.setItem('token', 'eyJh********') [known key format]"
-          },
-          "partialFingerprints": {
-            "dpdpFindingId/v1": "40501873bc1b"
-          },
-          "properties": {
-            "severity": "critical",
-            "security-severity": "9.5",
-            "confidence": "low",
-            "scope": "line",
-            "pii": [],
-            "law": {
-              "act": [
-                "s.8(5)"
-              ],
-              "rules": [
-                "Rule 6(1)(b)"
-              ],
-              "requirement": "Measures to control access to computer resources."
-            },
-            "penaltyCap": "Rs 250 crore",
-            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
-            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "frontend/src/app/last-login-ip/last-login-ip.component.spec.ts",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 72,
-                  "snippet": {
-                    "text": "localStorage.setItem('token', 'eyJh********') [known key format]"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "DPDP-SEC-004",
-          "ruleIndex": 10,
-          "level": "error",
-          "message": {
-            "text": "Hardcoded secrets or credentials (frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:78): localStorage.setItem('token', 'eyJh********') [known key format]"
-          },
-          "partialFingerprints": {
-            "dpdpFindingId/v1": "4b23cab3a09c"
-          },
-          "properties": {
-            "severity": "critical",
-            "security-severity": "9.5",
-            "confidence": "low",
-            "scope": "line",
-            "pii": [],
-            "law": {
-              "act": [
-                "s.8(5)"
-              ],
-              "rules": [
-                "Rule 6(1)(b)"
-              ],
-              "requirement": "Measures to control access to computer resources."
-            },
-            "penaltyCap": "Rs 250 crore",
-            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
-            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "frontend/src/app/last-login-ip/last-login-ip.component.spec.ts",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 78,
-                  "snippet": {
-                    "text": "localStorage.setItem('token', 'eyJh********') [known key format]"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "DPDP-SEC-004",
-          "ruleIndex": 10,
-          "level": "error",
-          "message": {
             "text": "Hardcoded secrets or credentials (frontend/src/app/login/login.component.ts:73): public testingPassword = 'IamU********' [literal value for testingPassword]"
           },
           "partialFingerprints": {
@@ -1794,333 +1656,11 @@
           ]
         },
         {
-          "ruleId": "DPDP-SEC-004",
-          "ruleIndex": 10,
-          "level": "error",
-          "message": {
-            "text": "Hardcoded secrets or credentials (test/api/user.test.ts:280): .set({ Authorization: 'eyJh********' }) [known key format]"
-          },
-          "partialFingerprints": {
-            "dpdpFindingId/v1": "fb8ca4e46fbd"
-          },
-          "properties": {
-            "severity": "critical",
-            "security-severity": "9.5",
-            "confidence": "low",
-            "scope": "line",
-            "pii": [],
-            "law": {
-              "act": [
-                "s.8(5)"
-              ],
-              "rules": [
-                "Rule 6(1)(b)"
-              ],
-              "requirement": "Measures to control access to computer resources."
-            },
-            "penaltyCap": "Rs 250 crore",
-            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
-            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "test/api/user.test.ts",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 280,
-                  "snippet": {
-                    "text": ".set({ Authorization: 'eyJh********' }) [known key format]"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "DPDP-SEC-004",
-          "ruleIndex": 10,
-          "level": "error",
-          "message": {
-            "text": "Hardcoded secrets or credentials (test/cypress/e2e/forgedJwt.spec.ts:22): 'eyJ0********' [known key format]"
-          },
-          "partialFingerprints": {
-            "dpdpFindingId/v1": "6719703122c8"
-          },
-          "properties": {
-            "severity": "critical",
-            "security-severity": "9.5",
-            "confidence": "low",
-            "scope": "line",
-            "pii": [],
-            "law": {
-              "act": [
-                "s.8(5)"
-              ],
-              "rules": [
-                "Rule 6(1)(b)"
-              ],
-              "requirement": "Measures to control access to computer resources."
-            },
-            "penaltyCap": "Rs 250 crore",
-            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
-            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "test/cypress/e2e/forgedJwt.spec.ts",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 22,
-                  "snippet": {
-                    "text": "'eyJ0********' [known key format]"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "DPDP-SEC-004",
-          "ruleIndex": 10,
-          "level": "error",
-          "message": {
-            "text": "Hardcoded secrets or credentials (test/cypress/e2e/forgedJwt.spec.ts:38): 'eyJ0********' [known key format]"
-          },
-          "partialFingerprints": {
-            "dpdpFindingId/v1": "fb5ae7ce0839"
-          },
-          "properties": {
-            "severity": "critical",
-            "security-severity": "9.5",
-            "confidence": "low",
-            "scope": "line",
-            "pii": [],
-            "law": {
-              "act": [
-                "s.8(5)"
-              ],
-              "rules": [
-                "Rule 6(1)(b)"
-              ],
-              "requirement": "Measures to control access to computer resources."
-            },
-            "penaltyCap": "Rs 250 crore",
-            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
-            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "test/cypress/e2e/forgedJwt.spec.ts",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 38,
-                  "snippet": {
-                    "text": "'eyJ0********' [known key format]"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "DPDP-SEC-004",
-          "ruleIndex": 10,
-          "level": "error",
-          "message": {
-            "text": "Hardcoded secrets or credentials (test/server/currentUser.unit.test.ts:40): req.cookies.token = 'eyJ0********' [known key format]"
-          },
-          "partialFingerprints": {
-            "dpdpFindingId/v1": "9360e4fb6ef7"
-          },
-          "properties": {
-            "severity": "critical",
-            "security-severity": "9.5",
-            "confidence": "low",
-            "scope": "line",
-            "pii": [],
-            "law": {
-              "act": [
-                "s.8(5)"
-              ],
-              "rules": [
-                "Rule 6(1)(b)"
-              ],
-              "requirement": "Measures to control access to computer resources."
-            },
-            "penaltyCap": "Rs 250 crore",
-            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
-            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "test/server/currentUser.unit.test.ts",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 40,
-                  "snippet": {
-                    "text": "req.cookies.token = 'eyJ0********' [known key format]"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "DPDP-SEC-004",
-          "ruleIndex": 10,
-          "level": "error",
-          "message": {
-            "text": "Hardcoded secrets or credentials (test/server/currentUser.unit.test.ts:43): 'eyJ0********', [known key format]"
-          },
-          "partialFingerprints": {
-            "dpdpFindingId/v1": "ee8dcad34631"
-          },
-          "properties": {
-            "severity": "critical",
-            "security-severity": "9.5",
-            "confidence": "low",
-            "scope": "line",
-            "pii": [],
-            "law": {
-              "act": [
-                "s.8(5)"
-              ],
-              "rules": [
-                "Rule 6(1)(b)"
-              ],
-              "requirement": "Measures to control access to computer resources."
-            },
-            "penaltyCap": "Rs 250 crore",
-            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
-            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "test/server/currentUser.unit.test.ts",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 43,
-                  "snippet": {
-                    "text": "'eyJ0********', [known key format]"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "DPDP-SEC-004",
-          "ruleIndex": 10,
-          "level": "error",
-          "message": {
-            "text": "Hardcoded secrets or credentials (test/server/verify.unit.test.ts:308): req.headers = { authorization: 'Bearer eyJ0********' } [known key format]"
-          },
-          "partialFingerprints": {
-            "dpdpFindingId/v1": "b73546366e54"
-          },
-          "properties": {
-            "severity": "critical",
-            "security-severity": "9.5",
-            "confidence": "low",
-            "scope": "line",
-            "pii": [],
-            "law": {
-              "act": [
-                "s.8(5)"
-              ],
-              "rules": [
-                "Rule 6(1)(b)"
-              ],
-              "requirement": "Measures to control access to computer resources."
-            },
-            "penaltyCap": "Rs 250 crore",
-            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
-            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "test/server/verify.unit.test.ts",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 308,
-                  "snippet": {
-                    "text": "req.headers = { authorization: 'Bearer eyJ0********' } [known key format]"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "DPDP-SEC-004",
-          "ruleIndex": 10,
-          "level": "error",
-          "message": {
-            "text": "Hardcoded secrets or credentials (test/server/verify.unit.test.ts:316): req.headers = { authorization: 'Bearer eyJ0********' } [known key format]"
-          },
-          "partialFingerprints": {
-            "dpdpFindingId/v1": "110a14cdb39b"
-          },
-          "properties": {
-            "severity": "critical",
-            "security-severity": "9.5",
-            "confidence": "low",
-            "scope": "line",
-            "pii": [],
-            "law": {
-              "act": [
-                "s.8(5)"
-              ],
-              "rules": [
-                "Rule 6(1)(b)"
-              ],
-              "requirement": "Measures to control access to computer resources."
-            },
-            "penaltyCap": "Rs 250 crore",
-            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
-            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "test/server/verify.unit.test.ts",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 316,
-                  "snippet": {
-                    "text": "req.headers = { authorization: 'Bearer eyJ0********' } [known key format]"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
           "ruleId": "DPDP-SEC-003",
           "ruleIndex": 9,
           "level": "error",
           "message": {
-            "text": "Weak password hashing (data/static/codefixes/loginAdminChallenge_1.ts:18): models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+            "text": "Weak password hashing (data/static/codefixes/loginAdminChallenge_1.ts:18): models.sequelize.query(`SELECT * FROM Users WHERE email = '$********''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
           },
           "partialFingerprints": {
             "dpdpFindingId/v1": "21ae5a2e2535"
@@ -2156,7 +1696,7 @@
                 "region": {
                   "startLine": 18,
                   "snippet": {
-                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '$********''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
                   }
                 }
               }
@@ -2264,7 +1804,7 @@
           "ruleIndex": 9,
           "level": "error",
           "message": {
-            "text": "Weak password hashing (data/static/codefixes/loginBenderChallenge_1.ts:18): models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+            "text": "Weak password hashing (data/static/codefixes/loginBenderChallenge_1.ts:18): models.sequelize.query(`SELECT * FROM Users WHERE email = '$********''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
           },
           "partialFingerprints": {
             "dpdpFindingId/v1": "c34fbafa945f"
@@ -2300,7 +1840,7 @@
                 "region": {
                   "startLine": 18,
                   "snippet": {
-                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '$********''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
                   }
                 }
               }
@@ -2408,7 +1948,7 @@
           "ruleIndex": 9,
           "level": "error",
           "message": {
-            "text": "Weak password hashing (data/static/codefixes/loginBenderChallenge_4.ts:15): models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+            "text": "Weak password hashing (data/static/codefixes/loginBenderChallenge_4.ts:15): models.sequelize.query(`SELECT * FROM Users WHERE email = '$********''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
           },
           "partialFingerprints": {
             "dpdpFindingId/v1": "3333e4efa418"
@@ -2444,7 +1984,7 @@
                 "region": {
                   "startLine": 15,
                   "snippet": {
-                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '$********''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
                   }
                 }
               }
@@ -2504,7 +2044,7 @@
           "ruleIndex": 9,
           "level": "error",
           "message": {
-            "text": "Weak password hashing (data/static/codefixes/loginJimChallenge_2.ts:15): models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+            "text": "Weak password hashing (data/static/codefixes/loginJimChallenge_2.ts:15): models.sequelize.query(`SELECT * FROM Users WHERE email = '$********''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
           },
           "partialFingerprints": {
             "dpdpFindingId/v1": "d0bad33f4e2d"
@@ -2540,7 +2080,7 @@
                 "region": {
                   "startLine": 15,
                   "snippet": {
-                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '$********''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
                   }
                 }
               }
@@ -2552,7 +2092,7 @@
           "ruleIndex": 9,
           "level": "error",
           "message": {
-            "text": "Weak password hashing (data/static/codefixes/loginJimChallenge_4.ts:18): models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+            "text": "Weak password hashing (data/static/codefixes/loginJimChallenge_4.ts:18): models.sequelize.query(`SELECT * FROM Users WHERE email = '$********''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
           },
           "partialFingerprints": {
             "dpdpFindingId/v1": "75a005faa96b"
@@ -2588,7 +2128,7 @@
                 "region": {
                   "startLine": 18,
                   "snippet": {
-                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '$********''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
                   }
                 }
               }
@@ -3282,7 +2822,7 @@
           "ruleIndex": 9,
           "level": "error",
           "message": {
-            "text": "Weak password hashing (routes/login.ts:34): models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: UserModel, plain: true }) // vuln-code-snippet vuln-line loginAdminChallenge loginBenderChallenge loginJimChallenge [security.hash() hashes with m..."
+            "text": "Weak password hashing (routes/login.ts:34): models.sequelize.query(`SELECT * FROM Users WHERE email = '$********''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: UserModel, plain: true }) // vuln-code-snippet vuln-line loginAdminChallenge loginBenderChallenge loginJimChallenge [security.hash() hashes with md5 (lib/ins..."
           },
           "partialFingerprints": {
             "dpdpFindingId/v1": "f0d8179fc000"
@@ -3318,7 +2858,7 @@
                 "region": {
                   "startLine": 34,
                   "snippet": {
-                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '${req.body.email || ''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: UserModel, plain: true }) // vuln-code-snippet vuln-line loginAdminChallenge loginBenderChallenge loginJimChallenge [security.hash() hashes with m..."
+                    "text": "models.sequelize.query(`SELECT * FROM Users WHERE email = '$********''}' AND password = '${se********'')}' AND deletedAt IS NULL`, { model: UserModel, plain: true }) // vuln-code-snippet vuln-line loginAdminChallenge loginBenderChallenge loginJimChallenge [security.hash() hashes with md5 (lib/ins..."
                   }
                 }
               }
@@ -3415,6 +2955,144 @@
                   "startLine": 411,
                   "snippet": {
                     "text": "password: security.hash(password), [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "warning",
+          "message": {
+            "text": "Hardcoded secrets or credentials (frontend/src/app/app.guard.spec.ts:46): localStorage.setItem('token', 'eyJh********') [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "fd549a39c7da"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend/src/app/app.guard.spec.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 46,
+                  "snippet": {
+                    "text": "localStorage.setItem('token', 'eyJh********') [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "warning",
+          "message": {
+            "text": "Hardcoded secrets or credentials (frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:72): localStorage.setItem('token', 'eyJh********') [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "40501873bc1b"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend/src/app/last-login-ip/last-login-ip.component.spec.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 72,
+                  "snippet": {
+                    "text": "localStorage.setItem('token', 'eyJh********') [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "warning",
+          "message": {
+            "text": "Hardcoded secrets or credentials (frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:78): localStorage.setItem('token', 'eyJh********') [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "4b23cab3a09c"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend/src/app/last-login-ip/last-login-ip.component.spec.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 78,
+                  "snippet": {
+                    "text": "localStorage.setItem('token', 'eyJh********') [known key format]"
                   }
                 }
               }
@@ -3556,6 +3234,328 @@
                   "startLine": 128,
                   "snippet": {
                     "text": "retention_in_days = 30 [retention_in_days = 30: logs are deleted after 30 days; Rule 8(3) asks for at least one year]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "warning",
+          "message": {
+            "text": "Hardcoded secrets or credentials (test/api/user.test.ts:280): .set({ Authorization: 'eyJh********' }) [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "fb8ca4e46fbd"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/api/user.test.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 280,
+                  "snippet": {
+                    "text": ".set({ Authorization: 'eyJh********' }) [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "warning",
+          "message": {
+            "text": "Hardcoded secrets or credentials (test/cypress/e2e/forgedJwt.spec.ts:22): 'eyJ0********' [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "6719703122c8"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/cypress/e2e/forgedJwt.spec.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 22,
+                  "snippet": {
+                    "text": "'eyJ0********' [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "warning",
+          "message": {
+            "text": "Hardcoded secrets or credentials (test/cypress/e2e/forgedJwt.spec.ts:38): 'eyJ0********' [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "fb5ae7ce0839"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/cypress/e2e/forgedJwt.spec.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 38,
+                  "snippet": {
+                    "text": "'eyJ0********' [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "warning",
+          "message": {
+            "text": "Hardcoded secrets or credentials (test/server/currentUser.unit.test.ts:40): req.cookies.token = 'eyJ0********' [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "9360e4fb6ef7"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/server/currentUser.unit.test.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 40,
+                  "snippet": {
+                    "text": "req.cookies.token = 'eyJ0********' [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "warning",
+          "message": {
+            "text": "Hardcoded secrets or credentials (test/server/currentUser.unit.test.ts:43): 'eyJ0********', [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "ee8dcad34631"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/server/currentUser.unit.test.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 43,
+                  "snippet": {
+                    "text": "'eyJ0********', [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "warning",
+          "message": {
+            "text": "Hardcoded secrets or credentials (test/server/verify.unit.test.ts:308): req.headers = { authorization: 'Bearer eyJ0********' } [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "b73546366e54"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/server/verify.unit.test.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 308,
+                  "snippet": {
+                    "text": "req.headers = { authorization: 'Bearer eyJ0********' } [known key format]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "warning",
+          "message": {
+            "text": "Hardcoded secrets or credentials (test/server/verify.unit.test.ts:316): req.headers = { authorization: 'Bearer eyJ0********' } [known key format]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "110a14cdb39b"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/server/verify.unit.test.ts",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 316,
+                  "snippet": {
+                    "text": "req.headers = { authorization: 'Bearer eyJ0********' } [known key format]"
                   }
                 }
               }

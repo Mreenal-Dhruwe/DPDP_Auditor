@@ -3,7 +3,7 @@
   "tool_version": "0.1.0",
   "rules_version": "0.1.0",
   "target": "target_app",
-  "generated_at": "2026-11-24T01:41:16.864487Z",
+  "generated_at": "2026-11-24T03:02:39.405658Z",
   "files_scanned": 10,
   "coverage": {
     "files_by_kind": {
@@ -288,7 +288,7 @@
       "scope": "project",
       "file": "app.py",
       "line": 90,
-      "evidence": "Date of birth / age is collected (the backend reads 'dob'), but no parent or guardian consent flow exists anywhere, so under-18s are processed without a parent's consent",
+      "evidence": "Date of birth / age is collected (the backend reads 'dob'), but no parent or guardian consent flow exists anywhere, so under-18s are processed without a parent's consent [the code deals with minors: app.py:72 'is_adult']",
       "context": {
         "start_line": 87,
         "lines": [

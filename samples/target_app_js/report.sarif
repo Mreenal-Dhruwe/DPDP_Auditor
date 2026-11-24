@@ -823,7 +823,7 @@
       "invocations": [
         {
           "executionSuccessful": true,
-          "endTimeUtc": "2026-11-24T01:31:40.529766+00:00"
+          "endTimeUtc": "2026-11-24T03:02:40.328893+00:00"
         }
       ],
       "results": [
@@ -867,6 +867,52 @@
                   "startLine": 4,
                   "snippet": {
                     "text": "jwtSecret: 'shop********', [literal value for jwtSecret]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (config.js:7): cryptoKey: 'a_fi********', [literal value for cryptoKey]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "9a0367ed4816"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "config.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 7,
+                  "snippet": {
+                    "text": "cryptoKey: 'a_fi********', [literal value for cryptoKey]"
                   }
                 }
               }
@@ -1165,6 +1211,103 @@
           ]
         },
         {
+          "ruleId": "DPDP-SEC-002",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "Personal data stored in plaintext (routes/members.js:18): await members.insertOne({ name, passport, password: bcrypt.hashSync(password, 12) }) [members.passport stored as STRING]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "a8035045ec07"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "passport"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Encryption, obfuscation, masking or virtual tokens."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "A database leak exposes the data directly.",
+            "fix": "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "routes/members.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 18,
+                  "snippet": {
+                    "text": "await members.insertOne({ name, passport, password: bcrypt.hashSync(password, 12) }) [members.passport stored as STRING]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-006",
+          "ruleIndex": 12,
+          "level": "error",
+          "message": {
+            "text": "Excessive data in API responses (routes/members.js:30): members.findOne({ id: req.params.id }, (err, member) => res.json(member)) [GET /members/:id (handler) sends members.findOne() with passport, password; pass `attributes` or pick the fields]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "589cc63c3cee"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "passport",
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Masking and minimising exposed personal data."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Sensitive fields leak to every client, including logs and caches.",
+            "fix": "Return a response schema/serializer with only the needed fields; mask identifiers."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "routes/members.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 30,
+                  "snippet": {
+                    "text": "members.findOne({ id: req.params.id }, (err, member) => res.json(member)) [GET /members/:id (handler) sends members.findOne() with passport, password; pass `attributes` or pick the fields]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
           "ruleId": "DPDP-SEC-001",
           "ruleIndex": 7,
           "level": "error",
@@ -1359,6 +1502,53 @@
           ]
         },
         {
+          "ruleId": "DPDP-SEC-008",
+          "ruleIndex": 14,
+          "level": "error",
+          "message": {
+            "text": "Insecure infrastructure configuration (web.js:12): app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false })) [session cookie options are missing: no `secure` flag, so it is also sent over plain HTTP]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "ad90e45e7ecf"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)",
+                "Rule 6(1)(g)"
+              ],
+              "requirement": "Access control and appropriate technical and organisational measures."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Raises the chance and impact of a breach of stored personal data.",
+            "fix": "Run as non-root, disable debug in production, restrict CORS, enforce TLS, block public buckets."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "web.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 12,
+                  "snippet": {
+                    "text": "app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false })) [session cookie options are missing: no `secure` flag, so it is also sent over plain HTTP]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
           "ruleId": "DPDP-SEC-010",
           "ruleIndex": 16,
           "level": "warning",
@@ -1457,7 +1647,7 @@
           "ruleIndex": 25,
           "level": "warning",
           "message": {
-            "text": "No way to access or export one's data (project-wide (see models.js:7)): None of the 12 routes lets users see or export their own data (no GET /me, /profile, /account or /export) (personal data is held, e.g. table users)"
+            "text": "No way to access or export one's data (project-wide (see models.js:7)): None of the 16 routes lets users see or export their own data (no GET /me, /profile, /account or /export) (personal data is held, e.g. table users)"
           },
           "partialFingerprints": {
             "dpdpFindingId/v1": "73679b13823f"
@@ -1491,7 +1681,7 @@
                 "region": {
                   "startLine": 7,
                   "snippet": {
-                    "text": "None of the 12 routes lets users see or export their own data (no GET /me, /profile, /account or /export) (personal data is held, e.g. table users)"
+                    "text": "None of the 16 routes lets users see or export their own data (no GET /me, /profile, /account or /export) (personal data is held, e.g. table users)"
                   }
                 }
               }
@@ -2123,12 +2313,12 @@
       "properties": {
         "target": "target_app_js",
         "rulesVersion": "0.1.0",
-        "filesScanned": 11,
+        "filesScanned": 14,
         "coverage": {
           "files_by_kind": {
             "typescript": 6,
+            "javascript": 5,
             "config": 2,
-            "javascript": 2,
             "templates": 1
           },
           "rules_checked": [

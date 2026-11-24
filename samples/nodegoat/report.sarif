@@ -1,0 +1,1971 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "DPDP Compliance Auditor",
+          "version": "0.1.0",
+          "semanticVersion": "0.1.0",
+          "rules": [
+            {
+              "id": "DPDP-NOT-001",
+              "name": "PersonalDataCollectedWithoutANoticeOfDataAndPurpose",
+              "shortDescription": {
+                "text": "Personal data collected without a notice of data and purpose"
+              },
+              "fullDescription": {
+                "text": "Notice must give an itemised description of the personal data and the specified purpose."
+              },
+              "help": {
+                "text": "Show an itemised notice (data fields + purpose) before or with the consent request.\n\nLaw: DPDP Act s.5(1), DPDP Rules Rule 3(b). Notice must give an itemised description of the personal data and the specified purpose.",
+                "markdown": "**Fix:** Show an itemised notice (data fields + purpose) before or with the consent request.\n\n**Law:** DPDP Act s.5(1), DPDP Rules Rule 3(b). Notice must give an itemised description of the personal data and the specified purpose."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "notice",
+                  "s.5(1)",
+                  "Rule 3(b)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-CON-001",
+              "name": "ConsentCanBeGivenButNotWithdrawn",
+              "shortDescription": {
+                "text": "Consent can be given but not withdrawn"
+              },
+              "fullDescription": {
+                "text": "Withdrawal must be possible at any time, with ease comparable to giving consent; processing must then stop."
+              },
+              "help": {
+                "text": "Add DELETE /consent (or POST /consent/withdraw) that clears consent and stops downstream processing.\n\nLaw: DPDP Act s.6(4), DPDP Act s.6(6), DPDP Rules Rule 3(c)(i). Withdrawal must be possible at any time, with ease comparable to giving consent; processing must then stop.",
+                "markdown": "**Fix:** Add DELETE /consent (or POST /consent/withdraw) that clears consent and stops downstream processing.\n\n**Law:** DPDP Act s.6(4), DPDP Act s.6(6), DPDP Rules Rule 3(c)(i). Withdrawal must be possible at any time, with ease comparable to giving consent; processing must then stop."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "consent",
+                  "s.6(4)",
+                  "s.6(6)",
+                  "Rule 3(c)(i)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-CON-002",
+              "name": "PreTickedOrDefaultTrueConsent",
+              "shortDescription": {
+                "text": "Pre-ticked or default-true consent"
+              },
+              "fullDescription": {
+                "text": "Consent must be unambiguous with a clear affirmative action."
+              },
+              "help": {
+                "text": "Default consent to false and require an explicit user action.\n\nLaw: DPDP Act s.6(1). Consent must be unambiguous with a clear affirmative action.",
+                "markdown": "**Fix:** Default consent to false and require an explicit user action.\n\n**Law:** DPDP Act s.6(1). Consent must be unambiguous with a clear affirmative action."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "consent",
+                  "s.6(1)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-CON-003",
+              "name": "NoEvidenceOfConsentStored",
+              "shortDescription": {
+                "text": "No evidence of consent stored"
+              },
+              "fullDescription": {
+                "text": "The Data Fiduciary must be able to prove notice was given and consent obtained."
+              },
+              "help": {
+                "text": "Store consent records with user id, purpose, notice version, timestamp and channel.\n\nLaw: DPDP Act s.6(10). The Data Fiduciary must be able to prove notice was given and consent obtained.",
+                "markdown": "**Fix:** Store consent records with user id, purpose, notice version, timestamp and channel.\n\n**Law:** DPDP Act s.6(10). The Data Fiduciary must be able to prove notice was given and consent obtained."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "consent",
+                  "s.6(10)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-CON-004",
+              "name": "PersonalDataUsedWithoutCheckingConsent",
+              "shortDescription": {
+                "text": "Personal data used without checking consent"
+              },
+              "fullDescription": {
+                "text": "Process only on consent or a legitimate use, limited to the specified purpose."
+              },
+              "help": {
+                "text": "Add a consent guard (middleware or decorator) before purpose-specific processing.\n\nLaw: DPDP Act s.4(1), DPDP Act s.6(1). Process only on consent or a legitimate use, limited to the specified purpose.",
+                "markdown": "**Fix:** Add a consent guard (middleware or decorator) before purpose-specific processing.\n\n**Law:** DPDP Act s.4(1), DPDP Act s.6(1). Process only on consent or a legitimate use, limited to the specified purpose."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "consent",
+                  "s.4(1)",
+                  "s.6(1)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-CON-005",
+              "name": "OverCollectionBeyondTheStatedPurpose",
+              "shortDescription": {
+                "text": "Over-collection beyond the stated purpose"
+              },
+              "fullDescription": {
+                "text": "Consent is limited to personal data necessary for the specified purpose."
+              },
+              "help": {
+                "text": "Remove unused fields and permissions, or tie each one to a stated purpose.\n\nLaw: DPDP Act s.6(1). Consent is limited to personal data necessary for the specified purpose.",
+                "markdown": "**Fix:** Remove unused fields and permissions, or tie each one to a stated purpose.\n\n**Law:** DPDP Act s.6(1). Consent is limited to personal data necessary for the specified purpose."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "consent",
+                  "s.6(1)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-CON-006",
+              "name": "ConsentRequestOfferedInOneLanguageOnly",
+              "shortDescription": {
+                "text": "Consent request offered in one language only"
+              },
+              "fullDescription": {
+                "text": "Option to access the consent request in English or an Eighth Schedule language."
+              },
+              "help": {
+                "text": "Use i18n resources for notice and consent text with at least one Indian language.\n\nLaw: DPDP Act s.6(3). Option to access the consent request in English or an Eighth Schedule language.",
+                "markdown": "**Fix:** Use i18n resources for notice and consent text with at least one Indian language.\n\n**Law:** DPDP Act s.6(3). Option to access the consent request in English or an Eighth Schedule language."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "consent",
+                  "s.6(3)"
+                ],
+                "security-severity": "3.0",
+                "severity": "low"
+              }
+            },
+            {
+              "id": "DPDP-SEC-001",
+              "name": "PersonalDataWrittenToLogs",
+              "shortDescription": {
+                "text": "Personal data written to logs"
+              },
+              "fullDescription": {
+                "text": "Secure personal data through encryption, obfuscation, masking or virtual tokens."
+              },
+              "help": {
+                "text": "Mask or tokenise PII before logging (e.g. a***@x.com, ******1234).\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Secure personal data through encryption, obfuscation, masking or virtual tokens.",
+                "markdown": "**Fix:** Mask or tokenise PII before logging (e.g. a***@x.com, ******1234).\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Secure personal data through encryption, obfuscation, masking or virtual tokens."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(a)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-SEC-002",
+              "name": "PersonalDataStoredInPlaintext",
+              "shortDescription": {
+                "text": "Personal data stored in plaintext"
+              },
+              "fullDescription": {
+                "text": "Encryption, obfuscation, masking or virtual tokens."
+              },
+              "help": {
+                "text": "Encrypt sensitive columns at the field level, or store tokens instead of raw values.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Encryption, obfuscation, masking or virtual tokens.",
+                "markdown": "**Fix:** Encrypt sensitive columns at the field level, or store tokens instead of raw values.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Encryption, obfuscation, masking or virtual tokens."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(a)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-SEC-003",
+              "name": "WeakPasswordHashing",
+              "shortDescription": {
+                "text": "Weak password hashing"
+              },
+              "fullDescription": {
+                "text": "Reasonable security safeguards to prevent personal data breach."
+              },
+              "help": {
+                "text": "Use bcrypt, scrypt or argon2 with per-user salt.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Reasonable security safeguards to prevent personal data breach.",
+                "markdown": "**Fix:** Use bcrypt, scrypt or argon2 with per-user salt.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Reasonable security safeguards to prevent personal data breach."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(a)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-SEC-004",
+              "name": "HardcodedSecretsOrCredentials",
+              "shortDescription": {
+                "text": "Hardcoded secrets or credentials"
+              },
+              "fullDescription": {
+                "text": "Measures to control access to computer resources."
+              },
+              "help": {
+                "text": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(b). Measures to control access to computer resources.",
+                "markdown": "**Fix:** Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(b). Measures to control access to computer resources."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(b)"
+                ],
+                "security-severity": "9.5",
+                "severity": "critical"
+              }
+            },
+            {
+              "id": "DPDP-SEC-005",
+              "name": "PersonalDataExposedByAnUnauthenticatedRoute",
+              "shortDescription": {
+                "text": "Personal data exposed by an unauthenticated route"
+              },
+              "fullDescription": {
+                "text": "Appropriate measures to control access."
+              },
+              "help": {
+                "text": "Require authentication and check that the requester owns the record.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(b). Appropriate measures to control access.",
+                "markdown": "**Fix:** Require authentication and check that the requester owns the record.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(b). Appropriate measures to control access."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(b)"
+                ],
+                "security-severity": "9.5",
+                "severity": "critical"
+              }
+            },
+            {
+              "id": "DPDP-SEC-006",
+              "name": "ExcessiveDataInApiResponses",
+              "shortDescription": {
+                "text": "Excessive data in API responses"
+              },
+              "fullDescription": {
+                "text": "Masking and minimising exposed personal data."
+              },
+              "help": {
+                "text": "Return a response schema/serializer with only the needed fields; mask identifiers.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Masking and minimising exposed personal data.",
+                "markdown": "**Fix:** Return a response schema/serializer with only the needed fields; mask identifiers.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(a). Masking and minimising exposed personal data."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(a)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-SEC-007",
+              "name": "NoAccessLoggingOnPersonalDataReads",
+              "shortDescription": {
+                "text": "No access logging on personal-data reads"
+              },
+              "fullDescription": {
+                "text": "Visibility on access to personal data through logs, monitoring and review."
+              },
+              "help": {
+                "text": "Write an audit event (who, what record, when) for every PII read and change.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(c). Visibility on access to personal data through logs, monitoring and review.",
+                "markdown": "**Fix:** Write an audit event (who, what record, when) for every PII read and change.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(c). Visibility on access to personal data through logs, monitoring and review."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(c)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-SEC-008",
+              "name": "InsecureInfrastructureConfiguration",
+              "shortDescription": {
+                "text": "Insecure infrastructure configuration"
+              },
+              "fullDescription": {
+                "text": "Access control and appropriate technical and organisational measures."
+              },
+              "help": {
+                "text": "Run as non-root, disable debug in production, restrict CORS, enforce TLS, block public buckets.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(b), DPDP Rules Rule 6(1)(g). Access control and appropriate technical and organisational measures.",
+                "markdown": "**Fix:** Run as non-root, disable debug in production, restrict CORS, enforce TLS, block public buckets.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(b), DPDP Rules Rule 6(1)(g). Access control and appropriate technical and organisational measures."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(b)",
+                  "Rule 6(1)(g)"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-SEC-009",
+              "name": "NoBackupConfiguredForPersonalDataStores",
+              "shortDescription": {
+                "text": "No backup configured for personal-data stores"
+              },
+              "fullDescription": {
+                "text": "Reasonable measures for continued processing, such as data backups."
+              },
+              "help": {
+                "text": "Configure automated, encrypted backups with tested restore.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(d). Reasonable measures for continued processing, such as data backups.",
+                "markdown": "**Fix:** Configure automated, encrypted backups with tested restore.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(d). Reasonable measures for continued processing, such as data backups."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(d)"
+                ],
+                "security-severity": "1.0",
+                "severity": "info"
+              }
+            },
+            {
+              "id": "DPDP-SEC-010",
+              "name": "LogRetentionShorterThanOneYear",
+              "shortDescription": {
+                "text": "Log retention shorter than one year"
+              },
+              "fullDescription": {
+                "text": "Retain logs and personal data for one year for detecting and investigating unauthorised access."
+              },
+              "help": {
+                "text": "Retain access/processing logs for at least 365 days in protected storage.\n\nLaw: DPDP Act s.8(5), DPDP Rules Rule 6(1)(e), DPDP Rules Rule 8(3). Retain logs and personal data for one year for detecting and investigating unauthorised access.",
+                "markdown": "**Fix:** Retain access/processing logs for at least 365 days in protected storage.\n\n**Law:** DPDP Act s.8(5), DPDP Rules Rule 6(1)(e), DPDP Rules Rule 8(3). Retain logs and personal data for one year for detecting and investigating unauthorised access."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "s.8(5)",
+                  "Rule 6(1)(e)",
+                  "Rule 8(3)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-TP-001",
+              "name": "PersonalDataSentToAThirdPartySdk",
+              "shortDescription": {
+                "text": "Personal data sent to a third-party SDK"
+              },
+              "fullDescription": {
+                "text": "Fiduciary is responsible for processors, which must work under a valid contract with security terms."
+              },
+              "help": {
+                "text": "Send pseudonymous IDs instead of PII, scrub events, and confirm a DPA exists with the vendor.\n\nLaw: DPDP Act s.8(1), DPDP Act s.8(2), DPDP Rules Rule 6(1)(f). Fiduciary is responsible for processors, which must work under a valid contract with security terms.",
+                "markdown": "**Fix:** Send pseudonymous IDs instead of PII, scrub events, and confirm a DPA exists with the vendor.\n\n**Law:** DPDP Act s.8(1), DPDP Act s.8(2), DPDP Rules Rule 6(1)(f). Fiduciary is responsible for processors, which must work under a valid contract with security terms."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "third parties",
+                  "s.8(1)",
+                  "s.8(2)",
+                  "Rule 6(1)(f)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-TP-002",
+              "name": "PersonalDataStoredOrSentOutsideIndia",
+              "shortDescription": {
+                "text": "Personal data stored or sent outside India"
+              },
+              "fullDescription": {
+                "text": "Transfers allowed unless the Government restricts a country or sets requirements by order."
+              },
+              "help": {
+                "text": "Record transfer destinations and review them against current Government orders.\n\nLaw: DPDP Act s.16(1), DPDP Rules Rule 15. Transfers allowed unless the Government restricts a country or sets requirements by order.",
+                "markdown": "**Fix:** Record transfer destinations and review them against current Government orders.\n\n**Law:** DPDP Act s.16(1), DPDP Rules Rule 15. Transfers allowed unless the Government restricts a country or sets requirements by order."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "transfers",
+                  "s.16(1)",
+                  "Rule 15"
+                ],
+                "security-severity": "1.0",
+                "severity": "info"
+              }
+            },
+            {
+              "id": "DPDP-BR-001",
+              "name": "NoBreachNotificationMechanism",
+              "shortDescription": {
+                "text": "No breach notification mechanism"
+              },
+              "fullDescription": {
+                "text": "Inform affected users without delay; send the Board a detailed report within 72 hours."
+              },
+              "help": {
+                "text": "Add an incident module that can notify affected users and generate the Board report.\n\nLaw: DPDP Act s.8(6), DPDP Rules Rule 7(1), DPDP Rules Rule 7(2). Inform affected users without delay; send the Board a detailed report within 72 hours.",
+                "markdown": "**Fix:** Add an incident module that can notify affected users and generate the Board report.\n\n**Law:** DPDP Act s.8(6), DPDP Rules Rule 7(1), DPDP Rules Rule 7(2). Inform affected users without delay; send the Board a detailed report within 72 hours."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "breach",
+                  "s.8(6)",
+                  "Rule 7(1)",
+                  "Rule 7(2)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-RET-001",
+              "name": "PersonalDataWithNoEraseOrAnonymisePath",
+              "shortDescription": {
+                "text": "Personal data with no erase or anonymise path"
+              },
+              "fullDescription": {
+                "text": "Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+              },
+              "help": {
+                "text": "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds.\n\nLaw: DPDP Act s.8(7), DPDP Act s.12(3), DPDP Rules Rule 8. Erase personal data on withdrawal or once the purpose is served, unless law requires retention.",
+                "markdown": "**Fix:** Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds.\n\n**Law:** DPDP Act s.8(7), DPDP Act s.12(3), DPDP Rules Rule 8. Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "retention",
+                  "s.8(7)",
+                  "s.12(3)",
+                  "Rule 8"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-RET-002",
+              "name": "ImmediateHardDeleteWithNoMinimumRetention",
+              "shortDescription": {
+                "text": "Immediate hard delete with no minimum retention"
+              },
+              "fullDescription": {
+                "text": "Retain personal data, traffic data and processing logs for at least one year, then erase."
+              },
+              "help": {
+                "text": "Soft-delete and restrict access, keep processing logs for one year, then purge.\n\nLaw: DPDP Rules Rule 8(3). Retain personal data, traffic data and processing logs for at least one year, then erase.",
+                "markdown": "**Fix:** Soft-delete and restrict access, keep processing logs for one year, then purge.\n\n**Law:** DPDP Rules Rule 8(3). Retain personal data, traffic data and processing logs for at least one year, then erase."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "retention",
+                  "Rule 8(3)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-RET-003",
+              "name": "NoPreErasureNoticeToTheUser",
+              "shortDescription": {
+                "text": "No pre-erasure notice to the user"
+              },
+              "fullDescription": {
+                "text": "Inform the user at least 48 hours before erasure (applies to Third Schedule classes)."
+              },
+              "help": {
+                "text": "Send a notice 48 hours before scheduled erasure.\n\nLaw: DPDP Act s.8(8), DPDP Rules Rule 8(2). Inform the user at least 48 hours before erasure (applies to Third Schedule classes).",
+                "markdown": "**Fix:** Send a notice 48 hours before scheduled erasure.\n\n**Law:** DPDP Act s.8(8), DPDP Rules Rule 8(2). Inform the user at least 48 hours before erasure (applies to Third Schedule classes)."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "retention",
+                  "s.8(8)",
+                  "Rule 8(2)"
+                ],
+                "security-severity": "3.0",
+                "severity": "low"
+              }
+            },
+            {
+              "id": "DPDP-CH-001",
+              "name": "ChildDataCollectedWithoutParentalConsentFlow",
+              "shortDescription": {
+                "text": "Child data collected without parental consent flow"
+              },
+              "fullDescription": {
+                "text": "Verifiable consent of the parent before processing a child's personal data."
+              },
+              "help": {
+                "text": "Gate under-18 sign-ups behind verified parental consent (Rule 10 methods).\n\nLaw: DPDP Act s.9(1), DPDP Rules Rule 10. Verifiable consent of the parent before processing a child's personal data.",
+                "markdown": "**Fix:** Gate under-18 sign-ups behind verified parental consent (Rule 10 methods).\n\n**Law:** DPDP Act s.9(1), DPDP Rules Rule 10. Verifiable consent of the parent before processing a child's personal data."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "children",
+                  "s.9(1)",
+                  "Rule 10"
+                ],
+                "security-severity": "7.5",
+                "severity": "high"
+              }
+            },
+            {
+              "id": "DPDP-CH-002",
+              "name": "TrackingOrTargetedAdsPossibleForChildren",
+              "shortDescription": {
+                "text": "Tracking or targeted ads possible for children"
+              },
+              "fullDescription": {
+                "text": "No tracking, behavioural monitoring or targeted advertising directed at children."
+              },
+              "help": {
+                "text": "Disable tracking and ad SDKs for users under 18.\n\nLaw: DPDP Act s.9(3). No tracking, behavioural monitoring or targeted advertising directed at children.",
+                "markdown": "**Fix:** Disable tracking and ad SDKs for users under 18.\n\n**Law:** DPDP Act s.9(3). No tracking, behavioural monitoring or targeted advertising directed at children."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "children",
+                  "s.9(3)"
+                ],
+                "security-severity": "9.5",
+                "severity": "critical"
+              }
+            },
+            {
+              "id": "DPDP-RT-001",
+              "name": "NoWayToAccessOrExportOneSData",
+              "shortDescription": {
+                "text": "No way to access or export one's data"
+              },
+              "fullDescription": {
+                "text": "Right to access information about personal data; publish how to make requests."
+              },
+              "help": {
+                "text": "Add GET /me/data returning stored data and processing summary.\n\nLaw: DPDP Act s.11, DPDP Rules Rule 14(1). Right to access information about personal data; publish how to make requests.",
+                "markdown": "**Fix:** Add GET /me/data returning stored data and processing summary.\n\n**Law:** DPDP Act s.11, DPDP Rules Rule 14(1). Right to access information about personal data; publish how to make requests."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "rights",
+                  "s.11",
+                  "Rule 14(1)"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-RT-002",
+              "name": "NoCorrectionOrErasureEndpoint",
+              "shortDescription": {
+                "text": "No correction or erasure endpoint"
+              },
+              "fullDescription": {
+                "text": "Right to correction, completion, updating and erasure."
+              },
+              "help": {
+                "text": "Add PATCH /me and an erasure request endpoint.\n\nLaw: DPDP Act s.12, DPDP Rules Rule 14. Right to correction, completion, updating and erasure.",
+                "markdown": "**Fix:** Add PATCH /me and an erasure request endpoint.\n\n**Law:** DPDP Act s.12, DPDP Rules Rule 14. Right to correction, completion, updating and erasure."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "rights",
+                  "s.12",
+                  "Rule 14"
+                ],
+                "security-severity": "5.0",
+                "severity": "medium"
+              }
+            },
+            {
+              "id": "DPDP-RT-003",
+              "name": "NoGrievanceMechanismOrContactPublished",
+              "shortDescription": {
+                "text": "No grievance mechanism or contact published"
+              },
+              "fullDescription": {
+                "text": "Publish a contact for processing questions; respond to grievances within 90 days."
+              },
+              "help": {
+                "text": "Add a grievance form with tracking and a published DPO/contact page.\n\nLaw: DPDP Act s.8(9), DPDP Act s.8(10), DPDP Act s.13, DPDP Rules Rule 9, DPDP Rules Rule 14(3). Publish a contact for processing questions; respond to grievances within 90 days.",
+                "markdown": "**Fix:** Add a grievance form with tracking and a published DPO/contact page.\n\n**Law:** DPDP Act s.8(9), DPDP Act s.8(10), DPDP Act s.13, DPDP Rules Rule 9, DPDP Rules Rule 14(3). Publish a contact for processing questions; respond to grievances within 90 days."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "dpdp",
+                  "privacy",
+                  "security",
+                  "rights",
+                  "s.8(9)",
+                  "s.8(10)",
+                  "s.13",
+                  "Rule 9",
+                  "Rule 14(3)"
+                ],
+                "security-severity": "3.0",
+                "severity": "low"
+              }
+            }
+          ]
+        }
+      },
+      "automationDetails": {
+        "id": "dpdp-compliance/NodeGoat/"
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "endTimeUtc": "2026-11-24T03:02:43.305963+00:00"
+        }
+      ],
+      "results": [
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (app/views/tutorial/a6.html:83): cryptoKey: \"a_se********\", [literal value for cryptoKey]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "a4cea7984769"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/views/tutorial/a6.html",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 83,
+                  "snippet": {
+                    "text": "cryptoKey: \"a_se********\", [literal value for cryptoKey]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (artifacts/cert/server.key:1): -----BEGIN RSA PRIVATE KEY----- [private key]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "b49dedc105f3"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "artifacts/cert/server.key",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 1,
+                  "snippet": {
+                    "text": "-----BEGIN RSA PRIVATE KEY----- [private key]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (artifacts/db-reset.js:18): \"password\": \"********\", [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "763e78a9ca93"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "artifacts/db-reset.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 18,
+                  "snippet": {
+                    "text": "\"password\": \"********\", [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (artifacts/db-reset.js:27): \"password\": \"********\" [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "8f5d26a7a951"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "artifacts/db-reset.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 27,
+                  "snippet": {
+                    "text": "\"password\": \"********\" [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (artifacts/db-reset.js:35): \"password\": \"********\" [literal value for password]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "fda6be088669"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "artifacts/db-reset.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 35,
+                  "snippet": {
+                    "text": "\"password\": \"********\" [literal value for password]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (config/env/all.js:8): cookieSecret: \"sess********\", [literal value for cookieSecret]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "668e32718946"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "config/env/all.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 8,
+                  "snippet": {
+                    "text": "cookieSecret: \"sess********\", [literal value for cookieSecret]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded secrets or credentials (config/env/all.js:9): cryptoKey: \"a_se********\", [literal value for cryptoKey]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "1b702acea884"
+          },
+          "properties": {
+            "severity": "critical",
+            "security-severity": "9.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "config/env/all.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 9,
+                  "snippet": {
+                    "text": "cryptoKey: \"a_se********\", [literal value for cryptoKey]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-002",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "Personal data stored in plaintext (app/data/profile-dao.js:56): user.bankAcc = bankAcc; [users.bankAcc stored as STRING]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "30b8d3b8e801"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "bank_account"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Encryption, obfuscation, masking or virtual tokens."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "A database leak exposes the data directly.",
+            "fix": "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/data/profile-dao.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 56,
+                  "snippet": {
+                    "text": "user.bankAcc = bankAcc; [users.bankAcc stored as STRING]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-002",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "Personal data stored in plaintext (app/data/profile-dao.js:59): user.bankRouting = bankRouting; [users.bankRouting stored as STRING]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "14b732dec425"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "bank_routing"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Encryption, obfuscation, masking or virtual tokens."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "A database leak exposes the data directly.",
+            "fix": "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/data/profile-dao.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 59,
+                  "snippet": {
+                    "text": "user.bankRouting = bankRouting; [users.bankRouting stored as STRING]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-002",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "Personal data stored in plaintext (app/data/profile-dao.js:62): user.ssn = ssn; [users.ssn stored as STRING]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "aac1ce90e3a4"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [
+              "ssn"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Encryption, obfuscation, masking or virtual tokens."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "A database leak exposes the data directly.",
+            "fix": "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/data/profile-dao.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 62,
+                  "snippet": {
+                    "text": "user.ssn = ssn; [users.ssn stored as STRING]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-RET-001",
+          "ruleIndex": 20,
+          "level": "error",
+          "message": {
+            "text": "Personal data with no erase or anonymise path (app/data/profile-dao.js:78): users.update({ [table users holds address, bank_account, bank_routing, dob, full_name, ssn; no code deletes or anonymises it]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "ffda57c0d041"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "medium",
+            "scope": "line",
+            "pii": [
+              "address",
+              "bank_account",
+              "bank_routing",
+              "dob",
+              "full_name",
+              "ssn"
+            ],
+            "law": {
+              "act": [
+                "s.8(7)",
+                "s.12(3)"
+              ],
+              "rules": [
+                "Rule 8"
+              ],
+              "requirement": "Erase personal data on withdrawal or once the purpose is served, unless law requires retention."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Data is kept indefinitely and erasure requests cannot be honoured.",
+            "fix": "Add erasure/anonymisation jobs and an erasure endpoint, respecting legal holds."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/data/profile-dao.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 78,
+                  "snippet": {
+                    "text": "users.update({ [table users holds address, bank_account, bank_routing, dob, full_name, ssn; no code deletes or anonymises it]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-002",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "Personal data stored in plaintext (app/data/user-dao.js:25): password //received from request param [users.password stored as STRING; the code hashes passwords with pbkdf2, check this column stores that hash]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "466ebae48924"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(a)"
+              ],
+              "requirement": "Encryption, obfuscation, masking or virtual tokens."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "A database leak exposes the data directly.",
+            "fix": "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/data/user-dao.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 25,
+                  "snippet": {
+                    "text": "password //received from request param [users.password stored as STRING; the code hashes passwords with pbkdf2, check this column stores that hash]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-CH-001",
+          "ruleIndex": 23,
+          "level": "error",
+          "message": {
+            "text": "Child data collected without parental consent flow (project-wide (see app/views/profile.html:53)): Date of birth / age is collected (a form asks for 'dob'), but no parent or guardian consent flow exists anywhere, so under-18s are processed without a parent's consent [only a date of birth was found, nothing shows minors use the app; verify manually: it may be collected from adults only]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "7889a1154240"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "low",
+            "scope": "project",
+            "pii": [
+              "dob"
+            ],
+            "law": {
+              "act": [
+                "s.9(1)"
+              ],
+              "rules": [
+                "Rule 10"
+              ],
+              "requirement": "Verifiable consent of the parent before processing a child's personal data."
+            },
+            "penaltyCap": "Rs 200 crore",
+            "severityReason": "Rs 200 crore cap; affects a protected group.",
+            "fix": "Gate under-18 sign-ups behind verified parental consent (Rule 10 methods)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/views/profile.html",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 53,
+                  "snippet": {
+                    "text": "Date of birth / age is collected (a form asks for 'dob'), but no parent or guardian consent flow exists anywhere, so under-18s are processed without a parent's consent [only a date of birth was found, nothing shows minors use the app; verify manually: it may be collected from adults only]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-008",
+          "ruleIndex": 14,
+          "level": "error",
+          "message": {
+            "text": "Insecure infrastructure configuration (server.js:78): app.use(session({ [session cookie options are missing: no `secure` flag, so it is also sent over plain HTTP]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "3e59559df5ce"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)",
+                "Rule 6(1)(g)"
+              ],
+              "requirement": "Access control and appropriate technical and organisational measures."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Raises the chance and impact of a breach of stored personal data.",
+            "fix": "Run as non-root, disable debug in production, restrict CORS, enforce TLS, block public buckets."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 78,
+                  "snippet": {
+                    "text": "app.use(session({ [session cookie options are missing: no `secure` flag, so it is also sent over plain HTTP]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-008",
+          "ruleIndex": 14,
+          "level": "error",
+          "message": {
+            "text": "Insecure infrastructure configuration (server.js:145): http.createServer(app).listen(port, () => { [serves over plain HTTP and the project never creates an https server; verify manually: TLS may be ended by a proxy or load balancer in front]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "532a19c1ee7e"
+          },
+          "properties": {
+            "severity": "high",
+            "security-severity": "7.5",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)",
+                "Rule 6(1)(g)"
+              ],
+              "requirement": "Access control and appropriate technical and organisational measures."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Raises the chance and impact of a breach of stored personal data.",
+            "fix": "Run as non-root, disable debug in production, restrict CORS, enforce TLS, block public buckets."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 145,
+                  "snippet": {
+                    "text": "http.createServer(app).listen(port, () => { [serves over plain HTTP and the project never creates an https server; verify manually: TLS may be ended by a proxy or load balancer in front]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-BR-001",
+          "ruleIndex": 19,
+          "level": "warning",
+          "message": {
+            "text": "No breach notification mechanism (project-wide (see app/data/profile-dao.js:78)): Personal data is held (e.g. table users) but nothing in the project handles a breach: no incident module, no user or Board notification, no alert hook; verify manually: the breach process may be run outside the code"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "aef9d6cb6080"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "project",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(6)"
+              ],
+              "rules": [
+                "Rule 7(1)",
+                "Rule 7(2)"
+              ],
+              "requirement": "Inform affected users without delay; send the Board a detailed report within 72 hours."
+            },
+            "penaltyCap": "Rs 200 crore",
+            "severityReason": "Process often lives outside code; absence is a signal, not proof.",
+            "fix": "Add an incident module that can notify affected users and generate the Board report."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/data/profile-dao.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 78,
+                  "snippet": {
+                    "text": "Personal data is held (e.g. table users) but nothing in the project handles a breach: no incident module, no user or Board notification, no alert hook; verify manually: the breach process may be run outside the code"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-RT-002",
+          "ruleIndex": 26,
+          "level": "warning",
+          "message": {
+            "text": "No correction or erasure endpoint (project-wide (see app/data/profile-dao.js:78)): No route lets users erase (DELETE /me or /account) their own data (personal data is held, e.g. table users)"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "f8ad8c337582"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "medium",
+            "scope": "project",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.12"
+              ],
+              "rules": [
+                "Rule 14"
+              ],
+              "requirement": "Right to correction, completion, updating and erasure."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Users cannot exercise a statutory right.",
+            "fix": "Add PATCH /me and an erasure request endpoint."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/data/profile-dao.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 78,
+                  "snippet": {
+                    "text": "No route lets users erase (DELETE /me or /account) their own data (personal data is held, e.g. table users)"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-NOT-001",
+          "ruleIndex": 0,
+          "level": "warning",
+          "message": {
+            "text": "Personal data collected without a notice of data and purpose (app/views/profile.html:38): <form role=\"form\" method=\"post\" action=\"/profile\"> [the form asks for address, bank_account, bank_routing, dob, full_name, ssn but the page shows no notice of what is collected and why; verify manually: the notice may be in a modal or an earlier step]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "43060e611866"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [
+              "address",
+              "bank_account",
+              "bank_routing",
+              "dob",
+              "full_name",
+              "ssn"
+            ],
+            "law": {
+              "act": [
+                "s.5(1)"
+              ],
+              "rules": [
+                "Rule 3(b)"
+              ],
+              "requirement": "Notice must give an itemised description of the personal data and the specified purpose."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Notice is a precondition for valid consent; impact is on transparency, not direct exposure.",
+            "fix": "Show an itemised notice (data fields + purpose) before or with the consent request."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/views/profile.html",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 38,
+                  "snippet": {
+                    "text": "<form role=\"form\" method=\"post\" action=\"/profile\"> [the form asks for address, bank_account, bank_routing, dob, full_name, ssn but the page shows no notice of what is collected and why; verify manually: the notice may be in a modal or an earlier step]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-NOT-001",
+          "ruleIndex": 0,
+          "level": "warning",
+          "message": {
+            "text": "Personal data collected without a notice of data and purpose (app/views/signup.html:72): <form method=\"post\" role=\"form\" method=\"post\"> [the form asks for email, full_name, password but the page shows no notice of what is collected and why; verify manually: the notice may be in a modal or an earlier step]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "8a5557116970"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [
+              "email",
+              "full_name",
+              "password"
+            ],
+            "law": {
+              "act": [
+                "s.5(1)"
+              ],
+              "rules": [
+                "Rule 3(b)"
+              ],
+              "requirement": "Notice must give an itemised description of the personal data and the specified purpose."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Notice is a precondition for valid consent; impact is on transparency, not direct exposure.",
+            "fix": "Show an itemised notice (data fields + purpose) before or with the consent request."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/views/signup.html",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 72,
+                  "snippet": {
+                    "text": "<form method=\"post\" role=\"form\" method=\"post\"> [the form asks for email, full_name, password but the page shows no notice of what is collected and why; verify manually: the notice may be in a modal or an earlier step]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "warning",
+          "message": {
+            "text": "Hardcoded secrets or credentials (config/env/development.js:6): zapApiKey: \"v9dn********\", [literal value for zapApiKey]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "35a6d88e30f2"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "config/env/development.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 6,
+                  "snippet": {
+                    "text": "zapApiKey: \"v9dn********\", [literal value for zapApiKey]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-004",
+          "ruleIndex": 10,
+          "level": "warning",
+          "message": {
+            "text": "Hardcoded secrets or credentials (config/env/test.js:6): zapApiKey: \"v9dn********\", [literal value for zapApiKey]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "9f7e60264713"
+          },
+          "properties": {
+            "severity": "medium",
+            "security-severity": "5.0",
+            "confidence": "high",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(b)"
+              ],
+              "requirement": "Measures to control access to computer resources."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.",
+            "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "config/env/test.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 6,
+                  "snippet": {
+                    "text": "zapApiKey: \"v9dn********\", [literal value for zapApiKey]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-RT-003",
+          "ruleIndex": 27,
+          "level": "note",
+          "message": {
+            "text": "No grievance mechanism or contact published (project-wide (see app/data/profile-dao.js:78)): No grievance, complaint or contact route or page, and no grievance officer, DPO or privacy@ contact in the pages (personal data is held, e.g. table users)"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "2ae8400cbe32"
+          },
+          "properties": {
+            "severity": "low",
+            "security-severity": "3.0",
+            "confidence": "medium",
+            "scope": "project",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(9)",
+                "s.8(10)",
+                "s.13"
+              ],
+              "rules": [
+                "Rule 9",
+                "Rule 14(3)"
+              ],
+              "requirement": "Publish a contact for processing questions; respond to grievances within 90 days."
+            },
+            "penaltyCap": "Rs 50 crore",
+            "severityReason": "Often handled outside the app; verify manually.",
+            "fix": "Add a grievance form with tracking and a published DPO/contact page."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/data/profile-dao.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 78,
+                  "snippet": {
+                    "text": "No grievance, complaint or contact route or page, and no grievance officer, DPO or privacy@ contact in the pages (personal data is held, e.g. table users)"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DPDP-SEC-009",
+          "ruleIndex": 15,
+          "level": "note",
+          "message": {
+            "text": "No backup configured for personal-data stores (docker-compose.yml:14): image: mongo:4.4 [mongo service with nothing in the repo backing it up; verify manually: backups may be configured outside the repository]"
+          },
+          "partialFingerprints": {
+            "dpdpFindingId/v1": "88210fc857a5"
+          },
+          "properties": {
+            "severity": "info",
+            "security-severity": "1.0",
+            "confidence": "low",
+            "scope": "line",
+            "pii": [],
+            "law": {
+              "act": [
+                "s.8(5)"
+              ],
+              "rules": [
+                "Rule 6(1)(d)"
+              ],
+              "requirement": "Reasonable measures for continued processing, such as data backups."
+            },
+            "penaltyCap": "Rs 250 crore",
+            "severityReason": "Backups are usually configured outside the repo (cloud console, DBA tooling), so the code alone cannot show they are missing; reported for manual verification.",
+            "fix": "Configure automated, encrypted backups with tested restore."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "docker-compose.yml",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 14,
+                  "snippet": {
+                    "text": "image: mongo:4.4 [mongo service with nothing in the repo backing it up; verify manually: backups may be configured outside the repository]"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "target": "NodeGoat",
+        "rulesVersion": "0.1.0",
+        "filesScanned": 111,
+        "coverage": {
+          "files_by_kind": {
+            "javascript": 50,
+            "templates": 24,
+            "other": 23,
+            "config": 14
+          },
+          "rules_checked": [
+            "DPDP-NOT-001",
+            "DPDP-CON-001",
+            "DPDP-CON-002",
+            "DPDP-CON-003",
+            "DPDP-CON-004",
+            "DPDP-CON-005",
+            "DPDP-CON-006",
+            "DPDP-SEC-001",
+            "DPDP-SEC-002",
+            "DPDP-SEC-003",
+            "DPDP-SEC-004",
+            "DPDP-SEC-005",
+            "DPDP-SEC-006",
+            "DPDP-SEC-007",
+            "DPDP-SEC-008",
+            "DPDP-SEC-009",
+            "DPDP-SEC-010",
+            "DPDP-TP-001",
+            "DPDP-TP-002",
+            "DPDP-BR-001",
+            "DPDP-RET-001",
+            "DPDP-RET-002",
+            "DPDP-RET-003",
+            "DPDP-CH-001",
+            "DPDP-CH-002",
+            "DPDP-RT-001",
+            "DPDP-RT-002",
+            "DPDP-RT-003"
+          ],
+          "rules_not_checked": []
+        },
+        "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes."
+      }
+    }
+  ]
+}

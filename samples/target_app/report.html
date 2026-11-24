@@ -80,7 +80,7 @@
 <header>
   <h1>DPDP compliance report</h1>
   <p class="sub">target_app · Digital Personal Data Protection Act, 2023 and DPDP Rules, 2025</p>
-  <p class="meta">Generated 24 Nov 2026, 01:41 UTC · DPDP Compliance Auditor 0.1.0 · rules v0.1.0</p>
+  <p class="meta">Generated 24 Nov 2026, 03:02 UTC · DPDP Compliance Auditor 0.1.0 · rules v0.1.0</p>
   <nav aria-label="Sections">
     <a href="#summary">Summary</a>
     <a href="#coverage">Scan coverage</a>
@@ -271,7 +271,7 @@
       <code class="rule">DPDP-CH-001</code>
     </header>
     <p class="where"><code>project-wide (see app.py:90)</code> · confidence medium · personal data: dob</p>
-    <div class="evidence"><code>Date of birth / age is collected (the backend reads &#39;dob&#39;), but no parent or guardian consent flow exists anywhere, so under-18s are processed without a parent&#39;s consent</code></div>
+    <div class="evidence"><code>Date of birth / age is collected (the backend reads &#39;dob&#39;), but no parent or guardian consent flow exists anywhere, so under-18s are processed without a parent&#39;s consent [the code deals with minors: app.py:72 &#39;is_adult&#39;]</code></div>
     <pre class="code" aria-label="Source around project-wide (see app.py:90) (masked)"><span class="ln"><span class="no">87</span>    if not form.get(&#34;kyc_consent&#34;):</span><span class="ln"><span class="no">88</span>        return jsonify(error=&#34;consent to KYC processing is required&#34;), 400</span><span class="ln"><span class="no">89</span>    full_name, email, phone = form[&#34;full_name&#34;], form[&#34;email&#34;], form[&#34;phone&#34;]</span><span class="ln hit"><span class="no">90</span>    dob = form[&#34;dob&#34;]</span><span class="ln"><span class="no">91</span>    aadhaar, city = form[&#34;aadhaar&#34;], form[&#34;city&#34;]</span><span class="ln"><span class="no">92</span>    cur = db().execute(</span><span class="ln"><span class="no">93</span>        &#34;INSERT INTO users (full_name, email, phone, dob, aadhaar, city, password_hash, created_at)&#34;</span></pre>
     <dl>
       <dt>Law</dt>

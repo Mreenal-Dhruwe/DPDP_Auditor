@@ -80,11 +80,11 @@
 <header>
   <h1>DPDP compliance report</h1>
   <p class="sub">juice-shop · Digital Personal Data Protection Act, 2023 and DPDP Rules, 2025</p>
-  <p class="meta">Generated 24 Nov 2026, 01:32 UTC · DPDP Compliance Auditor 0.1.0 · rules v0.1.0</p>
+  <p class="meta">Generated 24 Nov 2026, 03:02 UTC · DPDP Compliance Auditor 0.1.0 · rules v0.1.0</p>
   <nav aria-label="Sections">
     <a href="#summary">Summary</a>
     <a href="#coverage">Scan coverage</a>
-<a href="#sev-critical">Critical (28)</a><a href="#sev-high">High (27)</a><a href="#sev-medium">Medium (3)</a><a href="#sev-info">Info (2)</a>    <a href="#disclaimer">Disclaimer</a>
+<a href="#sev-critical">Critical (18)</a><a href="#sev-high">High (27)</a><a href="#sev-medium">Medium (13)</a><a href="#sev-info">Info (2)</a>    <a href="#disclaimer">Disclaimer</a>
   </nav>
 </header>
 
@@ -92,9 +92,9 @@
   <h2>Summary</h2>
   <div class="tiles">
     <div class="tile"><span class="n">60</span><span class="k">findings</span></div>
-    <div class="tile critical"><span class="n">28</span><span class="k">critical</span></div>
+    <div class="tile critical"><span class="n">18</span><span class="k">critical</span></div>
     <div class="tile high"><span class="n">27</span><span class="k">high</span></div>
-    <div class="tile medium"><span class="n">3</span><span class="k">medium</span></div>
+    <div class="tile medium"><span class="n">13</span><span class="k">medium</span></div>
     <div class="tile low"><span class="n">0</span><span class="k">low</span></div>
     <div class="tile info"><span class="n">2</span><span class="k">info</span></div>
   </div>
@@ -163,7 +163,7 @@
 </section>
 
 <section id="findings">
-  <h2 id="sev-critical">Critical <span class="count critical">· 28</span></h2>
+  <h2 id="sev-critical">Critical <span class="count critical">· 18</span></h2>
   <article class="finding critical" id="f-86b7b9b9c9f6">
     <header>
       <span class="badge critical">critical</span>
@@ -444,66 +444,6 @@
       <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
     </dl>
   </article>
-  <article class="finding critical" id="f-fd549a39c7da">
-    <header>
-      <span class="badge critical">critical</span>
-      <h3>Hardcoded secrets or credentials</h3>
-      <code class="rule">DPDP-SEC-004</code>
-    </header>
-    <p class="where"><code>frontend/src/app/app.guard.spec.ts:46</code> · confidence low</p>
-    <div class="evidence"><code>localStorage.setItem(&#39;token&#39;, &#39;eyJh********&#39;) [known key format]</code></div>
-    <pre class="code" aria-label="Source around frontend/src/app/app.guard.spec.ts:46 (masked)"><span class="ln"><span class="no">43</span>    it(&#39;returns payload from decoding a valid JWT&#39;, () =&gt; {</span><span class="ln"><span class="no">44</span>        const guard = TestBed.inject(LoginGuard)</span><span class="ln"><span class="no">45</span></span><span class="ln hit"><span class="no">46</span>        localStorage.setItem(&#39;token&#39;, &#39;eyJh********&#39;)</span><span class="ln"><span class="no">47</span>        expect(guard.tokenDecode()).toEqual({</span><span class="ln"><span class="no">48</span>            sub: &#39;1234567890&#39;,</span><span class="ln"><span class="no">49</span>            name: &#39;John Doe&#39;,</span></pre>
-    <dl>
-      <dt>Law</dt>
-      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
-      <dt>Penalty cap</dt>
-      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
-      <dt>Why critical</dt>
-      <dd>Anyone with repo access can reach the systems that hold personal data.</dd>
-      <dt>Recommended fix</dt>
-      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
-    </dl>
-  </article>
-  <article class="finding critical" id="f-40501873bc1b">
-    <header>
-      <span class="badge critical">critical</span>
-      <h3>Hardcoded secrets or credentials</h3>
-      <code class="rule">DPDP-SEC-004</code>
-    </header>
-    <p class="where"><code>frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:72</code> · confidence low</p>
-    <div class="evidence"><code>localStorage.setItem(&#39;token&#39;, &#39;eyJh********&#39;) [known key format]</code></div>
-    <pre class="code" aria-label="Source around frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:72 (masked)"><span class="ln"><span class="no">69</span>    })</span><span class="ln"><span class="no">70</span></span><span class="ln"><span class="no">71</span>    it(&#39;should set Last-Login IP from JWT as trusted HTML&#39;, () =&gt; {</span><span class="ln hit"><span class="no">72</span>        localStorage.setItem(&#39;token&#39;, &#39;eyJh********&#39;)</span><span class="ln"><span class="no">73</span>        component.ngOnInit()</span><span class="ln"><span class="no">74</span>        expect(sanitizer.bypassSecurityTrustHtml).toHaveBeenCalledWith(&#39;&lt;small&gt;1.2.3.4&lt;/small&gt;&#39;)</span><span class="ln"><span class="no">75</span>    })</span></pre>
-    <dl>
-      <dt>Law</dt>
-      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
-      <dt>Penalty cap</dt>
-      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
-      <dt>Why critical</dt>
-      <dd>Anyone with repo access can reach the systems that hold personal data.</dd>
-      <dt>Recommended fix</dt>
-      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
-    </dl>
-  </article>
-  <article class="finding critical" id="f-4b23cab3a09c">
-    <header>
-      <span class="badge critical">critical</span>
-      <h3>Hardcoded secrets or credentials</h3>
-      <code class="rule">DPDP-SEC-004</code>
-    </header>
-    <p class="where"><code>frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:78</code> · confidence low</p>
-    <div class="evidence"><code>localStorage.setItem(&#39;token&#39;, &#39;eyJh********&#39;) [known key format]</code></div>
-    <pre class="code" aria-label="Source around frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:78 (masked)"><span class="ln"><span class="no">75</span>    })</span><span class="ln"><span class="no">76</span></span><span class="ln"><span class="no">77</span>    it(&#39;should not set Last-Login IP if none is present in JWT&#39;, () =&gt; {</span><span class="ln hit"><span class="no">78</span>        localStorage.setItem(&#39;token&#39;, &#39;eyJh********&#39;)</span><span class="ln"><span class="no">79</span>        component.ngOnInit()</span><span class="ln"><span class="no">80</span>        expect(sanitizer.bypassSecurityTrustHtml).not.toHaveBeenCalled()</span><span class="ln"><span class="no">81</span>    })</span></pre>
-    <dl>
-      <dt>Law</dt>
-      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
-      <dt>Penalty cap</dt>
-      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
-      <dt>Why critical</dt>
-      <dd>Anyone with repo access can reach the systems that hold personal data.</dd>
-      <dt>Recommended fix</dt>
-      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
-    </dl>
-  </article>
   <article class="finding critical" id="f-344f27c0a6d8">
     <header>
       <span class="badge critical">critical</span>
@@ -584,146 +524,6 @@
       <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
     </dl>
   </article>
-  <article class="finding critical" id="f-fb8ca4e46fbd">
-    <header>
-      <span class="badge critical">critical</span>
-      <h3>Hardcoded secrets or credentials</h3>
-      <code class="rule">DPDP-SEC-004</code>
-    </header>
-    <p class="where"><code>test/api/user.test.ts:280</code> · confidence low</p>
-    <div class="evidence"><code>.set({ Authorization: &#39;eyJh********&#39; }) [known key format]</code></div>
-    <pre class="code" aria-label="Source around test/api/user.test.ts:280 (masked)"><span class="ln"><span class="no">277</span>  void it(&#39;GET who-am-i request returns nothing on expired auth token&#39;, async () =&gt; {</span><span class="ln"><span class="no">278</span>    const res = await request(app)</span><span class="ln"><span class="no">279</span>      .get(&#39;/rest/user/whoami&#39;)</span><span class="ln hit"><span class="no">280</span>      .set({ Authorization: &#39;eyJh********&#39; })</span><span class="ln"><span class="no">281</span>    assert.equal(res.status, 200)</span><span class="ln"><span class="no">282</span>    assert.ok(res.headers[&#39;content-type&#39;]?.includes(&#39;application/json&#39;))</span><span class="ln"><span class="no">283</span>    assert.deepEqual(res.body.user, {})</span></pre>
-    <dl>
-      <dt>Law</dt>
-      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
-      <dt>Penalty cap</dt>
-      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
-      <dt>Why critical</dt>
-      <dd>Anyone with repo access can reach the systems that hold personal data.</dd>
-      <dt>Recommended fix</dt>
-      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
-    </dl>
-  </article>
-  <article class="finding critical" id="f-6719703122c8">
-    <header>
-      <span class="badge critical">critical</span>
-      <h3>Hardcoded secrets or credentials</h3>
-      <code class="rule">DPDP-SEC-004</code>
-    </header>
-    <p class="where"><code>test/cypress/e2e/forgedJwt.spec.ts:22</code> · confidence low</p>
-    <div class="evidence"><code>&#39;eyJ0********&#39; [known key format]</code></div>
-    <pre class="code" aria-label="Source around test/cypress/e2e/forgedJwt.spec.ts:22 (masked)"><span class="ln"><span class="no">19</span>          cy.window().then(() =&gt; {</span><span class="ln"><span class="no">20</span>            localStorage.setItem(</span><span class="ln"><span class="no">21</span>              &#39;token&#39;,</span><span class="ln hit"><span class="no">22</span>              &#39;eyJ0********&#39;</span><span class="ln"><span class="no">23</span>            )</span><span class="ln"><span class="no">24</span>          })</span><span class="ln"><span class="no">25</span>          cy.visit(&#39;/#/&#39;)</span></pre>
-    <dl>
-      <dt>Law</dt>
-      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
-      <dt>Penalty cap</dt>
-      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
-      <dt>Why critical</dt>
-      <dd>Anyone with repo access can reach the systems that hold personal data.</dd>
-      <dt>Recommended fix</dt>
-      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
-    </dl>
-  </article>
-  <article class="finding critical" id="f-fb5ae7ce0839">
-    <header>
-      <span class="badge critical">critical</span>
-      <h3>Hardcoded secrets or credentials</h3>
-      <code class="rule">DPDP-SEC-004</code>
-    </header>
-    <p class="where"><code>test/cypress/e2e/forgedJwt.spec.ts:38</code> · confidence low</p>
-    <div class="evidence"><code>&#39;eyJ0********&#39; [known key format]</code></div>
-    <pre class="code" aria-label="Source around test/cypress/e2e/forgedJwt.spec.ts:38 (masked)"><span class="ln"><span class="no">35</span>      cy.window().then(() =&gt; {</span><span class="ln"><span class="no">36</span>        localStorage.setItem(</span><span class="ln"><span class="no">37</span>          &#39;token&#39;,</span><span class="ln hit"><span class="no">38</span>          &#39;eyJ0********&#39;</span><span class="ln"><span class="no">39</span>        )</span><span class="ln"><span class="no">40</span>      })</span><span class="ln"><span class="no">41</span>      cy.visit(&#39;/#/&#39;)</span></pre>
-    <dl>
-      <dt>Law</dt>
-      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
-      <dt>Penalty cap</dt>
-      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
-      <dt>Why critical</dt>
-      <dd>Anyone with repo access can reach the systems that hold personal data.</dd>
-      <dt>Recommended fix</dt>
-      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
-    </dl>
-  </article>
-  <article class="finding critical" id="f-9360e4fb6ef7">
-    <header>
-      <span class="badge critical">critical</span>
-      <h3>Hardcoded secrets or credentials</h3>
-      <code class="rule">DPDP-SEC-004</code>
-    </header>
-    <p class="where"><code>test/server/currentUser.unit.test.ts:40</code> · confidence low</p>
-    <div class="evidence"><code>req.cookies.token = &#39;eyJ0********&#39; [known key format]</code></div>
-    <pre class="code" aria-label="Source around test/server/currentUser.unit.test.ts:40 (masked)"><span class="ln"><span class="no">37</span>  })</span><span class="ln"><span class="no">38</span></span><span class="ln"><span class="no">39</span>  void it(&#39;should return ID and email of user belonging to cookie from the request&#39;, () =&gt; {</span><span class="ln hit"><span class="no">40</span>    req.cookies.token = &#39;eyJ0********&#39;</span><span class="ln"><span class="no">41</span>    req.query.callback = undefined</span><span class="ln"><span class="no">42</span>    authenticatedUsers.put(</span><span class="ln"><span class="no">43</span>      &#39;eyJ0********&#39;,</span></pre>
-    <dl>
-      <dt>Law</dt>
-      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
-      <dt>Penalty cap</dt>
-      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
-      <dt>Why critical</dt>
-      <dd>Anyone with repo access can reach the systems that hold personal data.</dd>
-      <dt>Recommended fix</dt>
-      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
-    </dl>
-  </article>
-  <article class="finding critical" id="f-ee8dcad34631">
-    <header>
-      <span class="badge critical">critical</span>
-      <h3>Hardcoded secrets or credentials</h3>
-      <code class="rule">DPDP-SEC-004</code>
-    </header>
-    <p class="where"><code>test/server/currentUser.unit.test.ts:43</code> · confidence low</p>
-    <div class="evidence"><code>&#39;eyJ0********&#39;, [known key format]</code></div>
-    <pre class="code" aria-label="Source around test/server/currentUser.unit.test.ts:43 (masked)"><span class="ln"><span class="no">40</span>    req.cookies.token = &#39;eyJ0********&#39;</span><span class="ln"><span class="no">41</span>    req.query.callback = undefined</span><span class="ln"><span class="no">42</span>    authenticatedUsers.put(</span><span class="ln hit"><span class="no">43</span>      &#39;eyJ0********&#39;,</span><span class="ln"><span class="no">44</span>      { data: { id: 1, email: &#39;ad***@***&#39;, lastLoginIp: &#39;0.0.0.0&#39;, profileImage: &#39;/assets/public/images/uploads/default.svg&#39; } as unknown as UserModel }</span><span class="ln"><span class="no">45</span>    )</span><span class="ln"><span class="no">46</span>    retrieveLoggedInUser()(req, res)</span></pre>
-    <dl>
-      <dt>Law</dt>
-      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
-      <dt>Penalty cap</dt>
-      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
-      <dt>Why critical</dt>
-      <dd>Anyone with repo access can reach the systems that hold personal data.</dd>
-      <dt>Recommended fix</dt>
-      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
-    </dl>
-  </article>
-  <article class="finding critical" id="f-b73546366e54">
-    <header>
-      <span class="badge critical">critical</span>
-      <h3>Hardcoded secrets or credentials</h3>
-      <code class="rule">DPDP-SEC-004</code>
-    </header>
-    <p class="where"><code>test/server/verify.unit.test.ts:308</code> · confidence low</p>
-    <div class="evidence"><code>req.headers = { authorization: &#39;Bearer eyJ0********&#39; } [known key format]</code></div>
-    <pre class="code" aria-label="Source around test/server/verify.unit.test.ts:308 (masked)"><span class="ln"><span class="no">305</span>    })</span><span class="ln"><span class="no">306</span></span><span class="ln"><span class="no">307</span>    void it(&#39;&#34;jwtForgedChallenge&#34; is solved when forged token HMAC-signed with public RSA-key has email rs***@*** in the payload&#39;, { skip: isWindows() ? &#39;not supported on Windows&#39; : false }, () =&gt; {</span><span class="ln hit"><span class="no">308</span>      req.headers = { authorization: &#39;Bearer eyJ0********&#39; }</span><span class="ln"><span class="no">309</span></span><span class="ln"><span class="no">310</span>      verify.jwtChallenges()(req, res, next)</span><span class="ln"><span class="no">311</span></span></pre>
-    <dl>
-      <dt>Law</dt>
-      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
-      <dt>Penalty cap</dt>
-      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
-      <dt>Why critical</dt>
-      <dd>Anyone with repo access can reach the systems that hold personal data.</dd>
-      <dt>Recommended fix</dt>
-      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
-    </dl>
-  </article>
-  <article class="finding critical" id="f-110a14cdb39b">
-    <header>
-      <span class="badge critical">critical</span>
-      <h3>Hardcoded secrets or credentials</h3>
-      <code class="rule">DPDP-SEC-004</code>
-    </header>
-    <p class="where"><code>test/server/verify.unit.test.ts:316</code> · confidence low</p>
-    <div class="evidence"><code>req.headers = { authorization: &#39;Bearer eyJ0********&#39; } [known key format]</code></div>
-    <pre class="code" aria-label="Source around test/server/verify.unit.test.ts:316 (masked)"><span class="ln"><span class="no">313</span>    })</span><span class="ln"><span class="no">314</span></span><span class="ln"><span class="no">315</span>    void it(&#39;&#34;jwtForgedChallenge&#34; is solved when forged token HMAC-signed with public RSA-key has string &#34;rsa_lord@&#34; in the payload&#39;, { skip: isWindows() ? &#39;not supported on Windows&#39; : false }, () ...</span><span class="ln hit"><span class="no">316</span>      req.headers = { authorization: &#39;Bearer eyJ0********&#39; }</span><span class="ln"><span class="no">317</span></span><span class="ln"><span class="no">318</span>      verify.jwtChallenges()(req, res, next)</span><span class="ln"><span class="no">319</span></span></pre>
-    <dl>
-      <dt>Law</dt>
-      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
-      <dt>Penalty cap</dt>
-      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
-      <dt>Why critical</dt>
-      <dd>Anyone with repo access can reach the systems that hold personal data.</dd>
-      <dt>Recommended fix</dt>
-      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
-    </dl>
-  </article>
   <h2 id="sev-high">High <span class="count high">· 27</span></h2>
   <article class="finding high" id="f-21ae5a2e2535">
     <header>
@@ -732,8 +532,8 @@
       <code class="rule">DPDP-SEC-003</code>
     </header>
     <p class="where"><code>data/static/codefixes/loginAdminChallenge_1.ts:18</code> · confidence high · personal data: password</p>
-    <div class="evidence"><code>models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;${req.body.email || &#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]</code></div>
-    <pre class="code" aria-label="Source around data/static/codefixes/loginAdminChallenge_1.ts:18 (masked)"><span class="ln"><span class="no">15</span>    if (req.body.email.match(/.*[&#39;-;].*/) || req.body.password.match(/.*[&#39;-;].*/)) {</span><span class="ln"><span class="no">16</span>      res.status(451).send(res.__(&#39;SQL Injection detected.&#39;))</span><span class="ln"><span class="no">17</span>    }</span><span class="ln hit"><span class="no">18</span>    models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;${req.body.email || &#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: true })</span><span class="ln"><span class="no">19</span>      .then((authenticatedUser) =&gt; {</span><span class="ln"><span class="no">20</span>        const user = utils.queryResultToJson(authenticatedUser)</span><span class="ln"><span class="no">21</span>        if (user.data?.id &amp;&amp; user.data.totpSecret !== &#39;&#39;) {</span></pre>
+    <div class="evidence"><code>models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;$********&#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]</code></div>
+    <pre class="code" aria-label="Source around data/static/codefixes/loginAdminChallenge_1.ts:18 (masked)"><span class="ln"><span class="no">15</span>    if (req.body.email.match(/.*[&#39;-;].*/) || req.body.password.match(/.*[&#39;-;].*/)) {</span><span class="ln"><span class="no">16</span>      res.status(451).send(res.__(&#39;SQL Injection detected.&#39;))</span><span class="ln"><span class="no">17</span>    }</span><span class="ln hit"><span class="no">18</span>    models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;$********&#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: true })</span><span class="ln"><span class="no">19</span>      .then((authenticatedUser) =&gt; {</span><span class="ln"><span class="no">20</span>        const user = utils.queryResultToJson(authenticatedUser)</span><span class="ln"><span class="no">21</span>        if (user.data?.id &amp;&amp; user.data.totpSecret !== &#39;&#39;) {</span></pre>
     <dl>
       <dt>Law</dt>
       <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(a) DPDP Rules</span><br>Reasonable security safeguards to prevent personal data breach.</dd>
@@ -792,8 +592,8 @@
       <code class="rule">DPDP-SEC-003</code>
     </header>
     <p class="where"><code>data/static/codefixes/loginBenderChallenge_1.ts:18</code> · confidence high · personal data: password</p>
-    <div class="evidence"><code>models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;${req.body.email || &#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]</code></div>
-    <pre class="code" aria-label="Source around data/static/codefixes/loginBenderChallenge_1.ts:18 (masked)"><span class="ln"><span class="no">15</span>    if (req.body.email.match(/.*[&#39;-;].*/) || req.body.password.match(/.*[&#39;-;].*/)) {</span><span class="ln"><span class="no">16</span>      res.status(451).send(res.__(&#39;SQL Injection detected.&#39;))</span><span class="ln"><span class="no">17</span>    }</span><span class="ln hit"><span class="no">18</span>    models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;${req.body.email || &#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: true })</span><span class="ln"><span class="no">19</span>      .then((authenticatedUser) =&gt; {</span><span class="ln"><span class="no">20</span>        const user = utils.queryResultToJson(authenticatedUser)</span><span class="ln"><span class="no">21</span>        if (user.data?.id &amp;&amp; user.data.totpSecret !== &#39;&#39;) {</span></pre>
+    <div class="evidence"><code>models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;$********&#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]</code></div>
+    <pre class="code" aria-label="Source around data/static/codefixes/loginBenderChallenge_1.ts:18 (masked)"><span class="ln"><span class="no">15</span>    if (req.body.email.match(/.*[&#39;-;].*/) || req.body.password.match(/.*[&#39;-;].*/)) {</span><span class="ln"><span class="no">16</span>      res.status(451).send(res.__(&#39;SQL Injection detected.&#39;))</span><span class="ln"><span class="no">17</span>    }</span><span class="ln hit"><span class="no">18</span>    models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;$********&#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: true })</span><span class="ln"><span class="no">19</span>      .then((authenticatedUser) =&gt; {</span><span class="ln"><span class="no">20</span>        const user = utils.queryResultToJson(authenticatedUser)</span><span class="ln"><span class="no">21</span>        if (user.data?.id &amp;&amp; user.data.totpSecret !== &#39;&#39;) {</span></pre>
     <dl>
       <dt>Law</dt>
       <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(a) DPDP Rules</span><br>Reasonable security safeguards to prevent personal data breach.</dd>
@@ -852,8 +652,8 @@
       <code class="rule">DPDP-SEC-003</code>
     </header>
     <p class="where"><code>data/static/codefixes/loginBenderChallenge_4.ts:15</code> · confidence high · personal data: password</p>
-    <div class="evidence"><code>models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;${req.body.email || &#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]</code></div>
-    <pre class="code" aria-label="Source around data/static/codefixes/loginBenderChallenge_4.ts:15 (masked)"><span class="ln"><span class="no">12</span>  }</span><span class="ln"><span class="no">13</span></span><span class="ln"><span class="no">14</span>  return (req: Request, res: Response, next: NextFunction) =&gt; {</span><span class="ln hit"><span class="no">15</span>    models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;${req.body.email || &#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: false })</span><span class="ln"><span class="no">16</span>      .then((authenticatedUser) =&gt; {</span><span class="ln"><span class="no">17</span>        const user = utils.queryResultToJson(authenticatedUser)</span><span class="ln"><span class="no">18</span>        if (user.data?.id &amp;&amp; user.data.totpSecret !== &#39;&#39;) {</span></pre>
+    <div class="evidence"><code>models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;$********&#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]</code></div>
+    <pre class="code" aria-label="Source around data/static/codefixes/loginBenderChallenge_4.ts:15 (masked)"><span class="ln"><span class="no">12</span>  }</span><span class="ln"><span class="no">13</span></span><span class="ln"><span class="no">14</span>  return (req: Request, res: Response, next: NextFunction) =&gt; {</span><span class="ln hit"><span class="no">15</span>    models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;$********&#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: false })</span><span class="ln"><span class="no">16</span>      .then((authenticatedUser) =&gt; {</span><span class="ln"><span class="no">17</span>        const user = utils.queryResultToJson(authenticatedUser)</span><span class="ln"><span class="no">18</span>        if (user.data?.id &amp;&amp; user.data.totpSecret !== &#39;&#39;) {</span></pre>
     <dl>
       <dt>Law</dt>
       <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(a) DPDP Rules</span><br>Reasonable security safeguards to prevent personal data breach.</dd>
@@ -892,8 +692,8 @@
       <code class="rule">DPDP-SEC-003</code>
     </header>
     <p class="where"><code>data/static/codefixes/loginJimChallenge_2.ts:15</code> · confidence high · personal data: password</p>
-    <div class="evidence"><code>models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;${req.body.email || &#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]</code></div>
-    <pre class="code" aria-label="Source around data/static/codefixes/loginJimChallenge_2.ts:15 (masked)"><span class="ln"><span class="no">12</span>  }</span><span class="ln"><span class="no">13</span></span><span class="ln"><span class="no">14</span>  return (req: Request, res: Response, next: NextFunction) =&gt; {</span><span class="ln hit"><span class="no">15</span>    models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;${req.body.email || &#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: false })</span><span class="ln"><span class="no">16</span>      .then((authenticatedUser) =&gt; {</span><span class="ln"><span class="no">17</span>        const user = utils.queryResultToJson(authenticatedUser)</span><span class="ln"><span class="no">18</span>        if (user.data?.id &amp;&amp; user.data.totpSecret !== &#39;&#39;) {</span></pre>
+    <div class="evidence"><code>models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;$********&#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: false }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]</code></div>
+    <pre class="code" aria-label="Source around data/static/codefixes/loginJimChallenge_2.ts:15 (masked)"><span class="ln"><span class="no">12</span>  }</span><span class="ln"><span class="no">13</span></span><span class="ln"><span class="no">14</span>  return (req: Request, res: Response, next: NextFunction) =&gt; {</span><span class="ln hit"><span class="no">15</span>    models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;$********&#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: false })</span><span class="ln"><span class="no">16</span>      .then((authenticatedUser) =&gt; {</span><span class="ln"><span class="no">17</span>        const user = utils.queryResultToJson(authenticatedUser)</span><span class="ln"><span class="no">18</span>        if (user.data?.id &amp;&amp; user.data.totpSecret !== &#39;&#39;) {</span></pre>
     <dl>
       <dt>Law</dt>
       <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(a) DPDP Rules</span><br>Reasonable security safeguards to prevent personal data breach.</dd>
@@ -912,8 +712,8 @@
       <code class="rule">DPDP-SEC-003</code>
     </header>
     <p class="where"><code>data/static/codefixes/loginJimChallenge_4.ts:18</code> · confidence high · personal data: password</p>
-    <div class="evidence"><code>models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;${req.body.email || &#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]</code></div>
-    <pre class="code" aria-label="Source around data/static/codefixes/loginJimChallenge_4.ts:18 (masked)"><span class="ln"><span class="no">15</span>    if (req.body.email.match(/.*[&#39;-;].*/) || req.body.password.match(/.*[&#39;-;].*/)) {</span><span class="ln"><span class="no">16</span>      res.status(451).send(res.__(&#39;SQL Injection detected.&#39;))</span><span class="ln"><span class="no">17</span>    }</span><span class="ln hit"><span class="no">18</span>    models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;${req.body.email || &#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: true })</span><span class="ln"><span class="no">19</span>      .then((authenticatedUser) =&gt; {</span><span class="ln"><span class="no">20</span>        const user = utils.queryResultToJson(authenticatedUser)</span><span class="ln"><span class="no">21</span>        if (user.data?.id &amp;&amp; user.data.totpSecret !== &#39;&#39;) {</span></pre>
+    <div class="evidence"><code>models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;$********&#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: true }) [security.hash() hashes with md5 (lib/insecurity.ts:41): a fast, unsalted hash]</code></div>
+    <pre class="code" aria-label="Source around data/static/codefixes/loginJimChallenge_4.ts:18 (masked)"><span class="ln"><span class="no">15</span>    if (req.body.email.match(/.*[&#39;-;].*/) || req.body.password.match(/.*[&#39;-;].*/)) {</span><span class="ln"><span class="no">16</span>      res.status(451).send(res.__(&#39;SQL Injection detected.&#39;))</span><span class="ln"><span class="no">17</span>    }</span><span class="ln hit"><span class="no">18</span>    models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;$********&#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: models.User, plain: true })</span><span class="ln"><span class="no">19</span>      .then((authenticatedUser) =&gt; {</span><span class="ln"><span class="no">20</span>        const user = utils.queryResultToJson(authenticatedUser)</span><span class="ln"><span class="no">21</span>        if (user.data?.id &amp;&amp; user.data.totpSecret !== &#39;&#39;) {</span></pre>
     <dl>
       <dt>Law</dt>
       <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(a) DPDP Rules</span><br>Reasonable security safeguards to prevent personal data breach.</dd>
@@ -1212,8 +1012,8 @@
       <code class="rule">DPDP-SEC-003</code>
     </header>
     <p class="where"><code>routes/login.ts:34</code> · confidence high · personal data: password</p>
-    <div class="evidence"><code>models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;${req.body.email || &#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: UserModel, plain: true }) // vuln-code-snippet vuln-line loginAdminChallenge loginBenderChallenge loginJimChallenge [security.hash() hashes with m...</code></div>
-    <pre class="code" aria-label="Source around routes/login.ts:34 (masked)"><span class="ln"><span class="no">31</span></span><span class="ln"><span class="no">32</span>  return (req: Request, res: Response, next: NextFunction) =&gt; {</span><span class="ln"><span class="no">33</span>    verifyPreLoginChallenges(req) // vuln-code-snippet hide-line</span><span class="ln hit"><span class="no">34</span>    models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;${req.body.email || &#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: UserModel, plain: true }) // vuln-code-sni...</span><span class="ln"><span class="no">35</span>      .then((authenticatedUser) =&gt; { // vuln-code-snippet neutral-line loginAdminChallenge loginBenderChallenge loginJimChallenge</span><span class="ln"><span class="no">36</span>        const user = utils.queryResultToJson(authenticatedUser)</span><span class="ln"><span class="no">37</span>        if (user.data?.id &amp;&amp; user.data.totpSecret !== &#39;&#39;) {</span></pre>
+    <div class="evidence"><code>models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;$********&#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: UserModel, plain: true }) // vuln-code-snippet vuln-line loginAdminChallenge loginBenderChallenge loginJimChallenge [security.hash() hashes with md5 (lib/ins...</code></div>
+    <pre class="code" aria-label="Source around routes/login.ts:34 (masked)"><span class="ln"><span class="no">31</span></span><span class="ln"><span class="no">32</span>  return (req: Request, res: Response, next: NextFunction) =&gt; {</span><span class="ln"><span class="no">33</span>    verifyPreLoginChallenges(req) // vuln-code-snippet hide-line</span><span class="ln hit"><span class="no">34</span>    models.sequelize.query(`SELECT * FROM Users WHERE email = &#39;$********&#39;&#39;}&#39; AND password = &#39;${se********&#39;&#39;)}&#39; AND deletedAt IS NULL`, { model: UserModel, plain: true }) // vuln-code-snippet vuln-l...</span><span class="ln"><span class="no">35</span>      .then((authenticatedUser) =&gt; { // vuln-code-snippet neutral-line loginAdminChallenge loginBenderChallenge loginJimChallenge</span><span class="ln"><span class="no">36</span>        const user = utils.queryResultToJson(authenticatedUser)</span><span class="ln"><span class="no">37</span>        if (user.data?.id &amp;&amp; user.data.totpSecret !== &#39;&#39;) {</span></pre>
     <dl>
       <dt>Law</dt>
       <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(a) DPDP Rules</span><br>Reasonable security safeguards to prevent personal data breach.</dd>
@@ -1265,7 +1065,67 @@
       <dd>Use bcrypt, scrypt or argon2 with per-user salt.</dd>
     </dl>
   </article>
-  <h2 id="sev-medium">Medium <span class="count medium">· 3</span></h2>
+  <h2 id="sev-medium">Medium <span class="count medium">· 13</span></h2>
+  <article class="finding medium" id="f-fd549a39c7da">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Hardcoded secrets or credentials</h3>
+      <code class="rule">DPDP-SEC-004</code>
+    </header>
+    <p class="where"><code>frontend/src/app/app.guard.spec.ts:46</code> · confidence low</p>
+    <div class="evidence"><code>localStorage.setItem(&#39;token&#39;, &#39;eyJh********&#39;) [known key format]</code></div>
+    <pre class="code" aria-label="Source around frontend/src/app/app.guard.spec.ts:46 (masked)"><span class="ln"><span class="no">43</span>    it(&#39;returns payload from decoding a valid JWT&#39;, () =&gt; {</span><span class="ln"><span class="no">44</span>        const guard = TestBed.inject(LoginGuard)</span><span class="ln"><span class="no">45</span></span><span class="ln hit"><span class="no">46</span>        localStorage.setItem(&#39;token&#39;, &#39;eyJh********&#39;)</span><span class="ln"><span class="no">47</span>        expect(guard.tokenDecode()).toEqual({</span><span class="ln"><span class="no">48</span>            sub: &#39;1234567890&#39;,</span><span class="ln"><span class="no">49</span>            name: &#39;John Doe&#39;,</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-40501873bc1b">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Hardcoded secrets or credentials</h3>
+      <code class="rule">DPDP-SEC-004</code>
+    </header>
+    <p class="where"><code>frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:72</code> · confidence low</p>
+    <div class="evidence"><code>localStorage.setItem(&#39;token&#39;, &#39;eyJh********&#39;) [known key format]</code></div>
+    <pre class="code" aria-label="Source around frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:72 (masked)"><span class="ln"><span class="no">69</span>    })</span><span class="ln"><span class="no">70</span></span><span class="ln"><span class="no">71</span>    it(&#39;should set Last-Login IP from JWT as trusted HTML&#39;, () =&gt; {</span><span class="ln hit"><span class="no">72</span>        localStorage.setItem(&#39;token&#39;, &#39;eyJh********&#39;)</span><span class="ln"><span class="no">73</span>        component.ngOnInit()</span><span class="ln"><span class="no">74</span>        expect(sanitizer.bypassSecurityTrustHtml).toHaveBeenCalledWith(&#39;&lt;small&gt;1.2.3.4&lt;/small&gt;&#39;)</span><span class="ln"><span class="no">75</span>    })</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-4b23cab3a09c">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Hardcoded secrets or credentials</h3>
+      <code class="rule">DPDP-SEC-004</code>
+    </header>
+    <p class="where"><code>frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:78</code> · confidence low</p>
+    <div class="evidence"><code>localStorage.setItem(&#39;token&#39;, &#39;eyJh********&#39;) [known key format]</code></div>
+    <pre class="code" aria-label="Source around frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:78 (masked)"><span class="ln"><span class="no">75</span>    })</span><span class="ln"><span class="no">76</span></span><span class="ln"><span class="no">77</span>    it(&#39;should not set Last-Login IP if none is present in JWT&#39;, () =&gt; {</span><span class="ln hit"><span class="no">78</span>        localStorage.setItem(&#39;token&#39;, &#39;eyJh********&#39;)</span><span class="ln"><span class="no">79</span>        component.ngOnInit()</span><span class="ln"><span class="no">80</span>        expect(sanitizer.bypassSecurityTrustHtml).not.toHaveBeenCalled()</span><span class="ln"><span class="no">81</span>    })</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
+    </dl>
+  </article>
   <article class="finding medium" id="f-8f1074efeb5f">
     <header>
       <span class="badge medium">medium</span>
@@ -1324,6 +1184,146 @@
       <dd>Breaches discovered late cannot be investigated.</dd>
       <dt>Recommended fix</dt>
       <dd>Retain access/processing logs for at least 365 days in protected storage.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-fb8ca4e46fbd">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Hardcoded secrets or credentials</h3>
+      <code class="rule">DPDP-SEC-004</code>
+    </header>
+    <p class="where"><code>test/api/user.test.ts:280</code> · confidence low</p>
+    <div class="evidence"><code>.set({ Authorization: &#39;eyJh********&#39; }) [known key format]</code></div>
+    <pre class="code" aria-label="Source around test/api/user.test.ts:280 (masked)"><span class="ln"><span class="no">277</span>  void it(&#39;GET who-am-i request returns nothing on expired auth token&#39;, async () =&gt; {</span><span class="ln"><span class="no">278</span>    const res = await request(app)</span><span class="ln"><span class="no">279</span>      .get(&#39;/rest/user/whoami&#39;)</span><span class="ln hit"><span class="no">280</span>      .set({ Authorization: &#39;eyJh********&#39; })</span><span class="ln"><span class="no">281</span>    assert.equal(res.status, 200)</span><span class="ln"><span class="no">282</span>    assert.ok(res.headers[&#39;content-type&#39;]?.includes(&#39;application/json&#39;))</span><span class="ln"><span class="no">283</span>    assert.deepEqual(res.body.user, {})</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-6719703122c8">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Hardcoded secrets or credentials</h3>
+      <code class="rule">DPDP-SEC-004</code>
+    </header>
+    <p class="where"><code>test/cypress/e2e/forgedJwt.spec.ts:22</code> · confidence low</p>
+    <div class="evidence"><code>&#39;eyJ0********&#39; [known key format]</code></div>
+    <pre class="code" aria-label="Source around test/cypress/e2e/forgedJwt.spec.ts:22 (masked)"><span class="ln"><span class="no">19</span>          cy.window().then(() =&gt; {</span><span class="ln"><span class="no">20</span>            localStorage.setItem(</span><span class="ln"><span class="no">21</span>              &#39;token&#39;,</span><span class="ln hit"><span class="no">22</span>              &#39;eyJ0********&#39;</span><span class="ln"><span class="no">23</span>            )</span><span class="ln"><span class="no">24</span>          })</span><span class="ln"><span class="no">25</span>          cy.visit(&#39;/#/&#39;)</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-fb5ae7ce0839">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Hardcoded secrets or credentials</h3>
+      <code class="rule">DPDP-SEC-004</code>
+    </header>
+    <p class="where"><code>test/cypress/e2e/forgedJwt.spec.ts:38</code> · confidence low</p>
+    <div class="evidence"><code>&#39;eyJ0********&#39; [known key format]</code></div>
+    <pre class="code" aria-label="Source around test/cypress/e2e/forgedJwt.spec.ts:38 (masked)"><span class="ln"><span class="no">35</span>      cy.window().then(() =&gt; {</span><span class="ln"><span class="no">36</span>        localStorage.setItem(</span><span class="ln"><span class="no">37</span>          &#39;token&#39;,</span><span class="ln hit"><span class="no">38</span>          &#39;eyJ0********&#39;</span><span class="ln"><span class="no">39</span>        )</span><span class="ln"><span class="no">40</span>      })</span><span class="ln"><span class="no">41</span>      cy.visit(&#39;/#/&#39;)</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-9360e4fb6ef7">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Hardcoded secrets or credentials</h3>
+      <code class="rule">DPDP-SEC-004</code>
+    </header>
+    <p class="where"><code>test/server/currentUser.unit.test.ts:40</code> · confidence low</p>
+    <div class="evidence"><code>req.cookies.token = &#39;eyJ0********&#39; [known key format]</code></div>
+    <pre class="code" aria-label="Source around test/server/currentUser.unit.test.ts:40 (masked)"><span class="ln"><span class="no">37</span>  })</span><span class="ln"><span class="no">38</span></span><span class="ln"><span class="no">39</span>  void it(&#39;should return ID and email of user belonging to cookie from the request&#39;, () =&gt; {</span><span class="ln hit"><span class="no">40</span>    req.cookies.token = &#39;eyJ0********&#39;</span><span class="ln"><span class="no">41</span>    req.query.callback = undefined</span><span class="ln"><span class="no">42</span>    authenticatedUsers.put(</span><span class="ln"><span class="no">43</span>      &#39;eyJ0********&#39;,</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-ee8dcad34631">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Hardcoded secrets or credentials</h3>
+      <code class="rule">DPDP-SEC-004</code>
+    </header>
+    <p class="where"><code>test/server/currentUser.unit.test.ts:43</code> · confidence low</p>
+    <div class="evidence"><code>&#39;eyJ0********&#39;, [known key format]</code></div>
+    <pre class="code" aria-label="Source around test/server/currentUser.unit.test.ts:43 (masked)"><span class="ln"><span class="no">40</span>    req.cookies.token = &#39;eyJ0********&#39;</span><span class="ln"><span class="no">41</span>    req.query.callback = undefined</span><span class="ln"><span class="no">42</span>    authenticatedUsers.put(</span><span class="ln hit"><span class="no">43</span>      &#39;eyJ0********&#39;,</span><span class="ln"><span class="no">44</span>      { data: { id: 1, email: &#39;a********&#39;, lastLoginIp: &#39;0********&#39;, profileImage: &#39;/assets/public/images/uploads/default.svg&#39; } as unknown as UserModel }</span><span class="ln"><span class="no">45</span>    )</span><span class="ln"><span class="no">46</span>    retrieveLoggedInUser()(req, res)</span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-b73546366e54">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Hardcoded secrets or credentials</h3>
+      <code class="rule">DPDP-SEC-004</code>
+    </header>
+    <p class="where"><code>test/server/verify.unit.test.ts:308</code> · confidence low</p>
+    <div class="evidence"><code>req.headers = { authorization: &#39;Bearer eyJ0********&#39; } [known key format]</code></div>
+    <pre class="code" aria-label="Source around test/server/verify.unit.test.ts:308 (masked)"><span class="ln"><span class="no">305</span>    })</span><span class="ln"><span class="no">306</span></span><span class="ln"><span class="no">307</span>    void it(&#39;&#34;jwtForgedChallenge&#34; is solved when forged token HMAC-signed with public RSA-key has email rs***@*** in the payload&#39;, { skip: isWindows() ? &#39;not supported on Windows&#39; : false }, () =&gt; {</span><span class="ln hit"><span class="no">308</span>      req.headers = { authorization: &#39;Bearer eyJ0********&#39; }</span><span class="ln"><span class="no">309</span></span><span class="ln"><span class="no">310</span>      verify.jwtChallenges()(req, res, next)</span><span class="ln"><span class="no">311</span></span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
+    </dl>
+  </article>
+  <article class="finding medium" id="f-110a14cdb39b">
+    <header>
+      <span class="badge medium">medium</span>
+      <h3>Hardcoded secrets or credentials</h3>
+      <code class="rule">DPDP-SEC-004</code>
+    </header>
+    <p class="where"><code>test/server/verify.unit.test.ts:316</code> · confidence low</p>
+    <div class="evidence"><code>req.headers = { authorization: &#39;Bearer eyJ0********&#39; } [known key format]</code></div>
+    <pre class="code" aria-label="Source around test/server/verify.unit.test.ts:316 (masked)"><span class="ln"><span class="no">313</span>    })</span><span class="ln"><span class="no">314</span></span><span class="ln"><span class="no">315</span>    void it(&#39;&#34;jwtForgedChallenge&#34; is solved when forged token HMAC-signed with public RSA-key has string &#34;rsa_lord@&#34; in the payload&#39;, { skip: isWindows() ? &#39;not supported on Windows&#39; : false }, () ...</span><span class="ln hit"><span class="no">316</span>      req.headers = { authorization: &#39;Bearer eyJ0********&#39; }</span><span class="ln"><span class="no">317</span></span><span class="ln"><span class="no">318</span>      verify.jwtChallenges()(req, res, next)</span><span class="ln"><span class="no">319</span></span></pre>
+    <dl>
+      <dt>Law</dt>
+      <dd><span class="ref">s.8(5) DPDP Act</span><span class="ref">Rule 6(1)(b) DPDP Rules</span><br>Measures to control access to computer resources.</dd>
+      <dt>Penalty cap</dt>
+      <dd>Rs 250 crore <span class="muted">(Schedule item 1: s.8(5) security safeguards)</span></dd>
+      <dt>Why medium</dt>
+      <dd>Found in a development or test file: lowered to medium, critical if the same value is used in production. (rule default: critical) Anyone with repo access can reach the systems that hold personal data.</dd>
+      <dt>Recommended fix</dt>
+      <dd>Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore.</dd>
     </dl>
   </article>
   <h2 id="sev-info">Info <span class="count info">· 2</span></h2>

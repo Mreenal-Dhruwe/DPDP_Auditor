@@ -33,7 +33,7 @@ NOT_A_SECRET_WORDS = {
     "hash", "field", "label", "name", "url", "uri", "endpoint", "header", "param", "type", "length",
     "min", "max", "policy", "reset", "prompt", "placeholder", "regex", "pattern", "expiry", "expires",
     "expiration", "ttl", "count", "file", "path", "env", "var", "id", "algorithm", "alg", "scheme",
-    "prefix", "format", "input", "location", "address",  # BeeTokenAddress: a public address
+    "prefix", "format", "input", "location", "address", "public",  # BeeTokenAddress: a public address
 }
 PLACEHOLDERS = {
     "changeme", "change_me", "change-me", "password", "secret", "token", "xxx", "todo", "none", "null",
@@ -51,7 +51,7 @@ def looks_like_secret(name: str, value: str) -> bool:
     if not SECRET_NAME.search(name):
         # any other *Key (primaryKey, cacheKey, sortKey) is usually a field name: only a value
         # that looks generated (letters and digits mixed, 16+ characters) counts
-        if not (words and words[-1] == "key" and re.search(r"\d", value) and re.search(r"[A-Za-z]", value)
+        if not (len(words) > 1 and words[-1] == "key" and re.search(r"\d", value) and re.search(r"[A-Za-z]", value)
                 and len(value) >= 16 and not re.search(r"\s", value)):
             return False
     v = value.strip()

@@ -224,8 +224,9 @@ unless restricted (s.16), so it is reported as info only. To browse the rules as
 | Target | Findings | Accuracy |
 |---|---|---|
 | `target_app/` - our deliberately vulnerable Flask lending app | 13 (critical 3, high 8, medium 2) | 13/13 planted issues found, 0 false positives |
-| `target_app_js/` - our Express + Sequelize app | 27 (critical 3, high 8, medium 11, low 3, info 2) | 27/27 planted issues found, 0 false positives |
-| OWASP Juice Shop (1,494 files, about 20 s) | 60 (critical 28, high 27, medium 3, info 2) | reviewed by hand, see below |
+| `target_app_js/` - our Express app (Sequelize and the raw MongoDB driver) | 31 (critical 4, high 11, medium 11, low 3, info 2) | 31/31 planted issues found, 0 false positives |
+| OWASP Juice Shop (1,494 files, about 40 s) | 60 (critical 18, high 27, medium 13, info 2) | reviewed by hand, see below |
+| OWASP NodeGoat (111 files, about 2 s) | 23 (critical 7, high 8, medium 6, low 1, info 1) | reviewed by hand, see below |
 
 The answer keys (`ground_truth.yml`, `ground_truth_js.yml`) list every planted issue with
 its file, line and rule, and also the *compliant* look-alikes that must not be reported
@@ -244,8 +245,18 @@ Juice Shop has no answer key. Our review of its 60 findings
 - **info:** both Terraform setups deploy to `eu-west-1` (outside India; allowed unless restricted, s.16)
 - **real pattern, not app code:** MD5 login code repeated in Juice Shop's coding-challenge answer files
 - **low confidence by design:**
-  - tokens and hashes in test files
+  - tokens and hashes in test files, which are also lowered from critical to medium (10 findings)
   - "no erase path" for four models: Juice Shop generates REST endpoints with finale-rest, so a delete route may exist outside the code
+
+NodeGoat (Express + the raw MongoDB driver, no ORM) is the second reviewed target
+([`samples/nodegoat/`](samples/nodegoat/)). Real: plaintext `ssn`, bank account and routing
+numbers and passwords stored with `users.update` / `insert`, hardcoded `cookieSecret` and
+`cryptoKey`, a committed private key, plaintext seed passwords, a session cookie without `secure`,
+no erase route. Low confidence or doubtful: the date of birth on an adult profile
+(CH-001, "verify manually"), plain `http.createServer` (TLS may end at a proxy), and a
+tutorial page that shows the demo `cryptoKey` as example code (SEC-004). Not found: whole
+records spread into templates by a DAO in another file (SEC-006) and the IDOR on
+`/allocations/:userId`.
 
 ---
 
@@ -259,7 +270,7 @@ Juice Shop has no answer key. Our review of its 60 findings
 - **Data flow is shallow.** Values are followed within a function and through simple
   assignments, not through `.map()`, object spread or across many function calls.
 - **Frameworks:** Flask, FastAPI, Django, SQLAlchemy, Express and Sequelize. Prisma,
-  Mongoose, Spring, Go and PHP frameworks are not analysed yet. Endpoints generated at runtime
+  Mongoose (the raw MongoDB driver is read), Spring, Go and PHP frameworks are not analysed yet. Endpoints generated at runtime
   (finale-rest, DRF routers) and handlers inside npm packages are invisible.
 - **Heuristics can be wrong.** Each finding carries a confidence level; low-confidence
   findings say why (e.g. "may exist outside the scanned code").

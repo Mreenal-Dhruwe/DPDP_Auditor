@@ -3,13 +3,13 @@
   "tool_version": "0.1.0",
   "rules_version": "0.1.0",
   "target": "target_app_js",
-  "generated_at": "2026-11-24T01:31:40.529766Z",
-  "files_scanned": 11,
+  "generated_at": "2026-11-24T03:02:40.328893Z",
+  "files_scanned": 14,
   "coverage": {
     "files_by_kind": {
       "typescript": 6,
+      "javascript": 5,
       "config": 2,
-      "javascript": 2,
       "templates": 1
     },
     "rules_checked": [
@@ -46,16 +46,16 @@
   },
   "disclaimer": "Legal mapping is indicative, not legal advice. Code scanning cannot see contracts, privacy policies or offline processes.",
   "summary": {
-    "total": 27,
+    "total": 31,
     "by_severity": {
-      "critical": 3,
-      "high": 8,
+      "critical": 4,
+      "high": 11,
       "medium": 11,
       "low": 3,
       "info": 2
     },
     "by_category": {
-      "Security": 14,
+      "Security": 18,
       "Consent": 5,
       "Rights": 3,
       "Retention": 2,
@@ -64,10 +64,10 @@
       "Transfers": 1
     },
     "by_provision": {
-      "s.8(5)": 14,
-      "Rule 6(1)(a)": 5,
+      "s.8(5)": 18,
+      "Rule 6(1)(a)": 7,
+      "Rule 6(1)(b)": 5,
       "Rule 6(1)(c)": 4,
-      "Rule 6(1)(b)": 3,
       "s.6(1)": 2,
       "s.8(7)": 1,
       "s.12(3)": 1,
@@ -76,6 +76,7 @@
       "s.6(4)": 1,
       "s.6(6)": 1,
       "Rule 3(c)(i)": 1,
+      "Rule 6(1)(g)": 1,
       "Rule 6(1)(e)": 1,
       "Rule 8(3)": 1,
       "s.8(6)": 1,
@@ -119,8 +120,49 @@
           "  port: 3000,",
           "  jwtSecret: 'shop********',",
           "  dbPassword: process.env.DB_PASSWORD,",
-          "  dbStorage: process.env.DB_STORAGE || 'shop.sqlite'",
-          "}"
+          "  dbStorage: process.env.DB_STORAGE || 'shop.sqlite',",
+          "  cryptoKey: 'a_fi********',"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)"
+        ],
+        "requirement": "Measures to control access to computer resources."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "critical",
+      "severity_reason": "Anyone with repo access can reach the systems that hold personal data.",
+      "fix": "Move secrets to a secret manager or environment, rotate exposed keys, add .env to .gitignore."
+    },
+    {
+      "id": "9a0367ed4816",
+      "rule_id": "DPDP-SEC-004",
+      "title": "Hardcoded secrets or credentials",
+      "category": "Security",
+      "scope": "line",
+      "file": "config.js",
+      "line": 7,
+      "evidence": "cryptoKey: 'a_fi********', [literal value for cryptoKey]",
+      "context": {
+        "start_line": 4,
+        "lines": [
+          "  jwtSecret: 'shop********',",
+          "  dbPassword: process.env.DB_PASSWORD,",
+          "  dbStorage: process.env.DB_STORAGE || 'shop.sqlite',",
+          "  cryptoKey: 'a_fi********',",
+          "  signingKey: process.env.SIGNING_KEY,",
+          "  primaryKey: 'createdAt',",
+          "  cacheKey: 'user-profile-cache',"
         ]
       },
       "pii": [],
@@ -403,6 +445,93 @@
       "fix": "Add a consent guard (middleware or decorator) before purpose-specific processing."
     },
     {
+      "id": "a8035045ec07",
+      "rule_id": "DPDP-SEC-002",
+      "title": "Personal data stored in plaintext",
+      "category": "Security",
+      "scope": "line",
+      "file": "routes/members.js",
+      "line": 18,
+      "evidence": "await members.insertOne({ name, passport, password: bcrypt.hashSync(password, 12) }) [members.passport stored as STRING]",
+      "context": {
+        "start_line": 15,
+        "lines": [
+          "// The passport number is stored as typed; the password is hashed before it is saved.",
+          "router.post('/members', requireAuth, async (req, res) => {",
+          "  const { name, passport, password } = req.body",
+          "  await members.insertOne({ name, passport, password: bcrypt.hashSync(password, 12) })",
+          "  res.status(201).end()",
+          "})",
+          ""
+        ]
+      },
+      "pii": [
+        "passport"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Encryption, obfuscation, masking or virtual tokens."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "A database leak exposes the data directly.",
+      "fix": "Encrypt sensitive columns at the field level, or store tokens instead of raw values."
+    },
+    {
+      "id": "589cc63c3cee",
+      "rule_id": "DPDP-SEC-006",
+      "title": "Excessive data in API responses",
+      "category": "Security",
+      "scope": "line",
+      "file": "routes/members.js",
+      "line": 30,
+      "evidence": "members.findOne({ id: req.params.id }, (err, member) => res.json(member)) [GET /members/:id (handler) sends members.findOne() with passport, password; pass `attributes` or pick the fields]",
+      "context": {
+        "start_line": 27,
+        "lines": [
+          "// Sends the whole member record, passport number and password hash included.",
+          "router.get('/members/:id', requireAuth, (req, res) => {",
+          "  logger.info(`member ${req.params.id} read`)",
+          "  members.findOne({ id: req.params.id }, (err, member) => res.json(member))",
+          "})",
+          "",
+          "// Picks the fields it needs with a projection."
+        ]
+      },
+      "pii": [
+        "passport",
+        "password"
+      ],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(a)"
+        ],
+        "requirement": "Masking and minimising exposed personal data."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Sensitive fields leak to every client, including logs and caches.",
+      "fix": "Return a response schema/serializer with only the needed fields; mask identifiers."
+    },
+    {
       "id": "efdf12f3087f",
       "rule_id": "DPDP-SEC-001",
       "title": "Personal data written to logs",
@@ -577,6 +706,48 @@
       "fix": "Add DELETE /consent (or POST /consent/withdraw) that clears consent and stops downstream processing."
     },
     {
+      "id": "ad90e45e7ecf",
+      "rule_id": "DPDP-SEC-008",
+      "title": "Insecure infrastructure configuration",
+      "category": "Security",
+      "scope": "line",
+      "file": "web.js",
+      "line": 12,
+      "evidence": "app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false })) [session cookie options are missing: no `secure` flag, so it is also sent over plain HTTP]",
+      "context": {
+        "start_line": 9,
+        "lines": [
+          "const admin = express()",
+          "",
+          "// No cookie options: the session cookie has no `secure` flag and also travels over plain HTTP.",
+          "app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }))",
+          "",
+          "// Secure, script-proof cookie that expires.",
+          "admin.use(session({"
+        ]
+      },
+      "pii": [],
+      "confidence": "high",
+      "law": {
+        "act": [
+          "s.8(5)"
+        ],
+        "rules": [
+          "Rule 6(1)(b)",
+          "Rule 6(1)(g)"
+        ],
+        "requirement": "Access control and appropriate technical and organisational measures."
+      },
+      "penalty": {
+        "schedule_item": 1,
+        "provision": "s.8(5) security safeguards",
+        "cap": "Rs 250 crore"
+      },
+      "severity": "high",
+      "severity_reason": "Raises the chance and impact of a breach of stored personal data.",
+      "fix": "Run as non-root, disable debug in production, restrict CORS, enforce TLS, block public buckets."
+    },
+    {
       "id": "eed69ce5ed70",
       "rule_id": "DPDP-SEC-010",
       "title": "Log retention shorter than one year",
@@ -667,7 +838,7 @@
       "scope": "project",
       "file": "models.js",
       "line": 7,
-      "evidence": "None of the 12 routes lets users see or export their own data (no GET /me, /profile, /account or /export) (personal data is held, e.g. table users)",
+      "evidence": "None of the 16 routes lets users see or export their own data (no GET /me, /profile, /account or /export) (personal data is held, e.g. table users)",
       "context": {
         "start_line": 4,
         "lines": [

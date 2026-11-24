@@ -823,7 +823,7 @@
       "invocations": [
         {
           "executionSuccessful": true,
-          "endTimeUtc": "2026-11-24T01:41:16.864487+00:00"
+          "endTimeUtc": "2026-11-24T03:02:39.405658+00:00"
         }
       ],
       "results": [
@@ -1063,7 +1063,7 @@
           "ruleIndex": 23,
           "level": "error",
           "message": {
-            "text": "Child data collected without parental consent flow (project-wide (see app.py:90)): Date of birth / age is collected (the backend reads 'dob'), but no parent or guardian consent flow exists anywhere, so under-18s are processed without a parent's consent"
+            "text": "Child data collected without parental consent flow (project-wide (see app.py:90)): Date of birth / age is collected (the backend reads 'dob'), but no parent or guardian consent flow exists anywhere, so under-18s are processed without a parent's consent [the code deals with minors: app.py:72 'is_adult']"
           },
           "partialFingerprints": {
             "dpdpFindingId/v1": "48b171ec8ed6"
@@ -1099,7 +1099,7 @@
                 "region": {
                   "startLine": 90,
                   "snippet": {
-                    "text": "Date of birth / age is collected (the backend reads 'dob'), but no parent or guardian consent flow exists anywhere, so under-18s are processed without a parent's consent"
+                    "text": "Date of birth / age is collected (the backend reads 'dob'), but no parent or guardian consent flow exists anywhere, so under-18s are processed without a parent's consent [the code deals with minors: app.py:72 'is_adult']"
                   }
                 }
               }
