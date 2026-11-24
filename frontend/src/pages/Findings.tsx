@@ -5,7 +5,7 @@
 // link to /findings/:id renders the full page instead.
 
 import { Circle, CircleCheck, CircleDashed, CircleDot, Columns3, FileCode2, GripVertical, List, Search, X } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { useEffect, useRef, useState, type DragEvent } from "react";
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router";
 import { ReviewSelect, useMoveWithUndo } from "../components/ReviewSelect";
@@ -124,9 +124,13 @@ function Board({ findings }: { findings: Finding[] }) {
   const location = useLocation();
   const [dragging, setDragging] = useState<Finding | null>(null);
   const [over, setOver] = useState<ReviewStatus | null>(null);
+  // set synchronously at dragstart: the first dragover can arrive before React re-renders
+  const dragRef = useRef<Finding | null>(null);
 
   const drop = (status: ReviewStatus) => {
-    if (dragging && statusOf(dragging.id) !== status) moveWithUndo(dragging.id, dragging.title, status);
+    const card = dragRef.current;
+    if (card && statusOf(card.id) !== status) moveWithUndo(card.id, card.title, status);
+    dragRef.current = null;
     setDragging(null);
     setOver(null);
   };
@@ -142,8 +146,13 @@ function Board({ findings }: { findings: Finding[] }) {
             key={status}
             className={`column col${i}${target ? " over" : ""}`}
             aria-labelledby={`col-${i}`}
+            onDragEnter={(e: DragEvent) => {
+              if (!dragRef.current) return;
+              e.preventDefault(); // the spec makes an element a drop target when dragenter is cancelled
+              setOver(status);
+            }}
             onDragOver={(e: DragEvent) => {
-              if (!dragging) return;
+              if (!dragRef.current) return;
               e.preventDefault();
               e.dataTransfer.dropEffect = "move";
               if (over !== status) setOver(status);
@@ -165,24 +174,23 @@ function Board({ findings }: { findings: Finding[] }) {
             </h2>
             <p className="colhint">{COLUMN_HINT[status]}</p>
             <div className="stack">
-              <AnimatePresence initial={false}>
                 {cards.map((f) => (
                   <motion.article
                     layout
                     layoutId={`card-${f.id}`}
                     key={f.id}
-                    initial={{ opacity: 0, scale: 0.97 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.97 }}
-                    transition={{ type: "spring", stiffness: 520, damping: 40, opacity: { duration: 0.16 } }}
+                    // the shared layoutId glides the card from its old column to the new one
+                    transition={{ type: "spring", stiffness: 520, damping: 40 }}
                     className={`finding-card sev-${f.severity}${dragging?.id === f.id ? " dragging" : ""}`}
                     draggable
                     onDragStartCapture={(e: DragEvent) => {
                       e.dataTransfer.setData("text/plain", f.id);
                       e.dataTransfer.effectAllowed = "move";
+                      dragRef.current = f;
                       setDragging(f);
                     }}
                     onDragEndCapture={() => {
+                      dragRef.current = null;
                       setDragging(null);
                       setOver(null);
                     }}
@@ -205,7 +213,6 @@ function Board({ findings }: { findings: Finding[] }) {
                     </div>
                   </motion.article>
                 ))}
-              </AnimatePresence>
               {target && (
                 <div className="insert" aria-hidden="true">
                   Move to {status}

@@ -5,7 +5,7 @@
 // review store, so the map lives in this browser's localStorage and the UI says so. A team
 // deployment would swap `load` / `save` for an authorised API with ownership checks.
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 export const STATUSES = ["Open", "Triaged", "In progress", "Resolved"] as const;
 export type ReviewStatus = (typeof STATUSES)[number];
@@ -56,15 +56,19 @@ export function ReviewProvider({ scanId, findingIds, children }: { scanId: strin
     }
   }, [scanId, reviews]);
 
+  // `move` may be called later from a toast's Undo: it reads the latest map, never a stale one
+  const latest = useRef(reviews);
+  latest.current = reviews;
   const statusOf = useCallback((id: string) => reviews[id]?.status ?? "Open", [reviews]);
-  const move = useCallback(
-    (id: string, status: ReviewStatus) => {
-      const previous = reviews[id]?.status ?? "Open";
-      if (previous !== status) setReviews((old) => ({ ...old, [id]: { status, at: new Date().toISOString() } }));
-      return previous;
-    },
-    [reviews],
-  );
+  const move = useCallback((id: string, status: ReviewStatus) => {
+    const previous = latest.current[id]?.status ?? "Open";
+    if (previous !== status) {
+      const next = { ...latest.current, [id]: { status, at: new Date().toISOString() } };
+      latest.current = next;
+      setReviews(next);
+    }
+    return previous;
+  }, []);
   const counts = useMemo(() => {
     const result = Object.fromEntries(STATUSES.map((s) => [s, 0])) as Record<ReviewStatus, number>;
     for (const entry of Object.values(reviews)) result[entry.status] += 1;
