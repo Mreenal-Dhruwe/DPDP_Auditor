@@ -48,14 +48,14 @@ def test_status_tells_when_the_scan_expires(client):
 
 
 def test_a_scan_expires_after_the_ttl(tmp_path):
-    """TTL 0.01 minutes = 0.6 s: readable at first, then 410 and every file gone."""
-    settings = make_settings(tmp_path, ttl="0.01")
+    """TTL 0.03 minutes = 1.8 s: readable at first, then 410 and every file gone."""
+    settings = make_settings(tmp_path, ttl="0.03")
     client = TestClient(create_app(settings))
     scan_id, _ = start(client)
     assert client.get(f"/api/scan/{scan_id}/findings").status_code == 200
     export = settings.report_dir / scan_id / "report.json"
     assert export.is_file()
-    time.sleep(0.8)
+    time.sleep(2.3)
     assert client.get(f"/api/scan/{scan_id}").status_code == 410
     assert client.get(f"/api/scan/{scan_id}/findings").status_code == 410
     assert client.get(f"/api/scan/{scan_id}/report.html").status_code == 410

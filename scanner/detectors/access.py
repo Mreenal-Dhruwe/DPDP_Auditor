@@ -21,10 +21,10 @@ import re
 from tree_sitter import Node
 
 from scanner.detectors.javascript import (
-    FUNCTION_TYPES, JsPiiRefs, arguments, callee, line_of, string_value, text, walk,
+    FUNCTION_TYPES, JsPiiRefs, arguments, callee, js_files, line_of, string_value, text, walk,
 )
 from scanner.detectors.routes import Route, find_routes, resolve_js_handler
-from scanner.detectors.schemas import find_tables
+from scanner.detectors.schemas import MONGO_FINDERS, find_tables, mongo_aliases, mongo_collection_of
 from scanner.detectors.source import PEOPLE_TABLES, dotted_name, python_trees, string_key
 from scanner.ingest import Project
 from scanner.models import Hit
@@ -264,6 +264,8 @@ class _Records:
                 continue
             shown = table.model or table.name
             for key in {table.name.lower(), table.name.lower().rstrip("s"), (table.model or "").lower()} - {""}:
+                if key in self.by_name:  # same collection written in several files: union of the fields
+                    labels = sorted(set(labels) | set(self.by_name[key][1]))
                 self.by_name[key] = (shown, labels, table.file)
 
     def get(self, name: str) -> tuple[str, list[str], str] | None:
@@ -414,11 +416,25 @@ def _drf_all_fields(project: Project, records: _Records) -> list[Hit]:
     return hits
 
 
-def _js_finder(node: Node, records: _Records, hidden: set[str]) -> tuple[str, list[str]] | None:
+def _mongo_finder(call: Node, records: _Records, aliases: dict[str, str]) -> tuple[str, list[str]] | None:
+    """usersCol.findOne(query) / db.collection("users").find(query) without a projection."""
+    function = call.child_by_field_name("function")
+    if function is None or function.type != "member_expression" or text(function.child_by_field_name("property")) not in MONGO_FINDERS:
+        return None
+    collection = mongo_collection_of(function.child_by_field_name("object"), aliases)
+    record = records.get(collection) if collection else None
+    if record is None or any(a.type == "object" for a in arguments(call)[1:]) or ".project(" in text(call.parent):
+        return None  # unknown collection, or an options / projection object limits the fields
+    return f"{collection}.{text(function.child_by_field_name('property'))}()", record[1]
+
+
+def _js_finder(node: Node, records: _Records, hidden: set[str], aliases: dict[str, str] | None = None) -> tuple[str, list[str]] | None:
     """User.findByPk(id) without `attributes` -> ("User.findByPk()", labels)."""
     for call in walk(node):
         if call.type != "call_expression":
             continue
+        if aliases is not None and (mongo := _mongo_finder(call, records, aliases)):
+            return mongo
         called = callee(call)
         parts = called.split(".")
         if len(parts) < 2 or parts[-1] not in SEQUELIZE_FINDERS or (record := records.get(parts[-2])) is None:
@@ -432,6 +448,7 @@ def _js_finder(node: Node, records: _Records, hidden: set[str]) -> tuple[str, li
 def _js_excessive(project: Project, records: _Records) -> list[Hit]:
     hidden = {f for _, _, f in records.by_name.values() if HIDES_FIELDS.search(project.read_text(f))}
     hits = []
+    mongo_alias_map = {f.rel: mongo_aliases(f) for f in js_files(project)}
     for route in find_routes(project):
         if route.language != "js":
             continue
@@ -440,15 +457,22 @@ def _js_excessive(project: Project, records: _Records) -> list[Hit]:
             continue
         tainted: dict[str, tuple[str, list[str]]] = {}
         lines = project.read_text(handler_file).splitlines()
+        aliases = mongo_alias_map.get(handler_file, {})
         for node in walk(handler):
+            if node.type == "call_expression" and (mongo := _mongo_finder(node, records, aliases)):
+                callback = next((a for a in arguments(node) if a.type in FUNCTION_TYPES), None)
+                params = callback.child_by_field_name("parameters") if callback is not None else None
+                names = [text(p) for p in params.named_children] if params is not None else []
+                if len(names) >= 2:  # findOne(query, (err, user) => res.json(user))
+                    tainted[names[1]] = mongo
             if node.type == "variable_declarator" and (value := node.child_by_field_name("value")) is not None:
-                if source := _js_finder(value, records, hidden):
+                if source := _js_finder(value, records, hidden, aliases):
                     for name in _js_names(node.child_by_field_name("name")):
                         tainted[name] = source
             elif node.type == "call_expression" and callee(node).endswith(".then"):
                 function = node.child_by_field_name("function")
                 args = arguments(node)
-                source = _js_finder(function.child_by_field_name("object"), records, hidden)
+                source = _js_finder(function.child_by_field_name("object"), records, hidden, aliases)
                 if source and args and args[0].type in FUNCTION_TYPES:
                     params = args[0].child_by_field_name("parameters") or args[0].child_by_field_name("parameter")
                     for name in _js_names(params):
@@ -456,7 +480,7 @@ def _js_excessive(project: Project, records: _Records) -> list[Hit]:
             elif node.type == "call_expression" and _JS_SEND.match(callee(node)):
                 exposed = None
                 for arg in arguments(node):
-                    exposed = exposed or _js_finder(arg, records, hidden)  # res.json(await User.findAll())
+                    exposed = exposed or _js_finder(arg, records, hidden, aliases)  # res.json(await User.findAll())
                     for sub in walk(arg):
                         if exposed:
                             break

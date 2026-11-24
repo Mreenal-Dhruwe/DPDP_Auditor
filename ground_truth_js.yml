@@ -228,6 +228,22 @@ planted:
     clue: absence
     note: The nightly job deletes accounts unused for three years without warning users 48 hours before.
 
+  - id: JS-28
+    rule_id: DPDP-SEC-002
+    file: routes/members.js
+    line: 18
+    anchor: "members.insertOne({ name, passport"
+    clue: structure
+    note: The raw MongoDB driver stores the member's passport number as typed (the password next to it is bcrypt-hashed).
+
+  - id: JS-29
+    rule_id: DPDP-SEC-006
+    file: routes/members.js
+    line: 30
+    anchor: "members.findOne({ id: req.params.id }, (err, member)"
+    clue: structure
+    note: GET /members/:id sends the whole member record (passport number, password hash) with res.json.
+
 compliant:
   - rule_id: DPDP-SEC-004
     note: dbPassword and dbStorage come from process.env.
@@ -245,6 +261,12 @@ compliant:
     note: name, email and mobile on the quote form are Lead columns, stored by Lead.create(req.body).
   - rule_id: DPDP-SEC-007
     note: GET /api/leads/:id and the marketing handlers (routes/marketing.ts) log each read with logger.info.
+  - rule_id: DPDP-SEC-002
+    note: members.password is saved as bcrypt.hashSync(...) in routes/members.js.
+  - rule_id: DPDP-RET-001
+    note: members can be erased (members.deleteOne in DELETE /members/:id).
+  - rule_id: DPDP-SEC-006
+    note: GET /members/:id/card (routes/members.js:36) reads the member with a projection that returns only the name.
   - rule_id: DPDP-SEC-006
     note: getCustomer (routes/customers.ts:8) picks email and phone from the User record; GET /api/leads/:id (server.ts:39) picks name and source.
 

@@ -42,7 +42,7 @@ personal_data:
     - { name: indian_mobile, pattern: '(\+91[\-\s]?)?\b[6-9]\d{9}\b', sensitivity: medium }
     - { name: email, pattern: '\b[\w.+\-]+@[\w\-]+\.[\w.]+\b', sensitivity: medium }
   field_names:
-    high: [aadhaar, aadhar, pan, passport, voter_id, health, diagnosis, medical, biometric, fingerprint, password, card_number, account_number, bank_account]
+    high: [aadhaar, aadhar, pan, passport, voter_id, health, diagnosis, medical, biometric, fingerprint, password, card_number, account_number, bank_account, ssn, bank_routing]
     medium: [email, phone, mobile, dob, date_of_birth, address, pincode, full_name, upi, ifsc, location, lat, lng, ip_address]
     child_markers: [dob, date_of_birth, age, is_minor, guardian, parent_email]
 

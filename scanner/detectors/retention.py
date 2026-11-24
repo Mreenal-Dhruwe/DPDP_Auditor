@@ -59,6 +59,9 @@ def _erase_patterns(table: Table) -> list[tuple[str, re.Pattern]]:
         ("truncate", rf"\btruncate\s+(?:table\s+)?[`\"\[]?{name}\b"),
         ("null", rf"\bupdate\s+[`\"\[]?{name}[`\"\]]?\s+set\b[^;]{{0,300}}?\bnull\b"),
     ]
+    # raw MongoDB driver: members.deleteOne(...) / db.collection("members").deleteMany(...)
+    patterns.append(("delete", r"\.(?:deleteOne|deleteMany|findOneAndDelete)\("))
+    patterns.append(("remove", r"\.remove\(\s*\{"))
     if table.model:
         model = re.escape(table.model)
         patterns += [  # SQLAlchemy and Django, then Sequelize
@@ -115,10 +118,15 @@ def no_erase_path(project: Project) -> list[Hit]:
                 and _ERASE_FUNCTION.search(text) is not None
             code[rel] = (text, lowered, erase_function)
     hits = []
+    seen_collections: set[str] = set()  # a MongoDB collection written in several files is one table
     for table in find_tables(project):
         labels = sorted({m.label for c in table.columns if (m := matcher.match(c.name))})
         if not labels or _has_erase_path(table, code):
             continue
+        if table.model is None and suffix_of(table.file) in {".js", ".ts", ".mjs", ".cjs", ".jsx", ".tsx"}:
+            if table.name in seen_collections:
+                continue
+            seen_collections.add(table.name)
         lines = project.read_text(table.file).splitlines()
         defined = lines[table.line - 1].strip() if table.line <= len(lines) else table.name
         note = (f"; {generator} generates REST endpoints, so a delete path may exist outside the scanned code"
