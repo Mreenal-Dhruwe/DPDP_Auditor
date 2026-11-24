@@ -22,7 +22,7 @@ import yaml
 from pydantic import Field, ValidationError, model_validator
 
 from scanner.config import PROJECT_ROOT, get_settings
-from scanner.masking import mask_evidence
+from scanner.masking import mask_evidence, secret_values
 from scanner.models import (
     CONTEXT_RADIUS,
     DISCLAIMER,
@@ -89,6 +89,17 @@ class Rule(ContractModel):
     fix: Text
 
 
+_last_file: tuple[list[str], set[str]] | None = None
+
+
+def _file_secrets(source_lines: list[str]) -> set[str]:
+    """Secret values found anywhere in this file; the last file is cached (findings of one file arrive together)."""
+    global _last_file
+    if _last_file is None or _last_file[0] is not source_lines:
+        _last_file = (source_lines, secret_values(source_lines))
+    return _last_file[1]
+
+
 class RuleCatalogue(ContractModel):
     """The whole rules file, validated. Get one with load_rules()."""
 
@@ -150,7 +161,8 @@ class RuleCatalogue(ContractModel):
         if source_lines and hit.line is not None and hit.line <= len(source_lines):
             start = max(1, hit.line - CONTEXT_RADIUS)
             end = min(len(source_lines), hit.line + CONTEXT_RADIUS)
-            masked = [mask_evidence(source_lines[n - 1], self.personal_data.identifiers) for n in range(start, end + 1)]
+            known = _file_secrets(source_lines)
+            masked = [mask_evidence(source_lines[n - 1], self.personal_data.identifiers, known) for n in range(start, end + 1)]
             context = Context(start_line=start, lines=masked)
         return Finding(
             context=context,
@@ -160,7 +172,7 @@ class RuleCatalogue(ContractModel):
             scope=hit.scope,
             file=hit.file,
             line=hit.line,
-            evidence=mask_evidence(hit.evidence, self.personal_data.identifiers),
+            evidence=mask_evidence(hit.evidence, self.personal_data.identifiers, _file_secrets(source_lines or [])),
             pii=hit.pii,
             confidence=hit.confidence,
             law=rule.law.model_copy(deep=True),  # copies, so a finding can't change the rule

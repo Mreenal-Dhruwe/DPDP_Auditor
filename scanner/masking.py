@@ -68,6 +68,9 @@ _ENV_SECRET = re.compile(
     r"^(\s*(?:-\s*)?(?:export\s+|ENV\s+|ARG\s+)?[A-Z0-9_]*"
     r"(?:SECRET|PASSWORD|PASSWD|PWD|TOKEN|API_?KEY|PRIVATE_?KEY|ACCESS_?KEY)[A-Z0-9_]*\s*[:= ]\s*)([^\s'\"]+)\s*$"
 )
+# cryptoKey: "a_secure_key_for_crypto_here", signingKey = '...': names ending in "key" are only
+# masked for long, space-free values (a React `key: "id"` or i18n key is left alone)
+_KEY_NAME_VALUE = re.compile(r"""(\b[\w.-]*(?:crypto|sign|encrypt|hmac|jwt|session|cookie|auth|master|private|secret)[\w.-]*key['"]?\s*[:=]\s*)(['"])([^'"\s]{12,})\2""", re.IGNORECASE)
 _KNOWN_SECRETS = re.compile("|".join(f"(?:{p})" for p in KNOWN_SECRET_PATTERNS.values()))
 _TOKEN_CHARS = r"A-Za-z0-9+/_\-="
 _LONG_TOKEN = re.compile(rf"(?<![{_TOKEN_CHARS}])[{_TOKEN_CHARS}]{{32,}}(?![{_TOKEN_CHARS}])")
@@ -88,11 +91,38 @@ def _mask_connection_password(m: re.Match) -> str:
 
 
 def mask_secrets(text: str) -> str:
+    text = _KEY_NAME_VALUE.sub(lambda m: m.group(1) + m.group(2) + mask_secret(m.group(3)) + m.group(2), text)
     text = _QUOTED_SECRET.sub(lambda m: m.group(1) + m.group(2) + mask_secret(m.group(3)) + m.group(2), text)
     text = _ENV_SECRET.sub(lambda m: m.group(1) + mask_secret(m.group(2)), text)
     text = _KNOWN_SECRETS.sub(lambda m: mask_secret(m.group(0)), text)
     text = CONNECTION_PASSWORD.sub(_mask_connection_password, text)
     return _LONG_TOKEN.sub(lambda m: mask_secret(m.group(0)) if _looks_random(m.group(0)) else m.group(0), text)
+
+
+def secret_values(lines: Iterable[str]) -> set[str]:
+    """Secret values assigned anywhere in a file, so the same value can be masked wherever it
+    is repeated: in a trailing comment (`"password": "$2a$..", // Admin_123`), a test, a
+    neighbouring line. Plain lower-case words ("password", "changeme") are left out: masking
+    them everywhere would hide ordinary code."""
+    found: set[str] = set()
+    for line in lines:
+        for rx, group in ((_KEY_NAME_VALUE, 3), (_QUOTED_SECRET, 3)):
+            for m in rx.finditer(line):
+                value = m.group(group)
+                if len(value) >= 6 and MASK not in value and re.search(r"[^a-z]", value):
+                    found.add(value)
+        for m in _ENV_SECRET.finditer(line):
+            value = m.group(2)
+            if len(value) >= 6 and MASK not in value and re.search(r"[^a-z]", value):
+                found.add(value)
+    return found
+
+
+def mask_values(text: str, values: Iterable[str]) -> str:
+    for value in sorted(values, key=len, reverse=True):  # longest first, so a prefix cannot split one
+        if value in text:
+            text = text.replace(value, mask_secret(value))
+    return text
 
 
 def _mask_email(m: re.Match) -> str:
@@ -128,9 +158,12 @@ PII_MASKERS: list[tuple[str, Callable[[re.Match], str]]] = [
 ]
 
 
-def mask_evidence(text: str, identifiers: Iterable[IdentifierPattern]) -> str:
-    """Safety net applied to evidence and every context line by RuleCatalogue.to_finding()."""
+def mask_evidence(text: str, identifiers: Iterable[IdentifierPattern], known_values: Iterable[str] = ()) -> str:
+    """Safety net applied to evidence and every context line by RuleCatalogue.to_finding().
+
+    known_values: secrets found elsewhere in the same file (see secret_values), masked here too."""
     text = mask_secrets(text)
+    text = mask_values(text, known_values)
     patterns = {i.name: i.pattern for i in identifiers}
     for name, masker in PII_MASKERS:
         if name in patterns:
