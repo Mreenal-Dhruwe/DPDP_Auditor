@@ -244,9 +244,17 @@ planted:
     clue: structure
     note: GET /members/:id sends the whole member record (passport number, password hash) with res.json.
 
+  - id: JS-30
+    rule_id: DPDP-SEC-004
+    file: config.js
+    line: 8
+    anchor: "cryptoKey: '"
+    clue: pattern
+    note: Field-encryption key hard-coded in config.js (a *Key name that is not api_key or secret).
+
 compliant:
   - rule_id: DPDP-SEC-004
-    note: dbPassword and dbStorage come from process.env.
+    note: dbPassword, dbStorage and signingKey come from process.env; primaryKey, cacheKey and tokenType hold plain field names and labels, not secrets.
   - rule_id: DPDP-SEC-002
     note: User.password is hashed with bcrypt in the model's setter.
   - rule_id: DPDP-RET-001

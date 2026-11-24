@@ -45,8 +45,15 @@ _KNOWN = re.compile("|".join(f"(?:{p})" for p in KNOWN_SECRET_PATTERNS.values())
 
 
 def looks_like_secret(name: str, value: str) -> bool:
-    if not SECRET_NAME.search(name) or set(split_words(name)) & NOT_A_SECRET_WORDS:
+    words = split_words(name)
+    if set(words) & NOT_A_SECRET_WORDS:
         return False
+    if not SECRET_NAME.search(name):
+        # any other *Key (primaryKey, cacheKey, sortKey) is usually a field name: only a value
+        # that looks generated (letters and digits mixed, 16+ characters) counts
+        if not (words and words[-1] == "key" and re.search(r"\d", value) and re.search(r"[A-Za-z]", value)
+                and len(value) >= 16 and not re.search(r"\s", value)):
+            return False
     v = value.strip()
     lowered = v.lower()
     return not (

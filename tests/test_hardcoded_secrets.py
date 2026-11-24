@@ -87,3 +87,20 @@ def test_translations_are_not_secrets(tmp_path):
     write(tmp_path, "i18n/ja_JP.json", '{\n  "MANDATORY_PASSWORD": "パスワードを入力してください"\n}\n')
     write(tmp_path, "web/lang.json", '{"PASSWORD_HINT": "パスワードは8文字以上"}\n')  # non-ASCII outside i18n/
     assert scan(tmp_path) == []
+
+
+def test_key_named_secrets_are_found_and_plain_key_names_are_not(tmp_path):
+    write(tmp_path, "config.js", """
+        module.exports = {
+          cryptoKey: 'a_field_encryption_key_here',   // line 2: vulnerable
+          cookieSigningKey: "b7f3a9c1d5e84f20a6",       // line 3: vulnerable
+          sessionKey: 'fe12ab34cd56ef78ab90',          // line 4: vulnerable
+          randomKey: 'k9x2m4p7q1w8e5r3t6y0',           // line 5: any *Key holding a generated-looking value
+          signingKey: process.env.SIGNING_KEY,
+          primaryKey: 'createdAt',
+          cacheKey: 'user-profile-cache',
+          sortKey: 'created_at_desc',
+          tokenType: 'Bearer',
+        }
+    """)
+    assert sorted(h.line for h in scan(tmp_path)) == [3, 4, 5, 6]

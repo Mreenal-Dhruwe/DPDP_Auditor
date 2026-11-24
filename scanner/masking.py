@@ -36,7 +36,8 @@ PRIVATE_KEY_HEADER = re.compile(r"-----BEGIN (?:[A-Z]+ )*PRIVATE KEY-----")
 CONNECTION_PASSWORD = re.compile(r"\b[a-zA-Z][a-zA-Z0-9+.-]*://[^:/\s@'\"]+:([^@/\s'\"]+)@")
 # Names that suggest a secret value (used for assignments)
 SECRET_NAME = re.compile(
-    r"secret|passw(?:or)?d|passwd|pwd|token|api[_-]?key|apikey|private[_-]?key|access[_-]?key|auth[_-]?key|credential",
+    r"secret|passw(?:or)?d|passwd|pwd|token|api[_-]?key|apikey|private[_-]?key|access[_-]?key|auth[_-]?key|credential"
+    r"|(?:crypto|sign(?:ing)?|encrypt(?:ion)?|hmac|jwt|session|cookie|master)[_-]?key|crypto[_-]?(?:salt|pass)",
     re.IGNORECASE,
 )
 
