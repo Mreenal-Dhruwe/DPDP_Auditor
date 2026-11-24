@@ -1338,3 +1338,52 @@ tr:target {
     color: #000 !important;
   }
 }
+
+/* --- saved samples and expiry ------------------------------------------------------------------ */
+
+.samplelist {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid #2a2b30;
+}
+.samplelist p {
+  margin: 8px 0 12px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+.samplelist ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.samplelist a {
+  display: block;
+  padding: 10px 12px;
+  border: 1px solid var(--edge);
+  border-radius: 9px;
+  background: #15161a;
+  transition:
+    border-color var(--dur-fast),
+    background-color var(--dur-fast);
+}
+.samplelist a:hover {
+  border-color: #5a5b66;
+  background: #1a1b20;
+}
+.samplelist strong {
+  display: block;
+  font-size: 0.9rem;
+}
+.samplelist small {
+  color: var(--faint);
+  font-size: 0.76rem;
+}
+.expiry {
+  display: inline-block;
+  margin-top: 4px;
+  color: var(--faint);
+  font-size: 0.8rem;
+}

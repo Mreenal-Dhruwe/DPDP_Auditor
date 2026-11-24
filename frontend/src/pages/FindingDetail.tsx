@@ -142,7 +142,7 @@ export function FindingView({ finding, inDrawer = false }: { finding: Finding; i
                 <dt>Review status</dt>
                 <dd>
                   <ReviewSelect id={finding.id} title={finding.title} />
-                  <p>Saved in this browser only.</p>
+                  <p>Cleared when you reload or leave.</p>
                 </dd>
               </div>
             </dl>

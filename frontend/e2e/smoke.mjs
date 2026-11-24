@@ -11,7 +11,9 @@
 // Uses playwright-core with the Chrome or Edge already installed (CHROME_PATH overrides),
 // so no browser download is needed. Checks: upload -> progress -> dashboard -> detail,
 // exports, that the table matches the report, and that no planted secret reaches the page;
-// a failed scan, the review board (move, reload, scanner fields unchanged, drag, Undo, drawer),
+// a failed scan, the review board (move, in-memory review state, scanner fields unchanged, drag,
+// Undo, drawer, cleared on reload), short-lived scans (other visitors, delete token, TTL state,
+// saved samples),
 // keyboard order, the landing intro and reduced motion, and 390 px layouts on every route.
 
 import { execFileSync } from "node:child_process";
@@ -196,29 +198,53 @@ async function failedScan(browser, work) {
   await page.close();
 }
 
-async function reviewBoard(browser, scanId) {
-  console.log("\nReview board: move, reload, scanner fields unchanged");
+/** Start a zip scan through the UI in this page and wait for its overview. Returns the scan id. */
+async function uiScan(page, zip) {
+  await page.goto(BASE + "/scan");
+  await page.setInputFiles("[data-testid=zip-input]", zip);
+  await page.click("button[type=submit]");
+  await page.waitForURL(/\/scans\/[0-9a-f]{32}$/, { timeout: 60000 });
+  await page.waitForSelector("text=Showing");
+  return page.url().split("/").pop();
+}
+
+/** Navigate inside the app without reloading: a reload would (by design) delete this tab's scans. */
+async function spaGo(page, route) {
+  await page.evaluate((r) => {
+    history.pushState({}, "", r);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  }, route);
+  await page.waitForTimeout(500);
+}
+
+const EXPIRED = "text=This scan has expired or was not found";
+
+async function reviewBoard(browser, zip) {
+  console.log("\nReview board: move, navigate, scanner fields unchanged, cleared on reload");
   // tall viewport: the card and the target column both on screen, so nothing scrolls mid-drag
   const context = await browser.newContext({ viewport: { width: 1440, height: 1800 } });
   const page = await context.newPage();
+  const scanId = await uiScan(page, zip);
   const report = await (await page.request.get(`${BASE}/api/scan/${scanId}/findings`)).json();
   const card = report.findings[0];
-  await page.goto(`${BASE}/scans/${scanId}/findings`);
+  await page.click("[aria-label='Workspace'] a[aria-label='Findings']");
   const select = `[aria-label="Review status for ${card.title}"]`;
   await page.waitForSelector(select);
-  // keyboard: focus the card's status select and pick a value with the arrow keys
+  // keyboard: focus the card's status select and change it
   await page.focus(select);
   await page.selectOption(select, "Triaged");
   const toast = await page.waitForSelector(".toast:has-text('moved to Triaged')", { timeout: 5000 }).then(() => true, () => false);
   check(toast, "moving a card announces it with Undo");
   const column = await page.textContent(`.column:has(h2:has-text('Triaged')) .stack`);
   check(column.includes(card.title), "the card is now in the Triaged column");
-  await page.reload();
+  // moving between screens keeps the in-memory review state
+  await page.click("[aria-label='Workspace'] a[aria-label='Overview']");
+  await page.waitForSelector("text=Showing");
+  await page.click("[aria-label='Workspace'] a[aria-label='Findings']");
   await page.waitForSelector(select);
-  check((await page.inputValue(select)) === "Triaged", "review status survives a reload (this browser)");
+  check((await page.inputValue(select)) === "Triaged", "review status survives moving between screens (memory only)");
   const after = await (await page.request.get(`${BASE}/api/scan/${scanId}/findings`)).json();
-  const same = JSON.stringify(after.findings[0]) === JSON.stringify(card);
-  check(same, "scanner fields (severity, confidence, law, evidence) unchanged after the move");
+  check(JSON.stringify(after.findings[0]) === JSON.stringify(card), "scanner fields (severity, confidence, law, evidence) unchanged after the move");
   // drag and drop with a real pointer
   const other = report.findings[1];
   const source = page.locator(".finding-card", { hasText: other.title }).first();
@@ -236,6 +262,13 @@ async function reviewBoard(browser, scanId) {
   await page.keyboard.press("Escape");
   await page.waitForURL(/\/findings$/, { timeout: 5000 });
   check(!(await page.isVisible("dialog.drawer[open]")), "Escape closes the drawer and returns to the board");
+  // memory only: nothing about scans or reviews is written to browser storage
+  const storage = await page.evaluate(() => ({ local: localStorage.length, session: Object.keys(sessionStorage) }));
+  check(storage.local === 0 && storage.session.every((k) => k === "dpdp.brand-intro"), `no review state or scan ids in browser storage (${JSON.stringify(storage)})`);
+  // a reload starts empty: the scan is gone and so are the reviews
+  await page.reload();
+  check(await page.waitForSelector(EXPIRED, { timeout: 8000 }).then(() => true, () => false), "after a reload the same link shows the expired or not-found state");
+  check((await page.locator(".finding-card").count()) === 0, "a reload brings back no cards and no review state");
   await context.close();
 }
 
@@ -272,17 +305,74 @@ async function keyboardAndMotion(browser, scanId) {
   await reduced.close();
 }
 
-async function narrowScreens(browser, scanId, findingId) {
+async function narrowScreens(browser, zip) {
   console.log("\nNarrow screens (390 px): no sideways scrolling");
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce" });
   const page = await context.newPage();
-  for (const route of ["/", "/scan", `/scans/${scanId}`, `/scans/${scanId}/findings`, `/scans/${scanId}/findings/${findingId}`, `/scans/${scanId}/report`, "/rules"]) {
-    await page.goto(BASE + route);
+  const scanId = await uiScan(page, zip);
+  const report = await (await page.request.get(`${BASE}/api/scan/${scanId}/findings`)).json();
+  const findingId = report.findings[0].id;
+  for (const route of [`/scans/${scanId}`, "/scan", `/scans/${scanId}/findings`, `/scans/${scanId}/findings/${findingId}`, `/scans/${scanId}/report`, "/rules", "/"]) {
+    await spaGo(page, route); // in-app navigation: a reload would delete the scan
     await page.waitForLoadState("networkidle");
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     check(overflow <= 0, `${route.replace(scanId, "<scan>").replace(findingId, "<finding>")} fits a 390 px screen`);
   }
   await context.close();
+}
+
+async function expiryAndPrivacy(browser, zip) {
+  console.log("\nShort-lived scans: other visitors, delete token, reload, saved samples");
+  const health = await (await fetch(`${BASE}/api/health`)).json();
+  check(health.scan_ttl_minutes > 0, `the server reports its scan TTL (${health.scan_ttl_minutes} min)`);
+
+  const a = await browser.newContext();
+  const pageA = await a.newPage();
+  const scanId = await uiScan(pageA, zip);
+  check(await pageA.isVisible("text=deleted from the server"), "the overview says when the scan is deleted");
+
+  // another visitor (a new browser context = a new tab / person) opens the link directly
+  const b = await browser.newContext();
+  const pageB = await b.newPage();
+  await pageB.goto(`${BASE}/scans/${scanId}`);
+  check(await pageB.waitForSelector(EXPIRED, { timeout: 8000 }).then(() => true, () => false), "a direct visit to the link shows the expired or not-found state");
+  check((await pageB.locator("table").count()) === 0 && !(await pageB.isVisible("text=Hardcoded secrets")), "...and none of the report");
+  await pageB.goto(`${BASE}/scans/${scanId}/progress`);
+  check(await pageB.waitForSelector("text=This scan has expired or was not found", { timeout: 8000 }).then(() => true, () => false), "a direct visit to the progress link shows it too");
+
+  // the delete token is per scan: no token, a wrong token and another scan's token are refused
+  for (const [what, headers] of [["no token", {}], ["a wrong token", { "X-Delete-Token": "wrong" }]]) {
+    const response = await pageB.request.delete(`${BASE}/api/scans/${scanId}`, { headers });
+    check(response.status() === 403, `DELETE with ${what} is refused (403)`);
+  }
+  check((await pageB.request.get(`${BASE}/api/scan/${scanId}/findings`)).status() === 200, "...and the scan is still there");
+  check([404, 405].includes((await pageB.request.delete(`${BASE}/api/scans`)).status()), "there is no clear-all endpoint");
+
+  // the owner reloads: the page-leave beacon deletes the scan right away
+  await pageA.reload();
+  check(await pageA.waitForSelector(EXPIRED, { timeout: 8000 }).then(() => true, () => false), "the owner's reload shows the expired state too");
+  let status = 0;
+  for (let i = 0; i < 20 && status !== 410; i++) {
+    status = (await pageB.request.get(`${BASE}/api/scan/${scanId}/findings`)).status();
+    if (status !== 410) await pageB.waitForTimeout(250);
+  }
+  check(status === 410, "leaving the page deleted the scan on the server (410)");
+
+  // saved samples: loadable any time, clearly labelled, never tied to a tab
+  await pageB.goto(BASE + "/scan");
+  await pageB.waitForSelector("#samples a");
+  const names = await pageB.$$eval("#samples strong", (e) => e.map((x) => x.textContent));
+  check(["target_app", "target_app_js", "juice-shop"].every((n) => names.includes(n)), `saved samples are listed (${names.join(", ")})`);
+  check(await pageB.isVisible("#samples >> text=not live scans"), "the list says they are saved samples, not live scans");
+  await pageB.click("#samples a:has-text('juice-shop')");
+  await pageB.waitForSelector("text=Showing");
+  check(await pageB.isVisible("text=Saved sample, not a live scan"), "a saved sample is labelled on its overview");
+  await pageB.reload();
+  check(await pageB.waitForSelector("text=Saved sample, not a live scan", { timeout: 8000 }).then(() => true, () => false), "a saved sample still loads after a reload");
+  const sampleExport = await pageB.request.get(`${BASE}/api/samples/juice-shop/report.html`);
+  check(sampleExport.ok(), "saved samples can be exported");
+  await a.close();
+  await b.close();
 }
 
 const work = mkdtempSync(path.join(tmpdir(), "dpdp-e2e-"));
@@ -315,15 +405,16 @@ try {
   await noSecrets("dashboard");
   const report = await (await page.request.get(`${BASE}/api/scan/${scanId}/findings`)).json();
   for (const f of report.findings.filter((x) => x.rule_id === "DPDP-SEC-004")) {
-    await page.goto(`${BASE}/scans/${scanId}/findings/${f.id}`);
+    await spaGo(page, `/scans/${scanId}/findings/${f.id}`); // not goto: a reload would delete the scan
     await page.waitForSelector("h1");
     await noSecrets(`detail of ${f.rule_id} ${f.file}:${f.line}`);
   }
 
   await failedScan(browser, work);
-  await reviewBoard(browser, scanId);
+  await reviewBoard(browser, zip);
   await keyboardAndMotion(browser, scanId);
-  await narrowScreens(browser, scanId, report.findings[0].id);
+  await narrowScreens(browser, zip);
+  await expiryAndPrivacy(browser, zip);
 
   if (WITH_GIT) {
     const { report: juice } = await scanAndCheck(

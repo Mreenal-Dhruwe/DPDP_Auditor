@@ -74,7 +74,7 @@ rail on the left links the screens of the current scan:
    findings table. Filters live in the URL, so a link shows the same view.
 3. **Findings** (`/scans/<id>/findings`) - a review board (Open, Triaged, In progress,
    Resolved): drag cards between columns or use the status menu on each card (keyboard
-   and touch). Review status is kept in your browser; the scanner's severity, confidence
+   and touch). Review status is cleared when you reload or leave; the scanner's severity, confidence
    and legal mapping never change. A card opens the evidence drawer: masked code around
    the flagged line, the law card (section, Rule, requirement, penalty cap), severity
    and reason, confidence, the fix, and exports.
@@ -82,17 +82,31 @@ rail on the left links the screens of the current scan:
    verify by hand, and downloads (HTML, PDF, SARIF, JSON).
 5. **Rule catalogue** (`/rules`) - the 28 rules with their legal references.
 
-"View sample" on the landing page opens the target_app report without any backend.
+"View sample" on the landing page opens the target_app report without any backend. The
+scan screen also lists the **saved samples** (target_app, target_app_js, Juice Shop): reports
+made earlier from the command line, served from `samples/`, clearly labelled as not live
+scans and never deleted.
+
+**Scans are short-lived and private to the tab.** Review state and the list of scans a tab
+started live in memory only (no localStorage or sessionStorage), so a reload, a new tab or
+a direct visit starts empty, and a link to a scan then shows "expired or not found". When a
+tab is left or reloaded it asks the server to delete its scans at once; whatever that
+misses, the server deletes `SCAN_TTL_MINUTES` (default 30) after creation, together with the
+exports and any leftover temp files. The scan overview states when. Download the report or
+the review notes to keep them.
 
 ### API
 | Endpoint | |
 |---|---|
-| `POST /api/scan` | multipart zip (field `file`) or JSON `{"git_url": ...}` -> `202 {"scan_id"}` |
-| `GET /api/scan/{id}` | status: `queued` / `running` / `done` / `failed`, the current step, summary |
+| `POST /api/scan` | multipart zip (field `file`) or JSON `{"git_url": ...}` -> `202 {"scan_id", "delete_token"}` (the token is shown once) |
+| `GET /api/scan/{id}` | status: `queued` / `running` / `done` / `failed`, the current step, summary, `expires_at`; `410` once the scan expired or was deleted |
 | `GET /api/scan/{id}/findings` | the report (JSON) |
 | `GET /api/scan/{id}/report.{json,html,sarif,pdf}` | downloads |
+| `DELETE /api/scans/{id}` | delete a scan now; header `X-Delete-Token` must be the token issued at creation (`403` otherwise). There is no endpoint that clears every scan. |
+| `POST /api/scans/{id}/delete` | the same for `navigator.sendBeacon`, which can only POST: JSON body `{"token": ...}` |
+| `GET /api/samples`, `/api/samples/{name}/findings`, `/api/samples/{name}/report.{json,html,sarif,pdf}` | the saved sample reports (never expire) |
 | `GET /api/rules` | the rule catalogue and which rules are checked automatically |
-| `GET /api/health` | |
+| `GET /api/health` | status and counts, including `scan_ttl_minutes` |
 
 Interactive docs: http://localhost:8000/docs.
 
@@ -149,8 +163,10 @@ SQL schemas, Dockerfiles and config files.
 - safe unzip: no absolute paths or `..` (zip slip), no symlinks, caps on size and file count
   (zip bombs); Git URLs only over https from an allow-list of hosts, without credentials
 - secrets and personal data are masked in evidence and code excerpts (`sk_live_ab********`)
-- reports expire after `REPORT_TTL_DAYS`; scan ids are random; the container runs as a
-  non-root user with read-only code
+- scans, exports and temp files are deleted `SCAN_TTL_MINUTES` after creation (default 30), or
+  at once by the tab that started them (a per-scan delete token; a wrong token deletes nothing);
+  expired scans answer 410; scan ids are random; the container runs as a non-root user with
+  read-only code
 
 ---
 
@@ -244,8 +260,10 @@ Juice Shop has no answer key. Our review of its 60 findings
   (finale-rest, DRF routers) and handlers inside npm packages are invisible.
 - **Heuristics can be wrong.** Each finding carries a confidence level; low-confidence
   findings say why (e.g. "may exist outside the scanned code").
-- **Scans live in memory.** Restarting the server forgets finished scans (their files are
-  deleted after `REPORT_TTL_DAYS`).
+- **Scans are short-lived and live in memory.** They are deleted after 30 minutes or when the
+  tab that started them is left, and a server restart forgets them. Reading a scan is not
+  token-protected (only deleting is): its random id is the secret, and another tab is kept
+  out by the interface, not by the server. There is no login.
 - **PDF export** needs WeasyPrint's system libraries; they are in the Docker image.
 
 ---

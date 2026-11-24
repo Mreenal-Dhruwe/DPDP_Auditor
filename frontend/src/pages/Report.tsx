@@ -1,6 +1,6 @@
 // Report (/scans/:id/report): summary, severity distribution, mapped provisions, coverage,
 // review progress and downloads. Exports are the server's (authoritative, masked); the
-// review notes kept in this browser are offered as a separate, clearly labelled file.
+// review notes (cleared when you reload or leave) are offered as a separate, clearly labelled file.
 
 import { ClipboardList, FileChartColumn } from "lucide-react";
 import { Link } from "react-router";
@@ -144,7 +144,7 @@ export function ReportPage() {
               <ClipboardList aria-hidden="true" />
               Review notes (JSON)
             </button>
-            <small className="note">Kept in this browser only; not part of the scanner's report.</small>
+            <small className="note">Cleared when you reload or leave; download them to keep them. Not part of the scanner's report.</small>
           </section>
         </aside>
       </div>

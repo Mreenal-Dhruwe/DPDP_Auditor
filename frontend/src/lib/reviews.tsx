@@ -2,8 +2,9 @@
 //
 // A separate map keyed by scan id and the finding's stable id: moving a card never touches
 // the scanner's fields (severity, confidence, legal mapping, evidence). The backend has no
-// review store, so the map lives in this browser's localStorage and the UI says so. A team
-// deployment would swap `load` / `save` for an authorised API with ownership checks.
+// review store and scans are short-lived, so the map lives in memory only (no localStorage,
+// no sessionStorage): it survives moving between screens but is cleared when the page is
+// reloaded or left, exactly like the scan it belongs to. The report page can download it.
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
@@ -16,15 +17,10 @@ interface Entry {
 }
 type Reviews = Record<string, Entry>;
 
-const keyOf = (scanId: string) => `dpdp.review.${scanId}`;
+const memory = new Map<string, Reviews>(); // module memory: gone on reload
 
 function load(scanId: string, ids: string[]): Reviews {
-  let saved: Record<string, Partial<Entry>> = {};
-  try {
-    saved = JSON.parse(localStorage.getItem(keyOf(scanId)) ?? "{}") ?? {};
-  } catch {
-    /* unreadable or blocked storage: start fresh */
-  }
+  const saved: Record<string, Partial<Entry>> = memory.get(scanId) ?? {};
   return Object.fromEntries(
     ids.map((id) => {
       const entry = saved[id];
@@ -49,11 +45,7 @@ export function ReviewProvider({ scanId, findingIds, children }: { scanId: strin
   useEffect(() => setReviews(load(scanId, idsKey ? idsKey.split(",") : [])), [scanId, idsKey]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(keyOf(scanId), JSON.stringify(reviews));
-    } catch {
-      /* the in-memory map keeps working */
-    }
+    memory.set(scanId, reviews);
   }, [scanId, reviews]);
 
   // `move` may be called later from a toast's Undo: it reads the latest map, never a stale one

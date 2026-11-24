@@ -5,10 +5,11 @@
 //   report is src/mock/report.json.
 // - the scan id "sample" always shows that mock report, in any mode: an offline demo.
 
+import { isSampleId, ownsScan, registerScan, SAMPLE_ID } from "./lib/session";
 import type { Report, ScanStarted, ScanStatus, Severity } from "./types/contract";
 
+export { SAMPLE_ID };
 export const MOCK_MODE = import.meta.env.VITE_API_MODE === "mock";
-export const SAMPLE_ID = "sample";
 export const EXPORT_FORMATS = ["html", "pdf", "sarif", "json"] as const;
 export type ExportFormat = (typeof EXPORT_FORMATS)[number];
 
@@ -47,11 +48,17 @@ async function errorText(response: Response): Promise<string> {
 
 // --- starting a scan -------------------------------------------------------------------
 
+/** The tab keeps the delete token (in memory) so it can delete the scan when the page is left. */
+const registered = (started: ScanStarted) => {
+  registerScan(started.scan_id, started.delete_token);
+  return started;
+};
+
 export function startZipScan(file: File): Promise<ScanStarted> {
   if (MOCK_MODE) return mockStart(file.name.replace(/\.zip$/i, ""), "zip");
   const form = new FormData();
   form.append("file", file);
-  return request<ScanStarted>("/api/scan", { method: "POST", body: form });
+  return request<ScanStarted>("/api/scan", { method: "POST", body: form }).then(registered);
 }
 
 export function startGitScan(gitUrl: string): Promise<ScanStarted> {
@@ -60,27 +67,57 @@ export function startGitScan(gitUrl: string): Promise<ScanStarted> {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ git_url: gitUrl }),
-  });
+  }).then(registered);
+}
+
+/** Scans belong to the tab that started them. After a reload, in a new tab or on a direct
+ *  visit this tab owns nothing, so a scan id is treated exactly like an expired one (410),
+ *  without asking the server. */
+function requireOwned(scanId: string): void {
+  if (!isSampleId(scanId) && !ownsScan(scanId))
+    throw new ApiError(410, "This scan was started in another tab or before a reload. Scans are cleared when you reload or leave.");
 }
 
 export function getScanStatus(scanId: string): Promise<ScanStatus> {
   if (MOCK_MODE || scanId === SAMPLE_ID) return loadSample().then((sample) => mockStatus(scanId, sample));
+  try {
+    requireOwned(scanId);
+  } catch (e) {
+    return Promise.reject(e);
+  }
   return request<ScanStatus>(`/api/scan/${encodeURIComponent(scanId)}`);
 }
 
+// --- saved samples: reports made earlier by the command line, served by the API, never expire ---
+
+export interface SampleInfo {
+  id: string; // "sample-<name>"
+  name: string;
+  target: string;
+  total: number;
+  by_severity: Record<Severity, number>;
+  generated_at: string;
+}
+
+export function getSamples(): Promise<SampleInfo[]> {
+  if (MOCK_MODE) return Promise.resolve([]);
+  return request<SampleInfo[]>("/api/samples");
+}
+
+const sampleName = (scanId: string) => encodeURIComponent(scanId.slice("sample-".length));
+
 // --- reports ---------------------------------------------------------------------------
 
-const reports = new Map<string, Promise<Report>>(); // a finished report never changes
-
+// No cache: a scan can expire on the server, so every visit to a report asks again.
 export function getReport(scanId: string): Promise<Report> {
   if (MOCK_MODE || scanId === SAMPLE_ID) return loadSample();
-  let pending = reports.get(scanId);
-  if (!pending) {
-    pending = request<Report>(`/api/scan/${encodeURIComponent(scanId)}/findings`);
-    pending.catch(() => reports.delete(scanId)); // retry later, e.g. after a 409 "still running"
-    reports.set(scanId, pending);
+  if (isSampleId(scanId)) return request<Report>(`/api/samples/${sampleName(scanId)}/findings`);
+  try {
+    requireOwned(scanId);
+  } catch (e) {
+    return Promise.reject(e);
   }
-  return pending;
+  return request<Report>(`/api/scan/${encodeURIComponent(scanId)}/findings`);
 }
 
 /** Exports are only offline for JSON: the other formats are rendered by the backend. */
@@ -99,7 +136,8 @@ export async function downloadReport(scanId: string, format: ExportFormat, targe
   }
   let response: Response;
   try {
-    response = await fetch(`/api/scan/${encodeURIComponent(scanId)}/report.${format}`);
+    const base = isSampleId(scanId) ? `/api/samples/${sampleName(scanId)}` : `/api/scan/${encodeURIComponent(scanId)}`;
+    response = await fetch(`${base}/report.${format}`);
   } catch {
     throw new ApiError(0, "Cannot reach the scanner API.");
   }
@@ -126,7 +164,8 @@ const MOCK_STEPS = { zip: ["queued", "unpacking", "scanning", "writing reports",
 function mockStart(target: string, source: "zip" | "git"): Promise<ScanStarted> {
   const scanId = `mock-${Date.now().toString(36)}`;
   mockScans.set(scanId, { target, source, started: Date.now() });
-  return new Promise((resolve) => setTimeout(() => resolve({ scan_id: scanId }), 300));
+  registerScan(scanId, "mock");
+  return new Promise((resolve) => setTimeout(() => resolve({ scan_id: scanId, delete_token: "mock" }), 300));
 }
 
 function mockStatus(scanId: string, sample: Report): ScanStatus {
@@ -142,6 +181,7 @@ function mockStatus(scanId: string, sample: Report): ScanStatus {
     step: steps[index],
     steps,
     created_at: new Date(scan.started || Date.now()).toISOString(),
+    expires_at: new Date((scan.started || Date.now()) + 30 * 60_000).toISOString(),
     finished_at: done ? new Date().toISOString() : null,
     error: null,
     summary: done ? sample.summary : null,

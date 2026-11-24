@@ -1,39 +1,21 @@
 // Which scan the workspace rail points at. The scan in the URL wins; otherwise the last one
-// opened in this tab; otherwise the bundled sample report. Kept in sessionStorage (a
-// per-tab convenience: the scan itself lives on the server).
+// opened in this tab; otherwise the bundled sample report. In memory only: a reload starts
+// empty (the scan itself is deleted from the server when the page is left).
 
 import { useSyncExternalStore } from "react";
-import { SAMPLE_ID } from "../api";
+import { isSampleId } from "./session";
 
 export interface Scope {
   scanId: string;
   target: string;
 }
 
-const KEY = "dpdp.scope";
 const EVENT = "dpdp-scope";
-let memory: Scope | null = null;
-
-function read(): Scope | null {
-  try {
-    const raw = sessionStorage.getItem(KEY);
-    const value = raw ? (JSON.parse(raw) as Scope) : null;
-    return value && typeof value.scanId === "string" && typeof value.target === "string" ? value : memory;
-  } catch {
-    return memory;
-  }
-}
-
-let cached: Scope | null = read();
+let current: Scope | null = null;
 
 export function rememberScope(scope: Scope): void {
-  if (cached?.scanId === scope.scanId && cached.target === scope.target) return;
-  memory = cached = scope;
-  try {
-    sessionStorage.setItem(KEY, JSON.stringify(scope));
-  } catch {
-    /* in-memory only */
-  }
+  if (current?.scanId === scope.scanId && current.target === scope.target) return;
+  current = scope;
   window.dispatchEvent(new Event(EVENT));
 }
 
@@ -43,7 +25,7 @@ function subscribe(onChange: () => void) {
 }
 
 export function useLastScope(): Scope | null {
-  return useSyncExternalStore(subscribe, () => cached, () => null);
+  return useSyncExternalStore(subscribe, () => current, () => null);
 }
 
-export const isSample = (scanId: string) => scanId === SAMPLE_ID;
+export const isSample = isSampleId;

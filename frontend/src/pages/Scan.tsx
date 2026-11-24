@@ -4,9 +4,10 @@
 import { Check, Circle, FileArchive, GitBranch, LoaderCircle, ScanLine, UploadCloud, X } from "lucide-react";
 import { useEffect, useRef, useState, type DragEvent, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { ApiError, getScanStatus, SAMPLE_ID, startGitScan, startZipScan } from "../api";
+import { ApiError, getSamples, getScanStatus, SAMPLE_ID, startGitScan, startZipScan, type SampleInfo } from "../api";
 import { Heading, Notice } from "../components/ui";
 import { rememberScope } from "../lib/scope";
+import { setExpiry } from "../lib/session";
 import type { ScanStatus } from "../types/contract";
 
 const JUICE_SHOP = "https://github.com/juice-shop/juice-shop";
@@ -34,6 +35,14 @@ export function NewScan() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [over, setOver] = useState(false);
+  const [samples, setSamples] = useState<SampleInfo[]>([]);
+  useEffect(() => {
+    let live = true;
+    getSamples().then((list) => live && setSamples(list), () => {});
+    return () => {
+      live = false;
+    };
+  }, []);
 
   const choose = (chosen: File | undefined) => {
     setError(null);
@@ -186,8 +195,26 @@ export function NewScan() {
             </div>
           ))}
           <small>
-            Evidence in reports is masked. Want to look around first? <Link className="textlink" to={`/scans/${SAMPLE_ID}`}>Open the sample report</Link>
+            Evidence in reports is masked. Scans are private to this tab: they are cleared when you reload or leave, and the server deletes them after 30 minutes.
           </small>
+          <div className="samplelist" id="samples">
+            <h2 className="type-pixel">Saved samples</h2>
+            <p>
+              Reports saved earlier from the command line. They are <b>not live scans</b> and are never deleted.
+            </p>
+            <ul>
+              {(samples.length ? samples : [{ id: SAMPLE_ID, name: SAMPLE_ID, target: "target_app", total: 16, generated_at: "" } as SampleInfo]).map((s) => (
+                <li key={s.id}>
+                  <Link to={`/scans/${s.id}`}>
+                    <strong>{s.target}</strong>
+                    <small>
+                      {s.total} findings · saved sample
+                    </small>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </aside>
       </div>
     </section>
@@ -231,6 +258,7 @@ export function ScanProgress() {
         setError(null);
         if (next.status === "done") {
           rememberScope({ scanId, target: next.target });
+          setExpiry(scanId, next.expires_at);
           timer = setTimeout(() => navigate(`/scans/${scanId}`, { replace: true }), 450);
           return;
         }
@@ -239,7 +267,7 @@ export function ScanProgress() {
         if (!live) return;
         const err = e instanceof ApiError ? e : new ApiError(0, String(e));
         setError(err);
-        if (err.status === 404) return;
+        if (err.status === 404 || err.status === 410) return; // unknown, expired or not this tab's: polling again will not help
       }
       timer = setTimeout(poll, POLL_MS);
     };
@@ -339,21 +367,21 @@ export function ScanProgress() {
       )}
       {error && (
         <div className="stack-gap">
-          <Notice kind="error" title={error.status === 404 ? "Scan not found" : "Lost contact with the scanner"}>
-            {error.status === 404
-              ? "This scan id is unknown. Scans are kept in memory, so a server restart forgets them."
+          <Notice kind="error" title={error.status === 404 || error.status === 410 ? "This scan has expired or was not found" : "Lost contact with the scanner"}>
+            {error.status === 404 || error.status === 410
+              ? "Scans are cleared when you reload or leave, and the server deletes them 30 minutes after they were created."
               : `${error.message} Retrying…`}
           </Notice>
         </div>
       )}
-      {(failed || error?.status === 404) && (
+      {(failed || error?.status === 404 || error?.status === 410) && (
         <div className="formactions stack-gap">
           <Link className="btn mint" to="/scan">
             <ScanLine aria-hidden="true" />
             Start a new scan
           </Link>
           <Link className="textlink" to={`/scans/${SAMPLE_ID}`}>
-            Open the sample report
+            Open the saved sample report
           </Link>
         </div>
       )}

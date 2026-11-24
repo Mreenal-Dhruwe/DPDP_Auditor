@@ -11,6 +11,7 @@ import { Heading, Notice } from "../components/ui";
 import { applyFilters, countBy, formatDate, piiLabel, readFilters, SEVERITY_LABEL, writeFilters, type Filters } from "../lib/findings";
 import { STATUSES, useReviews } from "../lib/reviews";
 import { isSample } from "../lib/scope";
+import { expiryOf } from "../lib/session";
 import type { Finding, Severity } from "../types/contract";
 import { SEVERITIES } from "../types/contract";
 import { useScan } from "./ScanLayout";
@@ -45,9 +46,16 @@ export function Overview() {
       <div className="page topdash">
         {isSample(scanId) && (
           <div className="samplenote">
-            <Notice title="Sample report">
-              What the scanner reports for our deliberately vulnerable target_app, plus three illustrative findings so every
-              severity appears. <Link className="textlink" to="/scan">Run your own scan</Link>
+            <Notice title="Saved sample, not a live scan">
+              {scanId === "sample" ? (
+                <>
+                  What the scanner reports for our deliberately vulnerable target_app, plus three illustrative findings so every
+                  severity appears. It ships with the app and is never deleted.
+                </>
+              ) : (
+                <>Report saved earlier by the scanner command line on {report.target}. It is never deleted and does not expire.</>
+              )}{" "}
+              <Link className="textlink" to="/scan">Run your own scan</Link>
             </Notice>
           </div>
         )}
@@ -57,6 +65,12 @@ export function Overview() {
           sub={
             <span className="tabular">
               {report.summary.total} findings · {report.files_scanned} files · {formatDate(report.generated_at)} · rules v{report.rules_version}
+              {!isSample(scanId) && (
+                <>
+                  <br />
+                  <ExpiryNote scanId={scanId} />
+                </>
+              )}
             </span>
           }
         >
@@ -115,6 +129,16 @@ export function Overview() {
         <p className="footnote">{report.disclaimer}</p>
       </div>
     </section>
+  );
+}
+
+function ExpiryNote({ scanId }: { scanId: string }) {
+  const at = expiryOf(scanId);
+  const time = at ? new Date(at).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }) : null;
+  return (
+    <small className="expiry">
+      This scan is deleted from the server {time ? `at ${time}` : "30 minutes after it was created"}, or when you reload or leave.
+    </small>
   );
 }
 
@@ -230,7 +254,7 @@ function LightBand({ scanId, findings }: { scanId: string; findings: Finding[] }
           <i style={{ transform: `scaleX(${findings.length ? resolved / findings.length : 0})` }} />
         </div>
         <small className="tabular">
-          {resolved} of {findings.length} marked resolved in this browser
+          {resolved} of {findings.length} marked resolved (cleared when you reload or leave)
         </small>
         <Link className="bandlink" to={`/scans/${scanId}/findings`}>
           Open the review board <ArrowRight aria-hidden="true" />

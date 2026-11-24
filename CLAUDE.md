@@ -183,7 +183,13 @@ backend/
   jobs.py           # in-memory scan jobs + BackgroundTasks; ScanStatus model (a failed scan
                     # keeps the step it failed at); per-job temp folder always
                     # deleted (ingest.remove_tree also clears read-only git files); reports in
-                    # REPORT_DIR/<scan_id>/ expire after REPORT_TTL_DAYS. Git ingest: https on
+                    # REPORT_DIR/<scan_id>/. Scans live SCAN_TTL_MINUTES (default 30): JobStore.sweep
+                    # (every request + a background loop) deletes job, exports, temp files and
+                    # orphans; expired or deleted -> 410, unknown id -> 404 (tombstone list).
+                    # Each scan has a delete token (returned once by POST /api/scan): DELETE
+                    # /api/scans/{id} (X-Delete-Token) or POST /api/scans/{id}/delete (JSON, for
+                    # sendBeacon); wrong token -> 403; NO clear-all endpoint. /api/samples serves
+                    # samples/ (outside the TTL). Git ingest: https on
                     # ALLOWED_GIT_HOSTS only, shallow clone via the git CLI (no GitPython)
 frontend/           # React 19 + Vite 8 + TypeScript 7 + Tailwind 4 + react-router 8 + Recharts 3
                     # + lucide-react + motion. Design: dpdp-design-handoff/ (docs + skill);
@@ -198,8 +204,11 @@ frontend/           # React 19 + Vite 8 + TypeScript 7 + Tailwind 4 + react-rout
   src/components/   # Shell (rail, breadcrumb, health), ui (Heading, SeverityBadge,
                     # ConfidenceMeter, Notice, PageSkeleton), FindingsTable, ProvisionChart,
                     # CodeViewer, LawCard, ExportButtons, ReviewSelect
-  src/lib/          # findings (filters, labels), reviews (review status per scan + finding id
-                    # in localStorage; never touches scanner fields), scope (last scan), toast
+  src/lib/          # findings (filters, labels), reviews (review status per scan + finding id,
+                    # IN MEMORY ONLY; never touches scanner fields), scope (last scan, memory),
+                    # session (scans this tab owns + delete tokens, memory; pagehide sendBeacon
+                    # deletes them; ids it does not own are treated as expired), toast. No
+                    # localStorage / sessionStorage for scan data (BrandIntro keeps its 'played' flag)
   src/styles/       # base.css (tokens, controls), shell.css, screens.css
   src/types/contract.ts  # GENERATED (scripts/make_ts_types.py) - never edit by hand
   src/api.ts        # typed calls to /api (+ /api/rules, /api/health). `npm run dev:mock`
@@ -264,7 +273,8 @@ Build now (cheap, visible):
 - Never execute uploaded code.
 - Safe unzip: reject absolute paths and `..` (zip slip), skip symlinks, cap total
   uncompressed size (MAX_UPLOAD_MB) and file count (MAX_FILES) to stop zip bombs.
-- Delete uploads right after the scan; expire stored reports after REPORT_TTL_DAYS.
+- Delete uploads right after the scan; scans, exports and temp files expire after SCAN_TTL_MINUTES
+  (default 30) or when their owner's tab is left (token-scoped delete).
 - Mask secrets (e.g. `sk_live_ab********`) and PII (Aadhaar, phone, email) in evidence.
 - Docker container runs as non-root.
 Plan / pitch slide (build only if time allows):

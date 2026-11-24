@@ -6,6 +6,7 @@ import { RouterProvider } from "react-router/dom";
 import { Shell } from "./components/Shell";
 import { Heading, PageSkeleton } from "./components/ui";
 import { Landing } from "./landing/Landing";
+import { installLeaveCleanup } from "./lib/session";
 import { NewScan, ScanProgress } from "./pages/Scan";
 import { ScanLayout } from "./pages/ScanLayout";
 import "./index.css";
@@ -50,6 +51,8 @@ function NotFound() {
     </section>
   );
 }
+
+installLeaveCleanup(); // pagehide: delete this tab's scans on the server
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

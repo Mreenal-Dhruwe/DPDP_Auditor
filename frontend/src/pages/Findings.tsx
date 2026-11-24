@@ -60,7 +60,7 @@ function Workspace() {
         title="Findings"
         sub={
           <>
-            {report.target} · {report.summary.total} findings · <span className="tabular">{resolved}</span> resolved. Review status is saved in this browser only;
+            {report.target} · {report.summary.total} findings · <span className="tabular">{resolved}</span> resolved. Review status is cleared when you reload or leave;
             the scanner's severity, confidence and legal mapping never change.
           </>
         }

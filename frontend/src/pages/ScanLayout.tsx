@@ -35,7 +35,7 @@ export function ScanLayout() {
   if (!report) return <PageSkeleton />;
   return (
     <Context.Provider value={{ scanId, report }}>
-      <ReviewProvider scanId={scanId} findingIds={report.findings.map((f) => f.id)}>
+      <ReviewProvider key={scanId} scanId={scanId} findingIds={report.findings.map((f) => f.id)}>
         <Outlet />
       </ReviewProvider>
     </Context.Provider>
@@ -44,14 +44,17 @@ export function ScanLayout() {
 
 export function ReportError({ scanId, status, message }: { scanId: string; status: number; message: string }) {
   const unfinished = status === 409;
+  const gone = status === 404 || status === 410;
   return (
     <section className="page narrow arrive">
       <Heading
         eyebrow={`Scan ${scanId.slice(0, 8)}`}
-        title={unfinished ? "This scan has not finished" : status === 404 ? "Report not found" : "Could not load the report"}
+        title={unfinished ? "This scan has not finished" : gone ? "This scan has expired or was not found" : "Could not load the report"}
       />
-      <Notice kind={unfinished ? "info" : "error"} title={unfinished ? "Still running" : "Unavailable"}>
-        {status === 404 ? `${message}. Reports expire after a few days, and a server restart forgets running scans.` : message}
+      <Notice kind={unfinished ? "info" : "error"} title={unfinished ? "Still running" : gone ? "Nothing to show" : "Unavailable"}>
+        {gone
+          ? "Scans belong to the tab that started them. They are cleared when you reload or leave, and the server deletes them 30 minutes after they were created. Start a new scan, or open a saved sample."
+          : message}
       </Notice>
       <div className="formactions">
         {unfinished ? (
@@ -65,7 +68,7 @@ export function ReportError({ scanId, status, message }: { scanId: string; statu
           </Link>
         )}
         <Link className="textlink" to={`/scans/${SAMPLE_ID}`}>
-          Open the sample report
+          Open the saved sample report
         </Link>
       </div>
     </section>

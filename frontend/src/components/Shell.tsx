@@ -77,7 +77,7 @@ export function Shell() {
             <span>{label}</span>
             {(page === "overview" || page === "findings" || page === "report") && (
               <span className={`scope${isSample(scanId) ? " sample" : ""}`}>
-                {isSample(scanId) ? "Sample report" : "Scan"}
+                {isSample(scanId) ? "Saved sample" : "Scan"}
                 {target && (
                   <>
                     {" · "}
