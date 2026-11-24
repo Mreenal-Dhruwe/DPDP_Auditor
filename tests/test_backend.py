@@ -132,8 +132,8 @@ def test_unknown_unfinished_and_expired_scans(client, settings):
     scan_id = upload(client, zipped(PROJECT_ROOT / "target_app")).json()["scan_id"]
     report_dir = settings.report_dir / scan_id
     assert report_dir.is_dir()
-    store.update(scan_id, created_at=jobs.now() - timedelta(days=settings.report_ttl_days + 1))
-    assert client.get(f"/api/scan/{scan_id}").status_code == 404  # expired: forgotten...
+    store.update(scan_id, created_at=jobs.now() - store.ttl - timedelta(seconds=1))
+    assert client.get(f"/api/scan/{scan_id}").status_code == 410  # expired: forgotten (410, not 404)...
     assert not report_dir.exists()  # ...and its reports deleted
 
 

@@ -30,7 +30,10 @@ class Settings(BaseModel):
     report_dir: Path = Path("reports")
     max_upload_mb: int = Field(50, gt=0)
     max_files: int = Field(5000, gt=0)
-    report_ttl_days: int = Field(7, gt=0)
+    # A scan (job, exports, temp files) is deleted this long after it was created. Fractions
+    # are allowed so tests can use a very short TTL.
+    scan_ttl_minutes: float = Field(30, ge=0.005)
+    samples_dir: Path = Path("samples")  # saved sample reports: loadable demo data, outside the TTL
     rules_file: Path = Path("rules/dpdp_rules.yml")
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     api_port: int = Field(8000, ge=1, le=65535)
@@ -39,7 +42,7 @@ class Settings(BaseModel):
     allowed_git_hosts: list[str] = ["github.com", "gitlab.com", "bitbucket.org"]
     git_clone_timeout: int = Field(120, gt=0)  # seconds
 
-    @field_validator("upload_dir", "report_dir", "rules_file")
+    @field_validator("upload_dir", "report_dir", "rules_file", "samples_dir")
     @classmethod
     def _from_project_root(cls, path: Path) -> Path:
         return path if path.is_absolute() else (PROJECT_ROOT / path).resolve()

@@ -87,10 +87,12 @@ export interface Report {
 }
 
 /**
- * Response of POST /api/scan.
+ * Response of POST /api/scan. `delete_token` is shown once: whoever holds it can delete
+ * the scan early (DELETE /api/scans/{id}); it is never part of any other response.
  */
 export interface ScanStarted {
   scan_id: string;
+  delete_token: string;
 }
 
 /**
@@ -105,6 +107,7 @@ export interface ScanStatus {
   step: string;
   steps: string[];
   created_at: string;
+  expires_at: string;
   finished_at: string | null;
   error: string | null;
   summary: Summary | null;

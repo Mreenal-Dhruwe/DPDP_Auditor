@@ -25,11 +25,12 @@ frontend/dist
 
 # Not needed at runtime
 tests
-samples
 demo
 scripts
 *.md
 !README.md
+# the saved samples are served by the API
+!samples/README.md
 
 # Design reference material is not needed in the image
 dpdp-design-handoff

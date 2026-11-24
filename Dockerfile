@@ -33,7 +33,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_ROOT_USER_ACTION=ignore \
     UPLOAD_DIR=/data/uploads \
-    REPORT_DIR=/data/reports
+    REPORT_DIR=/data/reports \n    SCAN_TTL_MINUTES=30
 
 WORKDIR /app
 COPY requirements.txt ./
@@ -48,6 +48,8 @@ COPY rules/ rules/
 COPY target_app/ target_app/
 COPY target_app_js/ target_app_js/
 COPY ground_truth.yml ground_truth_js.yml ./
+# Saved sample reports: the demo fallback, served from /api/samples and never expired
+COPY samples/ samples/
 COPY --from=frontend /build/frontend/dist frontend/dist
 
 RUN useradd --create-home --uid 10001 auditor \
