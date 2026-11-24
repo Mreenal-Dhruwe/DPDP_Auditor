@@ -12,11 +12,11 @@ from scanner.engine import scan_folder
 from scanner.report.html_out import render_html
 from scanner.report.sarif_out import to_sarif
 
-PLANTED = ["Admin_123xYz", "a_secure_key_for_crypto_here", "s3cr3t-Planted-Val-99", "ghp_" + "a1B2c3D4e5" * 4]
+PLANTED = ["Rohitkumar", "Admin_123xYz", "a_secure_key_for_crypto_here", "s3cr3t-Planted-Val-99", "ghp_" + "a1B2c3D4e5" * 4]
 
 JS = """// config for the app
 const cryptoKey = "a_secure_key_for_crypto_here";
-const users = [{ "password": "Admin_123xYz", // Admin_123xYz is the demo login
+const users = [{ "firstName": "Rohitkumar", "password": "Admin_123xYz", // Admin_123xYz is the demo login
   //"password": "$2a$10$abcdefghijklmnopqrstuv", // Admin_123xYz
   "tokenSigning": "s3cr3t-Planted-Val-99" }];
 // ghp_PLANTED_TOKEN

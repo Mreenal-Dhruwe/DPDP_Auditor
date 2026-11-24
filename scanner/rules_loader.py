@@ -23,6 +23,7 @@ from pydantic import Field, ValidationError, model_validator
 
 from scanner.config import PROJECT_ROOT, get_settings
 from scanner.masking import mask_evidence, secret_values
+from scanner.pii import default_matcher
 from scanner.models import (
     CONTEXT_RADIUS,
     DISCLAIMER,
@@ -162,7 +163,7 @@ class RuleCatalogue(ContractModel):
             start = max(1, hit.line - CONTEXT_RADIUS)
             end = min(len(source_lines), hit.line + CONTEXT_RADIUS)
             known = _file_secrets(source_lines)
-            masked = [mask_evidence(source_lines[n - 1], self.personal_data.identifiers, known) for n in range(start, end + 1)]
+            masked = [mask_evidence(source_lines[n - 1], self.personal_data.identifiers, known, default_matcher()) for n in range(start, end + 1)]
             context = Context(start_line=start, lines=masked)
         severity, severity_reason = rule.severity, rule.severity_reason
         if hit.severity and SEVERITIES.index(hit.severity) > SEVERITIES.index(rule.severity) and hit.severity_note:
@@ -176,7 +177,7 @@ class RuleCatalogue(ContractModel):
             scope=hit.scope,
             file=hit.file,
             line=hit.line,
-            evidence=mask_evidence(hit.evidence, self.personal_data.identifiers, _file_secrets(source_lines or [])),
+            evidence=mask_evidence(hit.evidence, self.personal_data.identifiers, _file_secrets(source_lines or []), default_matcher()),
             pii=hit.pii,
             confidence=hit.confidence,
             law=rule.law.model_copy(deep=True),  # copies, so a finding can't change the rule

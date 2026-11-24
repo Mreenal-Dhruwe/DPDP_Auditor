@@ -114,3 +114,15 @@ def test_context_is_masked_before_it_is_cut(catalogue):
 def test_context_follows_the_scope(catalogue, location, has_context):
     finding = catalogue.to_finding(make_hit(**location), SOURCE)
     assert (finding.context is not None) == has_context
+
+
+@pytest.mark.parametrize(("line", "masked"), [
+    ('"firstName": "John",', '"firstName": "J' + MASK + '",'),
+    ("address = 'Flat 4, MG Road'", "address = 'F" + MASK + "'"),
+    ('"userName": "admin",', '"userName": "admin",'),   # not personal data
+    ('placeholder: "Enter address"', 'placeholder: "Enter address"'),  # a UI word next to the name, not the data name
+])
+def test_quoted_values_of_personal_fields_are_masked(line, masked):
+    from scanner.masking import mask_pii_literals
+    from scanner.pii import default_matcher
+    assert mask_pii_literals(line, default_matcher()) == masked

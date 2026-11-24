@@ -159,12 +159,29 @@ PII_MASKERS: list[tuple[str, Callable[[re.Match], str]]] = [
 ]
 
 
-def mask_evidence(text: str, identifiers: Iterable[IdentifierPattern], known_values: Iterable[str] = ()) -> str:
+# "firstName": "John", city = 'Pune', address: "12 Main Street": a quoted literal given to a
+# personal-data name is a personal value (seed data, fixtures, examples)
+_PII_LITERAL = re.compile(r"""(?<![\w.-])([A-Za-z_][\w.-]*)(['"]?\s*[:=]\s*)(['"])([^'"\n]{2,}?)\3""")
+
+
+def mask_pii_literals(text: str, matcher) -> str:
+    """Mask quoted values assigned to names the PII matcher knows (matcher.match(name))."""
+    def repl(m: re.Match) -> str:
+        value = m.group(4)
+        if MASK in value or "***" in value or not matcher.match(m.group(1)):
+            return m.group(0)
+        return f"{m.group(1)}{m.group(2)}{m.group(3)}{value[0]}{MASK}{m.group(3)}"
+    return _PII_LITERAL.sub(repl, text)
+
+
+def mask_evidence(text: str, identifiers: Iterable[IdentifierPattern], known_values: Iterable[str] = (), matcher=None) -> str:
     """Safety net applied to evidence and every context line by RuleCatalogue.to_finding().
 
     known_values: secrets found elsewhere in the same file (see secret_values), masked here too."""
     text = mask_secrets(text)
     text = mask_values(text, known_values)
+    if matcher is not None:
+        text = mask_pii_literals(text, matcher)
     patterns = {i.name: i.pattern for i in identifiers}
     for name, masker in PII_MASKERS:
         if name in patterns:
