@@ -7,13 +7,14 @@ import { ArrowRight, FileCode2, Layers3, ListChecks, ShieldAlert } from "lucide-
 import { Link, useSearchParams } from "react-router";
 import { FindingsTable } from "../components/FindingsTable";
 import { ProvisionChart } from "../components/ProvisionChart";
-import { Heading, Notice } from "../components/ui";
+import { Heading } from "../components/ui";
 import { applyFilters, countBy, formatDate, piiLabel, readFilters, SEVERITY_LABEL, writeFilters, type Filters } from "../lib/findings";
 import { STATUSES, useReviews } from "../lib/reviews";
 import { isSample } from "../lib/scope";
 import { expiryOf } from "../lib/session";
 import type { Finding, Severity } from "../types/contract";
 import { SEVERITIES } from "../types/contract";
+import { scanBase } from "../lib/paths";
 import { useScan } from "./ScanLayout";
 
 const KIND_LABEL: Record<string, string> = {
@@ -32,7 +33,7 @@ export function Overview() {
   const filters = readFilters(params);
   const setFilters = (next: Filters) => setParams(writeFilters(next), { replace: true });
   const search = params.toString();
-  const linkTo = (f: Finding) => `/scans/${scanId}/findings/${f.id}${search ? `?${search}` : ""}`;
+  const linkTo = (f: Finding) => `${scanBase(scanId)}/findings/${f.id}${search ? `?${search}` : ""}`;
 
   // The top of the page follows the category only; the table follows every filter.
   const inCategory = filters.category ? report.findings.filter((f) => f.category === filters.category) : report.findings;
@@ -44,21 +45,6 @@ export function Overview() {
   return (
     <section className="dashboard arrive">
       <div className="page topdash">
-        {isSample(scanId) && (
-          <div className="samplenote">
-            <Notice title="Saved sample, not a live scan">
-              {scanId === "sample" ? (
-                <>
-                  What the scanner reports for our deliberately vulnerable target_app, plus three illustrative findings so every
-                  severity appears. It ships with the app and is never deleted.
-                </>
-              ) : (
-                <>Report saved earlier by the scanner command line on {report.target}. It is never deleted and does not expire.</>
-              )}{" "}
-              <Link className="textlink" to="/scan">Run your own scan</Link>
-            </Notice>
-          </div>
-        )}
         <Heading
           eyebrow="Audit overview"
           title={<span className="breakall">{report.target}</span>}
@@ -117,10 +103,10 @@ export function Overview() {
         <div className="between sectionhead">
           <h2>Findings in scope</h2>
           <div className="formactions tight">
-            <Link className="textlink" to={`/scans/${scanId}/findings`}>
+            <Link className="textlink" to={`${scanBase(scanId)}/findings`}>
               Open the review board
             </Link>
-            <Link className="textlink" to={`/scans/${scanId}/report`}>
+            <Link className="textlink" to={`${scanBase(scanId)}/report`}>
               Report and exports
             </Link>
           </div>
@@ -256,7 +242,7 @@ function LightBand({ scanId, findings }: { scanId: string; findings: Finding[] }
         <small className="tabular">
           {resolved} of {findings.length} marked resolved (cleared when you reload or leave)
         </small>
-        <Link className="bandlink" to={`/scans/${scanId}/findings`}>
+        <Link className="bandlink" to={`${scanBase(scanId)}/findings`}>
           Open the review board <ArrowRight aria-hidden="true" />
         </Link>
       </section>

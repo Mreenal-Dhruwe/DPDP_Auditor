@@ -23,7 +23,7 @@
 
 | Route | Layout and behavior |
 | --- | --- |
-| `/` | As above. "Start a scan" opens `/scan`; "View sample" opens `/scans/sample`; nav links follow the last scan. The pastel panel states product facts (28 rules, 3 evidence scopes, 0 lines executed). The footer carries the disclaimer. |
+| `/` | As above. "Start a scan" opens `/scan`; "View saved samples" opens `/samples`; nav links are New scan, Saved samples and Rules. No report is loaded on the landing page. The pastel panel states product facts (28 rules, 3 evidence scopes, 0 lines executed). The footer carries the disclaimer. |
 | `/scan` | ZIP or Git URL tabs, a dropzone with a keyboard-focusable input, URL checks matching the backend's, a Juice Shop shortcut and a "How the scan runs" aside. |
 | `/scans/:id/progress` | Real stages from `GET /api/scan/{id}`. A failure names the stage and the server's reason; an unknown scan explains that restarts forget scans. Opens the overview when done. |
 | `/scans/:id` | Overview: severity × confidence breakdown (rows filter), provision chart, 2×2 summary (in-view and scan-wide numbers labelled), light band (coverage, personal data exposed, review queue), findings table. The category select filters the page. |
@@ -31,3 +31,5 @@
 | `/scans/:id/findings/:fid` | From the board: a drawer over the board. Direct link: a full page with a back link to the filtered overview. Previous / next follow the current filters. |
 | `/scans/:id/report` | Report header, severity distribution, provisions, categories, coverage and low-confidence findings to verify, server downloads, review progress and the review notes JSON. |
 | `/rules` | Live catalogue with search and a category filter; rule ids on findings link here. |
+| `/samples` | The saved sample reports as cards (target, findings, severities, save date), each labelled "Saved sample, not your scan". The only listing; fetched from `GET /api/samples`. |
+| `/samples/:name`, `/samples/:name/findings`, `/samples/:name/report` | The same screens as a scan, under a sample banner ("Saved sample, not your scan") on every one; never described as expiring. An unknown name shows "Saved sample not found". |

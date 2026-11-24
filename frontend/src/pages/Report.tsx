@@ -9,6 +9,7 @@ import { Heading } from "../components/ui";
 import { compareProvisions, countBy, formatDate, SEVERITY_LABEL } from "../lib/findings";
 import { STATUSES, useReviews } from "../lib/reviews";
 import { SEVERITIES } from "../types/contract";
+import { scanBase } from "../lib/paths";
 import { useScan } from "./ScanLayout";
 
 export function ReportPage() {
@@ -108,7 +109,7 @@ export function ReportPage() {
               toVerify.map((f) => (
                 <div className="ruleline" key={f.id}>
                   <code>{f.rule_id}</code>
-                  <Link className="textlink" to={`/scans/${scanId}/findings/${f.id}`}>
+                  <Link className="textlink" to={`${scanBase(scanId)}/findings/${f.id}`}>
                     {f.title}
                   </Link>
                 </div>

@@ -47,7 +47,7 @@ cd frontend && npm install && npm run dev        # http://localhost:5173
 ```
 Or build the frontend once (`cd frontend && npm run build`) and uvicorn serves everything on
 http://localhost:8000. `npm run dev:mock` runs the UI with a simulated API, no backend
-needed. PDF export needs WeasyPrint's Pango libraries; without them (usual on Windows) the
+needed (development only: its mock report is not part of a production build). PDF export needs WeasyPrint's Pango libraries; without them (usual on Windows) the
 API answers 501 and the HTML report is the printable version.
 
 ---
@@ -82,10 +82,13 @@ rail on the left links the screens of the current scan:
    verify by hand, and downloads (HTML, PDF, SARIF, JSON).
 5. **Rule catalogue** (`/rules`) - the 28 rules with their legal references.
 
-"View sample" on the landing page opens the target_app report without any backend. The
-scan screen also lists the **saved samples** (target_app, target_app_js, Juice Shop): reports
-made earlier from the command line, served from `samples/`, clearly labelled as not live
-scans and never deleted.
+**A fresh session shows only the landing page: no report is loaded or bundled by default.**
+The **saved samples** (target_app, target_app_js, Juice Shop) are reports made earlier from
+the command line, served from `samples/` by `/api/samples`, and shown only under an explicit
+`/samples/<name>` route, linked from the landing page ("View saved samples"), the nav and the
+scan screen. Every screen of a sample carries a "Saved sample, not your scan" banner; samples
+never expire and are never opened as a scan (`/scans/sample-...` is "not found"). Until a scan
+or a sample is open, the rail's Overview, Findings and Report items are disabled.
 
 **Scans are short-lived and private to the tab.** Review state and the list of scans a tab
 started live in memory only (no localStorage or sessionStorage), so a reload, a new tab or

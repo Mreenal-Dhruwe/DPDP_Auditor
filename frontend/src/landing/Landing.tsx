@@ -6,7 +6,7 @@ import { FileChartColumn, FileCode2, Fingerprint, GitFork, Layers3, Menu, Pause,
 import { motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
-import { SAMPLE_ID } from "../api";
+import { scanBase } from "../lib/paths";
 import { useLastScope } from "../lib/scope";
 import { DISCLAIMER } from "../types/contract";
 import Aurora from "./Aurora";
@@ -44,7 +44,7 @@ function usePrefersReducedMotion() {
   return reduced;
 }
 
-function ProductNav({ expanded, close, scanId }: { expanded: boolean; close: () => void; scanId: string }) {
+function ProductNav({ expanded, close }: { expanded: boolean; close: () => void }) {
   const nav = useRef<HTMLElement>(null);
   const [hovered, setHovered] = useState<HTMLAnchorElement | null>(null);
   const [focused, setFocused] = useState<HTMLAnchorElement | null>(null);
@@ -91,8 +91,8 @@ function ProductNav({ expanded, close, scanId }: { expanded: boolean; close: () 
       <a href="#platform" onClick={close}>
         Platform
       </a>
-      <Link to={`/scans/${scanId}`}>Overview</Link>
-      <Link to={`/scans/${scanId}/findings`}>Findings</Link>
+      <Link to="/scan">New scan</Link>
+      <Link to="/samples">Saved samples</Link>
       <Link to="/rules">Rules</Link>
     </nav>
   );
@@ -142,8 +142,7 @@ export function Landing() {
   const landing = useRef<HTMLElement>(null);
   const hero = useRef<HTMLElement>(null);
   const returnFocus = useRef(false);
-  const last = useLastScope();
-  const scanId = last?.scanId ?? SAMPLE_ID;
+  const last = useLastScope(); // a scan this tab started; none on a fresh visit
 
   const dismissIntro = useCallback(() => {
     returnFocus.current = document.activeElement?.classList.contains("intro-skip") ?? false;
@@ -169,9 +168,9 @@ export function Landing() {
       <main ref={landing} tabIndex={-1} className="landing" inert={intro} data-motion-paused={paused}>
         <header className="floatnav">
           <Brand />
-          <ProductNav expanded={menu} close={() => setMenu(false)} scanId={scanId} />
+          <ProductNav expanded={menu} close={() => setMenu(false)} />
           <div className="navend">
-            <Link className="btn light small" to={last ? `/scans/${last.scanId}` : "/scan"}>
+            <Link className="btn light small" to={last ? scanBase(last.scanId) : "/scan"}>
               Open workspace
             </Link>
             <button className="menu icon-btn" type="button" onClick={() => setMenu(!menu)} aria-label="Toggle navigation" aria-expanded={menu}>
@@ -190,8 +189,8 @@ export function Landing() {
               <Link className="btn mint" to="/scan">
                 Start a scan
               </Link>
-              <Link className="btn light" to={`/scans/${SAMPLE_ID}`}>
-                View sample
+              <Link className="btn light" to="/samples">
+                View saved samples
               </Link>
             </div>
           </div>

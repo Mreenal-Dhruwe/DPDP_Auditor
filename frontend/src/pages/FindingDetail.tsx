@@ -12,6 +12,7 @@ import { ReviewSelect } from "../components/ReviewSelect";
 import { ConfidenceMeter, Heading, Notice, SeverityBadge } from "../components/ui";
 import { applyFilters, describeLocation, isFiltered, piiLabel, readFilters } from "../lib/findings";
 import type { Finding } from "../types/contract";
+import { scanBase } from "../lib/paths";
 import { useScan } from "./ScanLayout";
 
 const CONFIDENCE_TEXT = {
@@ -30,14 +31,14 @@ export function FindingView({ finding, inDrawer = false }: { finding: Finding; i
   const list = filtered.some((f) => f.id === finding.id) ? filtered : report.findings;
   const index = list.findIndex((f) => f.id === finding.id);
   const [prev, next] = [list[index - 1], list[index + 1]];
-  const link = (f: Finding) => ({ pathname: `/scans/${scanId}/findings/${f.id}`, search });
+  const link = (f: Finding) => ({ pathname: `${scanBase(scanId)}/findings/${f.id}`, search });
   const navState = inDrawer ? location.state : undefined;
 
   return (
     <article className={`findingview${inDrawer ? " indrawer" : ""}`}>
       <div className="findingnav">
         {!inDrawer && (
-          <Link className="textlink" to={`/scans/${scanId}${search}`}>
+          <Link className="textlink" to={`${scanBase(scanId)}${search}`}>
             <ArrowLeft aria-hidden="true" /> {report.target}: all findings
           </Link>
         )}
@@ -172,7 +173,7 @@ export function FindingDetailPage() {
           This report has no finding with id {findingId}.
         </Notice>
         <div className="formactions">
-          <Link className="btn mint" to={`/scans/${scanId}`}>
+          <Link className="btn mint" to={`${scanBase(scanId)}`}>
             Back to the overview
           </Link>
         </div>

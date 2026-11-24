@@ -6,6 +6,7 @@ import { RouterProvider } from "react-router/dom";
 import { Shell } from "./components/Shell";
 import { Heading, PageSkeleton } from "./components/ui";
 import { Landing } from "./landing/Landing";
+import { SamplesIndex } from "./pages/Samples";
 import { installLeaveCleanup } from "./lib/session";
 import { NewScan, ScanProgress } from "./pages/Scan";
 import { ScanLayout } from "./pages/ScanLayout";
@@ -18,6 +19,14 @@ const Rules = lazy(() => import("./pages/Rules").then((m) => ({ default: m.Rules
 const FindingsRoute = lazy(() => import("./pages/Findings").then((m) => ({ default: m.FindingsRoute })));
 const page = (element: ReactNode) => <Suspense fallback={<PageSkeleton />}>{element}</Suspense>;
 
+// The screens of one report, under /scans/:scanId (your scan) or /samples/:name (a saved sample).
+const reportScreens = [
+  { index: true, element: page(<Overview />) },
+  // one route for board and drawer: the board stays mounted while the drawer opens
+  { path: "findings/:findingId?", element: page(<FindingsRoute />) },
+  { path: "report", element: page(<ReportPage />) },
+];
+
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
   {
@@ -25,16 +34,9 @@ const router = createBrowserRouter([
     children: [
       { path: "/scan", element: <NewScan /> },
       { path: "/scans/:scanId/progress", element: <ScanProgress /> },
-      {
-        path: "/scans/:scanId",
-        element: <ScanLayout />,
-        children: [
-          { index: true, element: page(<Overview />) },
-          // one route for board and drawer: the board stays mounted while the drawer opens
-          { path: "findings/:findingId?", element: page(<FindingsRoute />) },
-          { path: "report", element: page(<ReportPage />) },
-        ],
-      },
+      { path: "/scans/:scanId", element: <ScanLayout />, children: reportScreens },
+      { path: "/samples", element: <SamplesIndex /> },
+      { path: "/samples/:name", element: <ScanLayout />, children: reportScreens },
       { path: "/rules", element: page(<Rules />) },
       { path: "*", element: <NotFound /> },
     ],

@@ -1,20 +1,19 @@
 // Typed calls to the FastAPI backend (/api, proxied by Vite in development).
 //
-// Two ways to run without a backend:
-// - `npm run dev:mock` (VITE_API_MODE=mock): scans are simulated step by step and every
-//   report is src/mock/report.json.
-// - the scan id "sample" always shows that mock report, in any mode: an offline demo.
+// No report is ever loaded by default: reports come from the API only when a visitor starts
+// a scan or opens a saved sample. `npm run dev:mock` (VITE_API_MODE=mock) simulates the API
+// from src/mock/mockApi.ts; MOCK_MODE is a build-time constant, so a production build does not
+// contain that module or src/mock/report.json.
 
-import { isSampleId, ownsScan, registerScan, SAMPLE_ID } from "./lib/session";
+import { isSampleId, ownsScan, registerScan } from "./lib/session";
 import type { Report, ScanStarted, ScanStatus, Severity } from "./types/contract";
 
-export { SAMPLE_ID };
 export const MOCK_MODE = import.meta.env.VITE_API_MODE === "mock";
 export const EXPORT_FORMATS = ["html", "pdf", "sarif", "json"] as const;
 export type ExportFormat = (typeof EXPORT_FORMATS)[number];
 
-/** The sample report, loaded only when needed (it is a separate chunk of the build). */
-const loadSample = () => import("./mock/report.json").then((m) => m.default as Report);
+/** Development only: reached solely through `if (MOCK_MODE)`, which is dead code in production. */
+const mockApi = () => import("./mock/mockApi");
 
 export class ApiError extends Error {
   readonly status: number;
@@ -55,14 +54,14 @@ const registered = (started: ScanStarted) => {
 };
 
 export function startZipScan(file: File): Promise<ScanStarted> {
-  if (MOCK_MODE) return mockStart(file.name.replace(/\.zip$/i, ""), "zip");
+  if (MOCK_MODE) return mockApi().then((m) => m.mockStart(file.name.replace(/\.zip$/i, ""), "zip"));
   const form = new FormData();
   form.append("file", file);
   return request<ScanStarted>("/api/scan", { method: "POST", body: form }).then(registered);
 }
 
 export function startGitScan(gitUrl: string): Promise<ScanStarted> {
-  if (MOCK_MODE) return mockStart(gitUrl.split("/").pop()?.replace(/\.git$/, "") || "repo", "git");
+  if (MOCK_MODE) return mockApi().then((m) => m.mockStart(gitUrl.split("/").pop()?.replace(/\.git$/, "") || "repo", "git"));
   return request<ScanStarted>("/api/scan", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -79,7 +78,7 @@ function requireOwned(scanId: string): void {
 }
 
 export function getScanStatus(scanId: string): Promise<ScanStatus> {
-  if (MOCK_MODE || scanId === SAMPLE_ID) return loadSample().then((sample) => mockStatus(scanId, sample));
+  if (MOCK_MODE) return mockApi().then((m) => m.mockStatus(scanId));
   try {
     requireOwned(scanId);
   } catch (e) {
@@ -100,7 +99,7 @@ export interface SampleInfo {
 }
 
 export function getSamples(): Promise<SampleInfo[]> {
-  if (MOCK_MODE) return Promise.resolve([]);
+  if (MOCK_MODE) return mockApi().then((m) => m.mockSamples());
   return request<SampleInfo[]>("/api/samples");
 }
 
@@ -110,7 +109,7 @@ const sampleName = (scanId: string) => encodeURIComponent(scanId.slice("sample-"
 
 // No cache: a scan can expire on the server, so every visit to a report asks again.
 export function getReport(scanId: string): Promise<Report> {
-  if (MOCK_MODE || scanId === SAMPLE_ID) return loadSample();
+  if (MOCK_MODE) return mockApi().then((m) => m.mockReport());
   if (isSampleId(scanId)) return request<Report>(`/api/samples/${sampleName(scanId)}/findings`);
   try {
     requireOwned(scanId);
@@ -120,18 +119,18 @@ export function getReport(scanId: string): Promise<Report> {
   return request<Report>(`/api/scan/${encodeURIComponent(scanId)}/findings`);
 }
 
-/** Exports are only offline for JSON: the other formats are rendered by the backend. */
-export function canExport(scanId: string, format: ExportFormat): boolean {
-  return format === "json" || !(MOCK_MODE || scanId === SAMPLE_ID);
+/** In mock mode only JSON can be exported: the other formats are rendered by the backend. */
+export function canExport(_scanId: string, format: ExportFormat): boolean {
+  return format === "json" || !MOCK_MODE;
 }
 
 /** Download a report file. Fetched first (not a plain link) so errors such as
  *  "PDF needs the Pango libraries" (501) can be shown instead of a broken download. */
 export async function downloadReport(scanId: string, format: ExportFormat, target: string): Promise<void> {
   const fallbackName = `dpdp-report-${target}.${format}`;
-  if (MOCK_MODE || scanId === SAMPLE_ID) {
+  if (MOCK_MODE) {
     if (format !== "json") throw new ApiError(0, "Run a real scan to export this format.");
-    saveBlob(new Blob([JSON.stringify(await loadSample(), null, 2)], { type: "application/json" }), fallbackName);
+    saveBlob(new Blob([JSON.stringify((await mockApi()).mockReport(), null, 2)], { type: "application/json" }), fallbackName);
     return;
   }
   let response: Response;
@@ -153,39 +152,6 @@ function saveBlob(blob: Blob, filename: string): void {
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-// --- mock scans (npm run dev:mock) -------------------------------------------------------
-
-const STEP_MS = 900;
-const mockScans = new Map<string, { target: string; source: "zip" | "git"; started: number }>();
-const MOCK_STEPS = { zip: ["queued", "unpacking", "scanning", "writing reports", "done"], git: ["queued", "cloning", "scanning", "writing reports", "done"] };
-
-function mockStart(target: string, source: "zip" | "git"): Promise<ScanStarted> {
-  const scanId = `mock-${Date.now().toString(36)}`;
-  mockScans.set(scanId, { target, source, started: Date.now() });
-  registerScan(scanId, "mock");
-  return new Promise((resolve) => setTimeout(() => resolve({ scan_id: scanId, delete_token: "mock" }), 300));
-}
-
-function mockStatus(scanId: string, sample: Report): ScanStatus {
-  const scan = mockScans.get(scanId) ?? { target: sample.target, source: "zip" as const, started: 0 };
-  const steps = MOCK_STEPS[scan.source];
-  const index = Math.min(steps.length - 1, Math.floor((Date.now() - scan.started) / STEP_MS));
-  const done = index === steps.length - 1;
-  return {
-    scan_id: scanId,
-    target: scan.target,
-    source: scan.source,
-    status: done ? "done" : index === 0 ? "queued" : "running",
-    step: steps[index],
-    steps,
-    created_at: new Date(scan.started || Date.now()).toISOString(),
-    expires_at: new Date((scan.started || Date.now()) + 30 * 60_000).toISOString(),
-    finished_at: done ? new Date().toISOString() : null,
-    error: null,
-    summary: done ? sample.summary : null,
-  };
 }
 
 // --- rule catalogue and service health -----------------------------------------------------

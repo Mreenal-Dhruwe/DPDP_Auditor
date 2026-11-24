@@ -1387,3 +1387,99 @@ tr:target {
   color: var(--faint);
   font-size: 0.8rem;
 }
+
+/* --- saved sample banner and cards ------------------------------------------------------------- */
+
+.samplebanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 14px;
+  padding: 11px clamp(22px, 3.8vw, 75px);
+  border-bottom: 1px solid #3c3a52;
+  background: linear-gradient(90deg, #2a2540, #1e2433);
+  color: #d9d6ee;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+.samplebanner b {
+  color: #fff;
+  font-weight: 650;
+}
+.samplebanner span {
+  color: #c3c1d6;
+}
+.samplebanner a {
+  margin-left: auto;
+  color: var(--violet);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.samplecards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.samplecard {
+  display: grid;
+  gap: 10px;
+  height: 100%;
+  padding: 18px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  background: var(--panel);
+  transition:
+    border-color var(--dur-fast),
+    transform var(--dur) var(--ease-out);
+}
+.samplecard:hover {
+  border-color: #6a5f96;
+  transform: translateY(-2px);
+}
+.samplecard strong {
+  font-size: 1.25rem;
+  font-weight: 550;
+  letter-spacing: -0.03em;
+}
+.samplecard .chip {
+  justify-self: start;
+  color: var(--violet);
+  border-color: #3f3a55;
+}
+.samplecard .chip svg {
+  width: 13px;
+  height: 13px;
+}
+.samplemeta {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.samplesev {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.samplecard .open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  color: var(--violet);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+.samplecard .open svg {
+  width: 15px;
+  height: 15px;
+}
+@media (max-width: 760px) {
+  .samplebanner a {
+    margin-left: 0;
+  }
+}

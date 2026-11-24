@@ -1,31 +1,34 @@
 // Workspace frame: charcoal rail, breadcrumb with the current scan's scope, skip link.
-// Rail links follow the scan in the URL, else the last scan opened in this tab, else the
-// bundled sample report.
+// Rail links follow the scan or saved sample in the URL, else the last scan this tab opened.
+// With neither there is no report to point at: those items are disabled, never a default report.
 
-import { BookOpen, ChevronRight, Columns3, FileChartColumn, LayoutDashboard, ScanLine } from "lucide-react";
+import { BookOpen, ChevronRight, Columns3, FileChartColumn, LayoutDashboard, Library, ScanLine } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useParams } from "react-router";
-import { getHealth, MOCK_MODE, SAMPLE_ID } from "../api";
+import { getHealth, MOCK_MODE } from "../api";
+import { scanBase } from "../lib/paths";
 import { isSample, useLastScope } from "../lib/scope";
 import { ToastProvider } from "../lib/toast";
 
-type Page = "overview" | "scan" | "findings" | "report" | "rules";
+type Page = "overview" | "scan" | "findings" | "report" | "samples" | "rules";
 
 function pageOf(pathname: string): { page: Page; label: string } {
   if (pathname === "/scan" || pathname.endsWith("/progress")) return { page: "scan", label: "New scan" };
   if (pathname.startsWith("/rules")) return { page: "rules", label: "Rule catalogue" };
-  if (/\/scans\/[^/]+\/findings/.test(pathname)) return { page: "findings", label: "Findings" };
-  if (/\/scans\/[^/]+\/report/.test(pathname)) return { page: "report", label: "Report" };
+  if (pathname === "/samples") return { page: "samples", label: "Saved samples" };
+  if (/^\/(scans|samples)\/[^/]+\/findings/.test(pathname)) return { page: "findings", label: "Findings" };
+  if (/^\/(scans|samples)\/[^/]+\/report/.test(pathname)) return { page: "report", label: "Report" };
   return { page: "overview", label: "Overview" };
 }
 
 export function Shell() {
   const location = useLocation();
-  const { scanId: routeScan } = useParams();
+  const { scanId: routeScan, name: sampleRoute } = useParams();
   const last = useLastScope();
-  const scanId = routeScan ?? last?.scanId ?? SAMPLE_ID;
-  const target = last && last.scanId === scanId ? last.target : scanId === SAMPLE_ID ? "target_app" : "";
+  const scanId = routeScan ?? (sampleRoute ? `sample-${sampleRoute}` : undefined) ?? last?.scanId ?? null;
+  const base = scanId ? scanBase(scanId) : null;
+  const target = sampleRoute ?? (last && last.scanId === scanId ? last.target : "");
   const { page, label } = pageOf(location.pathname);
   const health = useHealth();
 
@@ -36,10 +39,11 @@ export function Shell() {
   }, [pageKey]);
 
   const nav = [
-    { to: `/scans/${scanId}`, label: "Overview", icon: LayoutDashboard, end: true, page: "overview" },
+    { to: base, label: "Overview", icon: LayoutDashboard, end: true, page: "overview" },
     { to: "/scan", label: "New scan", icon: ScanLine, end: false, page: "scan" },
-    { to: `/scans/${scanId}/findings`, label: "Findings", icon: Columns3, end: false, page: "findings" },
-    { to: `/scans/${scanId}/report`, label: "Report", icon: FileChartColumn, end: false, page: "report" },
+    { to: base && `${base}/findings`, label: "Findings", icon: Columns3, end: false, page: "findings" },
+    { to: base && `${base}/report`, label: "Report", icon: FileChartColumn, end: false, page: "report" },
+    { to: "/samples", label: "Saved samples", icon: Library, end: true, page: "samples" },
     { to: "/rules", label: "Rule catalogue", icon: BookOpen, end: false, page: "rules" },
   ] as const;
 
@@ -54,15 +58,24 @@ export function Shell() {
             <img src="/mark.svg" alt="" width="32" height="32" />
           </Link>
           <nav aria-label="Workspace">
-            {nav.map((item) => (
-              <NavLink key={item.label} to={item.to} end={item.end} aria-label={item.label} className={page === item.page ? "active" : ""}>
-                {page === item.page && <motion.span layoutId="rail-active" className="rail-indicator" transition={{ type: "spring", stiffness: 520, damping: 42 }} />}
-                <item.icon size={20} aria-hidden="true" />
-                <span className="tip" aria-hidden="true">
-                  {item.label}
+            {nav.map((item) =>
+              item.to ? (
+                <NavLink key={item.label} to={item.to} end={item.end} aria-label={item.label} className={page === item.page ? "active" : ""}>
+                  {page === item.page && <motion.span layoutId="rail-active" className="rail-indicator" transition={{ type: "spring", stiffness: 520, damping: 42 }} />}
+                  <item.icon size={20} aria-hidden="true" />
+                  <span className="tip" aria-hidden="true">
+                    {item.label}
+                  </span>
+                </NavLink>
+              ) : (
+                <span key={item.label} className="railitem" aria-disabled="true" aria-label={`${item.label} (start a scan or open a saved sample first)`}>
+                  <item.icon size={20} aria-hidden="true" />
+                  <span className="tip" aria-hidden="true">
+                    {item.label}: start a scan first
+                  </span>
                 </span>
-              </NavLink>
-            ))}
+              ),
+            )}
           </nav>
           <div className="railfoot" title={health.title}>
             <i className={health.state} aria-hidden="true" />
@@ -75,7 +88,7 @@ export function Shell() {
             <span>DPDP Auditor</span>
             <ChevronRight aria-hidden="true" />
             <span>{label}</span>
-            {(page === "overview" || page === "findings" || page === "report") && (
+            {scanId && (page === "overview" || page === "findings" || page === "report") && (
               <span className={`scope${isSample(scanId) ? " sample" : ""}`}>
                 {isSample(scanId) ? "Saved sample" : "Scan"}
                 {target && (
@@ -96,7 +109,7 @@ export function Shell() {
 
 /** Service availability from GET /api/health, checked once per visit. */
 function useHealth() {
-  const [state, setState] = useState<"up" | "down" | "unknown">(MOCK_MODE ? "unknown" : "unknown");
+  const [state, setState] = useState<"up" | "down" | "unknown">("unknown");
   const [detail, setDetail] = useState("");
   useEffect(() => {
     let live = true;

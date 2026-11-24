@@ -15,6 +15,7 @@ import { STATUSES, useReviews, type ReviewStatus } from "../lib/reviews";
 import type { Finding } from "../types/contract";
 import { CONFIDENCES, SEVERITIES } from "../types/contract";
 import { FindingDetailPage, FindingView } from "./FindingDetail";
+import { scanBase } from "../lib/paths";
 import { useScan } from "./ScanLayout";
 
 const COLUMN_ICON = { Open: Circle, Triaged: CircleDashed, "In progress": CircleDot, Resolved: CircleCheck } as const;
@@ -247,7 +248,7 @@ function ListView({ findings, statusOf, scanId }: { findings: Finding[]; statusO
           {findings.map((f) => (
             <tr key={f.id} data-status={statusOf(f.id)}>
               <td>
-                <Link className="rowtitle" state={{ board: location }} to={{ pathname: `/scans/${scanId}/findings/${f.id}`, search: location.search }}>
+                <Link className="rowtitle" state={{ board: location }} to={{ pathname: `${scanBase(scanId)}/findings/${f.id}`, search: location.search }}>
                   {f.title}
                 </Link>
                 <small className="mono">{describeLocation(f)}</small>

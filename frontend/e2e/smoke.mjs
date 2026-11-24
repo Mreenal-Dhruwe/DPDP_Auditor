@@ -13,7 +13,8 @@
 // exports, that the table matches the report, and that no planted secret reaches the page;
 // a failed scan, the review board (move, in-memory review state, scanner fields unchanged, drag,
 // Undo, drawer, cleared on reload), short-lived scans (other visitors, delete token, TTL state,
-// saved samples),
+// saved samples), a fresh session (landing only, no report requested, saved samples only under
+// /samples with a banner on every screen, no report in the production bundle),
 // keyboard order, the landing intro and reduced motion, and 390 px layouts on every route.
 
 import { execFileSync } from "node:child_process";
@@ -312,7 +313,7 @@ async function narrowScreens(browser, zip) {
   const scanId = await uiScan(page, zip);
   const report = await (await page.request.get(`${BASE}/api/scan/${scanId}/findings`)).json();
   const findingId = report.findings[0].id;
-  for (const route of [`/scans/${scanId}`, "/scan", `/scans/${scanId}/findings`, `/scans/${scanId}/findings/${findingId}`, `/scans/${scanId}/report`, "/rules", "/"]) {
+  for (const route of [`/scans/${scanId}`, "/scan", `/scans/${scanId}/findings`, `/scans/${scanId}/findings/${findingId}`, `/scans/${scanId}/report`, "/rules", "/samples", "/samples/target_app", "/samples/target_app/findings", "/"]) {
     await spaGo(page, route); // in-app navigation: a reload would delete the scan
     await page.waitForLoadState("networkidle");
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
@@ -366,13 +367,87 @@ async function expiryAndPrivacy(browser, zip) {
   check(await pageB.isVisible("#samples >> text=not live scans"), "the list says they are saved samples, not live scans");
   await pageB.click("#samples a:has-text('juice-shop')");
   await pageB.waitForSelector("text=Showing");
-  check(await pageB.isVisible("text=Saved sample, not a live scan"), "a saved sample is labelled on its overview");
+  check(await pageB.isVisible("text=Saved sample, not your scan"), "a saved sample is labelled on its overview");
   await pageB.reload();
-  check(await pageB.waitForSelector("text=Saved sample, not a live scan", { timeout: 8000 }).then(() => true, () => false), "a saved sample still loads after a reload");
+  check(await pageB.waitForSelector("text=Saved sample, not your scan", { timeout: 8000 }).then(() => true, () => false), "a saved sample still loads after a reload");
   const sampleExport = await pageB.request.get(`${BASE}/api/samples/juice-shop/report.html`);
   check(sampleExport.ok(), "saved samples can be exported");
   await a.close();
   await b.close();
+}
+
+async function freshSession(browser) {
+  console.log("\nFresh session: only the landing page, no report by default, saved samples only under /samples");
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  const reportRequests = [];
+  page.on("request", (r) => {
+    const url = new URL(r.url());
+    if (/\/api\/(scan\/[^/]+\/(findings|report)|samples\/[^/]+)/.test(url.pathname)) reportRequests.push(url.pathname);
+  });
+
+  await page.goto(BASE + "/");
+  await page.waitForSelector("text=From repository to compliance report");
+  check((await page.locator("table, .finding-card, .samplebanner").count()) === 0, "the landing page shows no report");
+  check((await page.locator("a[href^='/scans/']").count()) === 0, "the landing page links to no scan or default report");
+  check(await page.isVisible("a[href='/samples']:has-text('View saved samples')"), "the landing page links to the saved samples");
+  check((await page.getAttribute("a:has-text('Open workspace')", "href")) === "/scan", "'Open workspace' starts a scan when this tab has none");
+
+  await page.goto(BASE + "/scan");
+  await page.waitForSelector("text=Repository source");
+  check((await page.locator("a[aria-label='Overview'], a[aria-label='Findings'], a[aria-label='Report']").count()) === 0, "with no scan open, the rail has no Overview, Findings or Report link");
+  check((await page.locator(".rail [aria-disabled='true']").count()) === 3, "...they are shown disabled instead");
+  check(reportRequests.length === 0, `no report was requested on the landing or scan pages (${reportRequests.join(", ") || "none"})`);
+
+  // saved samples live under /samples only
+  await page.goto(BASE + "/scans/sample-juice-shop");
+  check(await page.waitForSelector("text=Saved sample not found", { timeout: 8000 }).then(() => true, () => false), "/scans/sample-... does not serve a saved sample");
+  await page.goto(BASE + "/scans/sample");
+  check(await page.waitForSelector("text=This scan has expired or was not found", { timeout: 8000 }).then(() => true, () => false), "/scans/sample (the old bundled sample) is gone");
+  await page.goto(BASE + "/samples/nope");
+  check(await page.waitForSelector("text=Saved sample not found", { timeout: 8000 }).then(() => true, () => false), "an unknown saved sample says so");
+
+  await page.goto(BASE + "/");
+  await page.click("a:has-text('View saved samples')");
+  await page.waitForURL(/\/samples$/);
+  await page.waitForSelector(".samplecard");
+  check((await page.locator(".samplecard").count()) >= 3, "the saved samples page lists the samples");
+  check(await page.isVisible(".samplecard >> text=Saved sample, not your scan"), "each card says it is a saved sample");
+  await page.click(".samplecard:has-text('juice-shop')");
+  await page.waitForURL(/\/samples\/juice-shop$/);
+  await page.waitForSelector("text=Showing");
+  const banner = ".samplebanner:has-text('Saved sample, not your scan')";
+  check(await page.isVisible(banner), "the overview of a saved sample carries the banner");
+  check((await page.getAttribute("a[aria-label='Findings']", "href")) === "/samples/juice-shop/findings", "the rail follows the /samples/... route");
+  await page.click("a[aria-label='Findings']");
+  await page.waitForSelector(".finding-card");
+  check(await page.isVisible(banner), "the findings board carries the banner");
+  await page.click(".cardtitle >> nth=0");
+  await page.waitForSelector("dialog.drawer[open]");
+  check(await page.isVisible(banner + " >> visible=true") || (await page.locator(".samplebanner").count()) === 1, "the banner stays while a finding is open");
+  await page.keyboard.press("Escape");
+  await page.click("a[aria-label='Report']");
+  await page.waitForSelector("text=Compliance report");
+  check(await page.isVisible(banner), "the report page carries the banner");
+  check(!(await page.isVisible("text=deleted from the server")), "a saved sample is not described as expiring");
+  // a live scan and a saved sample never share the "last scan" slot
+  await page.goto(BASE + "/");
+  check((await page.getAttribute("a:has-text('Open workspace')", "href")) === "/scan", "opening a saved sample does not become the tab's scan");
+  await context.close();
+
+  // the production bundle carries no report
+  const urls = new Set();
+  const html = await (await fetch(BASE + "/")).text();
+  for (const m of html.matchAll(/(?:src|href)="(\/assets\/[^"]+\.js)"/g)) urls.add(m[1]);
+  let contained = [];
+  for (const url of urls) {
+    const text = await (await fetch(BASE + url)).text();
+    for (const m of text.matchAll(/assets\/[A-Za-z0-9_.-]+\.js/g)) urls.add("/" + m[0]);
+    if (/35ee5d20f594|Hardcoded secrets or credentials|mock\/report|mock-/.test(text)) contained.push(url);
+  }
+  const dev = /\/src\/main\.tsx/.test(html);
+  check(dev || urls.size > 1, `the app is built from ${urls.size} script files`);
+  check(contained.length === 0, `no bundled report or mock data in any script (${contained.join(", ") || "clean"})`);
 }
 
 const work = mkdtempSync(path.join(tmpdir(), "dpdp-e2e-"));
@@ -415,6 +490,7 @@ try {
   await keyboardAndMotion(browser, scanId);
   await narrowScreens(browser, zip);
   await expiryAndPrivacy(browser, zip);
+  await freshSession(browser);
 
   if (WITH_GIT) {
     const { report: juice } = await scanAndCheck(

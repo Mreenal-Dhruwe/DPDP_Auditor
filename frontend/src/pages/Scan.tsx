@@ -4,7 +4,7 @@
 import { Check, Circle, FileArchive, GitBranch, LoaderCircle, ScanLine, UploadCloud, X } from "lucide-react";
 import { useEffect, useRef, useState, type DragEvent, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { ApiError, getSamples, getScanStatus, SAMPLE_ID, startGitScan, startZipScan, type SampleInfo } from "../api";
+import { ApiError, getSamples, getScanStatus, startGitScan, startZipScan, type SampleInfo } from "../api";
 import { Heading, Notice } from "../components/ui";
 import { rememberScope } from "../lib/scope";
 import { setExpiry } from "../lib/session";
@@ -197,15 +197,15 @@ export function NewScan() {
           <small>
             Evidence in reports is masked. Scans are private to this tab: they are cleared when you reload or leave, and the server deletes them after 30 minutes.
           </small>
-          <div className="samplelist" id="samples">
+          <div className="samplelist" id="samples" hidden={samples.length === 0}>
             <h2 className="type-pixel">Saved samples</h2>
             <p>
               Reports saved earlier from the command line. They are <b>not live scans</b> and are never deleted.
             </p>
             <ul>
-              {(samples.length ? samples : [{ id: SAMPLE_ID, name: SAMPLE_ID, target: "target_app", total: 16, generated_at: "" } as SampleInfo]).map((s) => (
+              {samples.map((s) => (
                 <li key={s.id}>
-                  <Link to={`/scans/${s.id}`}>
+                  <Link to={`/samples/${s.name}`}>
                     <strong>{s.target}</strong>
                     <small>
                       {s.total} findings · saved sample
@@ -380,8 +380,8 @@ export function ScanProgress() {
             <ScanLine aria-hidden="true" />
             Start a new scan
           </Link>
-          <Link className="textlink" to={`/scans/${SAMPLE_ID}`}>
-            Open the saved sample report
+          <Link className="textlink" to="/samples">
+            Browse saved samples
           </Link>
         </div>
       )}

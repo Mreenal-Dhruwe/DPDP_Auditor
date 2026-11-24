@@ -223,6 +223,21 @@
   margin: 22px 0 8px;
 }
 
+/* an item with nothing to point at yet (no scan or saved sample is open): visible, not a link */
+.rail nav .railitem {
+  position: relative;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-left: 3px solid transparent;
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+.rail nav .railitem:hover .tip {
+  opacity: 1;
+  transform: none;
+}
+
 @media (max-width: 760px) {
   .rail {
     width: 48px;

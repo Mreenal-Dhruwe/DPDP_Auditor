@@ -58,7 +58,7 @@ The design now runs in the real app under `frontend/` (React 19, Vite 8, react-r
 | `ui.tsx` Shell, Badge, Select | `components/Shell.tsx`, `components/ui.tsx`, `components/ReviewSelect.tsx`, `lib/toast.tsx` | `/api/health` dot in the rail |
 
 Decisions taken during the port:
-- Routes are scan-scoped. Rail links follow the scan in the URL, then the last scan opened in the tab (`lib/scope.ts`, memory only), then the bundled sample report (`/scans/sample`, generated from the real models).
+- Routes are scan-scoped. Rail links follow the scan in the URL, then the last scan opened in the tab (`lib/scope.ts`, memory only). With neither, the rail's Overview, Findings and Report items are disabled: there is no default report.
 - The app has no authentication and no server-side review store. Review status is a separate map per scan and finding id held in memory only (`lib/reviews.tsx`; no localStorage or sessionStorage), labelled "cleared when you reload or leave" wherever it appears. Every finding starts as Open. Server exports never include review state; the report page offers it as a separate "Review notes (JSON)" file.
 - Exports are the server's files (masked, authoritative), not locally generated HTML or SARIF. A 501 for PDF (no Pango) is shown in the UI.
 - Missing, unfinished and expired reports have explicit states (`ReportError` in `pages/ScanLayout.tsx`); a failed scan names the stage that failed and the server's reason.
@@ -68,6 +68,6 @@ Decisions taken during the port:
 
 - Scans live 30 minutes (`SCAN_TTL_MINUTES`) and are private to the tab that started them. `lib/session.ts` keeps the scan ids and delete tokens this tab created in memory; on `pagehide` it sends `navigator.sendBeacon` to `POST /api/scans/{id}/delete` (a beacon cannot send DELETE) so the server drops them at once. The server also exposes `DELETE /api/scans/{id}` with the `X-Delete-Token` header; a wrong token is refused (403) and there is no clear-all endpoint.
 - After a reload, in a new tab or on a direct link the tab owns nothing, so `api.ts` treats the id as expired (410) without asking the server, and `ReportError` shows "This scan has expired or was not found". A real expiry or deletion answers 410 as well.
-- `/scan` lists the saved samples from `GET /api/samples` (reports in `samples/`, outside the TTL, labelled "Saved sample, not a live scan"); `/scans/sample` is the sample bundled in the app for use without a backend.
+- `/scan` lists the saved samples from `GET /api/samples` (reports in `samples/`, outside the TTL). Saved samples are shown only under `/samples` and `/samples/:name`, linked from the landing page, with a "Saved sample, not your scan" banner (`ScanLayout`) on every screen. Nothing is bundled or loaded by default; `src/mock/` is development-only (`npm run dev:mock`) and is not in the production build.
 - Wording: review controls say "cleared when you reload or leave"; the overview says when the server deletes the scan.
 - The brand intro keeps its sessionStorage "played" flag: it is a UI preference, not scan data.

@@ -197,7 +197,8 @@ frontend/           # React 19 + Vite 8 + TypeScript 7 + Tailwind 4 + react-rout
   src/landing/      # Landing.tsx (/), Aurora.tsx (strands, parallax), BrandIntro.tsx (landing
                     # only, once per session, skippable, none with reduced motion), css
   src/pages/        # Scan.tsx (/scan, /scans/:id/progress), ScanLayout.tsx (loads the report
-                    # once for /scans/:id/*), Overview.tsx (/scans/:id), Findings.tsx (board,
+                    # once for /scans/:id/* and /samples/:name/*), Samples.tsx (/samples),
+                    # Overview.tsx (/scans/:id), Findings.tsx (board,
                     # list, drawer: /scans/:id/findings/:findingId?), FindingDetail.tsx,
                     # Report.tsx (/scans/:id/report), Rules.tsx (/rules)
                     # filters live in the URL (?sev=&rule=&prov=&conf=&cat=&q=&view=)
@@ -212,7 +213,12 @@ frontend/           # React 19 + Vite 8 + TypeScript 7 + Tailwind 4 + react-rout
   src/styles/       # base.css (tokens, controls), shell.css, screens.css
   src/types/contract.ts  # GENERATED (scripts/make_ts_types.py) - never edit by hand
   src/api.ts        # typed calls to /api (+ /api/rules, /api/health). `npm run dev:mock`
-                    # (.env.mock) simulates scans; scan id "sample" always shows the mock report
+                    # (.env.mock) simulates the API from src/mock/mockApi.ts + mock/report.json;
+                    # MOCK_MODE is a build-time constant, so production builds contain NEITHER
+                    # (e2e checks the bundle). NO report is loaded by default: a fresh session
+                    # shows only the landing page. Saved samples: /samples (list) and
+                    # /samples/:name only, banner "Saved sample, not your scan" on every screen;
+                    # /scans/sample-... is not found. lib/paths.ts scanBase() gives the base path
   e2e/smoke.mjs     # `npm run e2e [-- --git] [-- --pdf]`: headless Chrome against the live API:
                     # zip and Git scans, a failed scan, findings, exports, board moves (select,
                     # drag, Undo, reload, scanner fields unchanged), drawer, keyboard order,

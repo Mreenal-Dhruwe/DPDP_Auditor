@@ -7,10 +7,9 @@
 // only POST, so the endpoint is POST /api/scans/{id}/delete with {"token": ...}; the server
 // refuses a wrong token. Anything the beacon misses is deleted by the server's 30-minute TTL.
 
-export const SAMPLE_ID = "sample"; // the sample bundled in the app (works without a backend)
-
-/** "sample" (bundled) or "sample-<name>" (saved report served by /api/samples): not live scans. */
-export const isSampleId = (scanId: string) => scanId === SAMPLE_ID || scanId.startsWith("sample-");
+/** "sample-<name>": a saved report served by /api/samples under /samples/<name>. Real scan ids
+ *  are 32 hex characters, so the two can never collide. */
+export const isSampleId = (scanId: string) => scanId.startsWith("sample-");
 
 interface Owned {
   token: string;
