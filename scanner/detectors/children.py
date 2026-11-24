@@ -84,6 +84,29 @@ def _first_collection(project: Project) -> tuple[str, int, str] | None:
     return next(_collections(project), None)
 
 
+# A date of birth alone is a weak clue: most apps ask adults for it. A stronger one is code that
+# shows minors can be users: an age check against 18, or minor / under-18 / kids / school words
+# ("child" is not used: it is DOM and React vocabulary).
+_MINOR_WORDS = (r"is[_ ]?minor|minors?|under[_ -]?18|under[_ -]?age(?:d)?|is[_ ]?adult|over[_ -]?18|"
+                r"juveniles?|kids?|students?|schools?")
+_AGE_CHECK = r"\bage\w*\s*(?:<|>)=?\s*1[78]\b|(?:<|>)=?\s*1[78]\b[^\n]{0,20}\bage\b|\b1[78]\s*(?:<|>)=?\s*\w*age\b"
+MINOR_SIGNAL = re.compile(rf"\b(?:{_MINOR_WORDS})\b|{_AGE_CHECK}", re.IGNORECASE)
+MINOR_SIGNAL_NO_JS = re.compile(rf"\b(?:{_MINOR_WORDS})\b|{_AGE_CHECK}", re.IGNORECASE)
+CODE_SUFFIXES = TEMPLATE_SUFFIXES | {".py", ".js", ".ts", ".mjs", ".cjs", ".jsx", ".tsx", ".java", ".go", ".rb", ".php", ".cs", ".kt"}
+
+
+def _minor_signal(project: Project) -> str | None:
+    """First sign (file:line, matched text) that minors can use the app, else None."""
+    for rel in text_files(project):
+        suffix = suffix_of(rel)
+        if suffix not in CODE_SUFFIXES or is_test_file(rel):
+            continue
+        if m := MINOR_SIGNAL.search(project.read_text(rel)):
+            text = project.read_text(rel)
+            return f"{rel}:{text.count(chr(10), 0, m.start()) + 1} '{m.group(0).strip()}'"
+    return None
+
+
 def no_parental_consent(project: Project) -> list[Hit]:
     collected = _first_collection(project)
     if collected is None:
@@ -92,9 +115,15 @@ def no_parental_consent(project: Project) -> list[Hit]:
         if not is_test_file(rel) and PARENTAL_FLOW.search(project.read_text(rel)):
             return []
     rel, line, how = collected
-    return [Hit(rule_id=CH_001, scope="project", file=rel, line=line, pii=["dob"], confidence="medium",
-                evidence=f"Date of birth / age is collected ({how}), but no parent or guardian consent "
-                         f"flow exists anywhere, so under-18s are processed without a parent's consent")]
+    signal = _minor_signal(project)
+    evidence = (f"Date of birth / age is collected ({how}), but no parent or guardian consent "
+                f"flow exists anywhere, so under-18s are processed without a parent's consent")
+    if signal:
+        return [Hit(rule_id=CH_001, scope="project", file=rel, line=line, pii=["dob"], confidence="medium",
+                    evidence=f"{evidence} [the code deals with minors: {signal}]")]
+    return [Hit(rule_id=CH_001, scope="project", file=rel, line=line, pii=["dob"], confidence="low",
+                evidence=f"{evidence} [only a date of birth was found, nothing shows minors use the app; "
+                         f"verify manually: it may be collected from adults only]")]
 
 
 # --- DPDP-CH-002: tracking or targeted ads possible for children ----------------------------

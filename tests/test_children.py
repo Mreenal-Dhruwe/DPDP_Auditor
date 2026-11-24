@@ -35,3 +35,14 @@ def test_form_or_schema_only(tmp_path):
     (tmp_path / "signup.html").write_text('<form>\n<input type="date" name="dob">\n</form>\n', encoding="utf-8")
     [hit] = scan(tmp_path)
     assert (hit.file, hit.line) == ("signup.html", 2)
+
+
+def test_date_of_birth_alone_is_low_confidence_and_a_minor_signal_raises_it(tmp_path):
+    (tmp_path / "signup.html").write_text('<form>\n<input type="date" name="dob">\n</form>\n', encoding="utf-8")
+    [weak] = scan(tmp_path)
+    assert weak.confidence == "low" and "verify manually" in weak.evidence
+    (tmp_path / "app.py").write_text("def ok(age):\n    return age >= 18\n", encoding="utf-8")
+    [strong] = scan(tmp_path)
+    assert strong.confidence == "medium" and "app.py:2" in strong.evidence
+    (tmp_path / "parent.py").write_text("def verify_parent(parent_email): ...\n", encoding="utf-8")
+    assert scan(tmp_path) == []  # a parental consent flow: no finding
